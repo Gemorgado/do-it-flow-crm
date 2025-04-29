@@ -41,9 +41,7 @@ export function transformToPieSliceArray(data: ChartData): PieSlice[] {
   return labels.map((label, index) => ({
     name: label,
     value: data.datasets[0].data[index] as number,
-    color: Array.isArray(data.datasets[0].backgroundColor) 
-      ? data.datasets[0].backgroundColor[index] as string
-      : data.datasets[0].backgroundColor as string
+    color: getColorAsString(data.datasets[0].backgroundColor, index)
   }));
 }
 
@@ -61,10 +59,29 @@ export function toPieSliceArray(raw: ChartDataFormat | ChartData): PieSlice[] {
   return labels.map((lbl, i) => ({
     name: lbl,
     value: Number(raw.datasets[0].data[i]), // Ensure we're always returning a number
-    color: Array.isArray(raw.datasets[0].backgroundColor)
-      ? raw.datasets[0].backgroundColor[i]
-      : raw.datasets[0].backgroundColor
+    color: getColorAsString(raw.datasets[0].backgroundColor, i)
   }));
+}
+
+/**
+ * Helper function to ensure color is always returned as a string
+ */
+function getColorAsString(color: any, index: number): string {
+  if (!color) {
+    // Default color if none provided
+    return '#' + Math.floor(Math.random()*16777215).toString(16);
+  }
+  
+  if (typeof color === 'string') {
+    return color;
+  }
+  
+  if (Array.isArray(color) && index < color.length) {
+    return typeof color[index] === 'string' ? color[index] : '#' + Math.floor(Math.random()*16777215).toString(16);
+  }
+  
+  // For complex color objects or functions, return a default color
+  return '#' + Math.floor(Math.random()*16777215).toString(16);
 }
 
 export function getChannelData(channelName: string, marketingROIData: any[]) {
