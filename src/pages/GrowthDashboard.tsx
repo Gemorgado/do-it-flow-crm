@@ -53,7 +53,7 @@ export default function GrowthDashboard() {
   }));
 
   // Transform the data for our components
-  // The key fix: pre-transform the data to match the expected format
+  // Pre-transform the data to match the expected format for PieChart component
   const formattedLeadSourceData = transformPieData(leadSourceData);
   const formattedTrafficData = transformPieData(trafficSourceData);
 
