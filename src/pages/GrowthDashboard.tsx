@@ -52,9 +52,6 @@ export default function GrowthDashboard() {
     changeDirection: metric.changeDirection as "up" | "down" | "neutral"
   }));
 
-  // Transform leadSourceData for the pie chart to ensure it's in the right format
-  const transformedLeadSourceData = transformPieData(leadSourceData);
-
   return (
     <div className="animate-fade-in space-y-6">
       <GrowthHeader dateRange={dateRange} onDateRangeChange={handleDateRangeChange} />
