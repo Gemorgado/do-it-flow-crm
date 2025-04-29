@@ -16,6 +16,8 @@ import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import GrowthDashboard from "./pages/GrowthDashboard";
 import SpaceManagement from "./pages/SpaceManagement";
+import PlansAndServices from "./pages/PlansAndServices";
+import GrowthReports from "./pages/GrowthReports";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +39,8 @@ const App = () => (
             <Route path="/perfil" element={<Profile />} />
             <Route path="/growth" element={<GrowthDashboard />} />
             <Route path="/espacos" element={<SpaceManagement />} />
+            <Route path="/planos" element={<PlansAndServices />} />
+            <Route path="/relatorios" element={<GrowthReports />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </MainLayout>

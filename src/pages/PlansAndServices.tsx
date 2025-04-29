@@ -1,6 +1,5 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Building, Workstation, Calendar, CalendarCheck, LucideIcon, MapPin, Users } from "lucide-react";
+import { Building, Monitor, Calendar, CalendarCheck, LucideIcon, MapPin, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface PlanProps {
@@ -113,7 +112,7 @@ export default function PlansAndServices() {
     {
       title: "Estações de Trabalho",
       description: "Posições de trabalho para profissionais autônomos e pequenas equipes",
-      icon: Workstation,
+      icon: Monitor,
       planTypes: [
         {
           title: "Estação Flexível – Mensal",
