@@ -1,10 +1,11 @@
 
 import { Lead } from "@/types";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, UserPlus, Calendar, FileText, MessageCircle } from "lucide-react";
+import { MessageSquare, UserPlus, Calendar, FileText, MessageCircle, AlertTriangle } from "lucide-react";
 import { useState } from "react";
 import { WhatsAppDialog } from "./WhatsAppDialog";
 import { toast } from "@/hooks/use-toast";
+import { isLeadStale, needsFollowUp, getLeadAlertMessage } from "@/utils/pipelineAutomation";
 
 interface LeadCardProps {
   lead: Lead;
@@ -47,6 +48,10 @@ export function LeadCard({ lead, onDragStart, onStageUpdate }: LeadCardProps) {
     }
   };
 
+  // Get alert message if this lead needs attention
+  const alertMessage = getLeadAlertMessage(lead);
+  const needsAttention = isLeadStale(lead) || needsFollowUp(lead);
+
   return (
     <div 
       className="bg-white border rounded-md shadow-sm p-3 cursor-move hover:shadow-md transition-shadow"
@@ -56,6 +61,14 @@ export function LeadCard({ lead, onDragStart, onStageUpdate }: LeadCardProps) {
       <div className="flex justify-between items-start mb-1">
         <h4 className="font-medium flex items-center gap-1">
           {lead.name}
+          {needsAttention && (
+            <span className="text-amber-500 tooltip-trigger">
+              <AlertTriangle className="h-4 w-4" />
+              <span className="tooltip-text bg-amber-100 text-amber-800 text-xs p-1 rounded absolute mt-8 z-10">
+                {alertMessage}
+              </span>
+            </span>
+          )}
         </h4>
         {lead.value && (
           <span className="text-sm text-doIt-primary font-medium">
@@ -66,6 +79,14 @@ export function LeadCard({ lead, onDragStart, onStageUpdate }: LeadCardProps) {
       
       {lead.company && (
         <p className="text-sm text-gray-600 mb-2">{lead.company}</p>
+      )}
+      
+      {/* Show next follow up date if it exists */}
+      {lead.nextFollowUp && (
+        <div className="mb-2 text-xs flex items-center gap-1 text-gray-500">
+          <Calendar className="h-3 w-3" /> 
+          Follow-up: {new Date(lead.nextFollowUp).toLocaleDateString('pt-BR')}
+        </div>
       )}
       
       <div className="flex flex-wrap gap-2 mt-3">

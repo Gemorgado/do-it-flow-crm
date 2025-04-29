@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -7,16 +7,20 @@ import {
   Plus, 
   Filter, 
   Search, 
-  UserPlus 
+  UserPlus,
+  AlertTriangle
 } from "lucide-react";
 import { leads, pipelineStages } from "@/data/mockData";
 import { Lead, PipelineStage } from "@/types";
 import { toast } from "@/hooks/use-toast";
 import { PipelineColumn } from "@/components/Pipeline/PipelineColumn";
+import { getLeadsNeedingAttention, triggerAutomation } from "@/utils/pipelineAutomation";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 export default function Pipeline() {
   const [filteredLeads, setFilteredLeads] = useState<Lead[]>(leads);
   const [draggedLead, setDraggedLead] = useState<Lead | null>(null);
+  const [leadsNeedingAttention, setLeadsNeedingAttention] = useState<Lead[]>([]);
   
   // Group leads by pipeline stage
   const leadsByStage: Record<string, Lead[]> = {};
@@ -26,6 +30,17 @@ export default function Pipeline() {
       lead => lead.stage.id === stage.id
     );
   });
+
+  // Check for leads needing attention when filtered leads change
+  useEffect(() => {
+    const needAttention = getLeadsNeedingAttention(filteredLeads);
+    setLeadsNeedingAttention(needAttention);
+    
+    // Check automation triggers for each lead
+    filteredLeads.forEach(lead => {
+      triggerAutomation(lead);
+    });
+  }, [filteredLeads]);
 
   const handleDragStart = (e: React.DragEvent, lead: Lead) => {
     setDraggedLead(lead);
@@ -62,10 +77,11 @@ export default function Pipeline() {
     const targetStage = pipelineStages.find(stage => stage.id === targetStageId);
     if (!targetStage) return;
 
-    // Update the lead's stage
+    // Update the lead's stage and updatedAt timestamp
+    const now = new Date().toISOString();
     const updatedLeads = filteredLeads.map(lead => 
       lead.id === leadId 
-        ? { ...lead, stage: targetStage }
+        ? { ...lead, stage: targetStage, updatedAt: now }
         : lead
     );
 
@@ -121,6 +137,23 @@ export default function Pipeline() {
           <Plus className="mr-2 h-4 w-4" /> Novo Lead
         </Button>
       </div>
+
+      {leadsNeedingAttention.length > 0 && (
+        <Alert>
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Atenção necessária</AlertTitle>
+          <AlertDescription>
+            {leadsNeedingAttention.length} leads precisam da sua atenção.
+            {leadsNeedingAttention.length <= 3 && (
+              <ul className="mt-1 list-disc list-inside">
+                {leadsNeedingAttention.slice(0, 3).map(lead => (
+                  <li key={lead.id} className="text-sm">{lead.name} - {lead.company}</li>
+                ))}
+              </ul>
+            )}
+          </AlertDescription>
+        </Alert>
+      )}
 
       <div className="flex flex-col sm:flex-row justify-between gap-4">
         <div className="flex flex-1 gap-3">
