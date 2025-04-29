@@ -50,11 +50,15 @@ export function transformToPieSliceArray(data: ChartData): PieSlice[] {
 /**
  * Transforms pie data from raw chart data format to PieSlice[]
  */
-export function toPieSliceArray(raw: {
-  labels: string[];
-  datasets: { data: number[]; backgroundColor: string | string[] }[];
-}): PieSlice[] {
-  return raw.labels.map((lbl, i) => ({
+export function toPieSliceArray(raw: ChartDataFormat | ChartData): PieSlice[] {
+  // Handle case when raw is chart.js ChartData
+  if (!raw.labels || !raw.datasets || raw.datasets.length === 0) {
+    return [];
+  }
+
+  const labels = raw.labels as string[];
+  
+  return labels.map((lbl, i) => ({
     name: lbl,
     value: raw.datasets[0].data[i],
     color: Array.isArray(raw.datasets[0].backgroundColor)

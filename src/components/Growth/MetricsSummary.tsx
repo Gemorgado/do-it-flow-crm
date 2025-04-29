@@ -41,7 +41,7 @@ export function MetricsSummary({ metrics }: MetricsSummaryProps) {
                       ? "text-red-500" 
                       : "text-gray-500"
                 }`}>
-                  {metric.changeDirection === "up" ? "↑" : "↓"} {metric.change}
+                  {metric.changeDirection === "up" ? "↑" : metric.changeDirection === "down" ? "↓" : ""} {metric.change}
                 </div>
               )}
             </div>

@@ -1,10 +1,10 @@
+
 import { DateRange } from "react-day-picker";
 import { ChartCard } from "@/components/Dashboard/ChartCard";
 import { CRMMetricsCard } from "@/components/Dashboard/CRMMetricsCard";
 import { LineChart, PieChart } from "@/components/ui/chart";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { FileChartLine, FileChartPie } from "lucide-react";
-import type { ChartData } from "chart.js";
 import { toPieSliceArray } from "@/components/Growth/chartUtils";
 import { PieSlice } from "@/types/pie";
 
@@ -23,8 +23,8 @@ export function RevenueReport({ dateRange }: RevenueReportProps) {
     { label: "Outros Serviços", value: "R$ 12.300", tooltipText: "Receita mensal de outros serviços", changeValue: "8%", changeDirection: "neutral" as const },
   ];
 
-  // Revenue by service type as ChartData format
-  const revenueByServiceData: ChartData<'pie'> = {
+  // Revenue by service type
+  const revenueByServiceData = {
     labels: ["Salas Privativas", "Estações Fixas", "Estações Flexíveis", "Endereço Fiscal", "Salas de Reunião"],
     datasets: [
       {

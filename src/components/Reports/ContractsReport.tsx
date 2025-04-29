@@ -1,3 +1,4 @@
+
 import { DateRange } from "react-day-picker";
 import { ChartCard } from "@/components/Dashboard/ChartCard";
 import { CRMMetricsCard } from "@/components/Dashboard/CRMMetricsCard";
@@ -24,8 +25,8 @@ export function ContractsReport({ dateRange }: ContractsReportProps) {
     { label: "Tempo Médio de Contrato", value: "14 meses", tooltipText: "Duração média dos contratos ativos" },
   ];
 
-  // Status distribution data as ChartData format
-  const contractStatusData: ChartData<'pie'> = {
+  // Status distribution data
+  const contractStatusData = {
     labels: ["Ativos", "A Vencer (30d)", "Cancelados (30d)"],
     datasets: [
       {
@@ -36,8 +37,8 @@ export function ContractsReport({ dateRange }: ContractsReportProps) {
     ]
   };
 
-  // Type distribution data as ChartData format
-  const contractTypeData: ChartData<'pie'> = {
+  // Type distribution data
+  const contractTypeData = {
     labels: ["Sala Privativa", "Estação Fixa", "Estação Flexível", "Endereço Fiscal"],
     datasets: [
       {

@@ -52,10 +52,14 @@ export default function GrowthDashboard() {
     });
   };
 
-  // Cast growthMetrics to match MetricProps type
+  // Convert growthMetrics to match MetricProps type
   const typedMetrics: MetricProps[] = growthMetrics.map(metric => ({
-    ...metric,
+    label: metric.title,
+    value: metric.value,
+    description: "Performance metric", // Adding required field
+    badgeText: metric.change || "", // Adding required field
     badgeVariant: metric.badgeVariant as "outline" | "secondary" | "default" | "destructive",
+    change: metric.change,
     changeDirection: metric.changeDirection as "up" | "down" | "neutral"
   }));
 

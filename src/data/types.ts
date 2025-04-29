@@ -46,4 +46,4 @@ export interface ProposalItem {
   total: number;
 }
 
-export { ChartData };
+export type { ChartData };
