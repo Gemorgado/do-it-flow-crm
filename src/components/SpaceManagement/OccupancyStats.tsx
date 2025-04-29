@@ -10,6 +10,7 @@ interface OccupancyStatsProps {
     occupancyRate: number;
     availableSpaces: number;
     availableByType: Record<string, number>;
+    availableByFloor?: Record<string, number>;
   };
 }
 
@@ -71,6 +72,20 @@ export function OccupancyStats({ stats }: OccupancyStatsProps) {
           ))}
         </div>
       </div>
+
+      {stats.availableByFloor && (
+        <div>
+          <h3 className="text-lg font-semibold mb-3">Disponibilidade por Andar</h3>
+          <div className="space-y-3">
+            {Object.entries(stats.availableByFloor).map(([floor, count]) => (
+              <div key={floor} className="flex justify-between">
+                <span className="text-sm">{floor}º Andar</span>
+                <span className="font-semibold text-green-600">{count} sala{count > 1 ? "s" : ""}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

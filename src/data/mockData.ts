@@ -369,13 +369,15 @@ export const pipelineStages: PipelineStage[] = [
   }
 ];
 
+// Updated locations with all the requested rooms
 export const locations: Location[] = [
+  // Private rooms 101-107
   {
     id: "loc-101",
     name: "Sala 101",
     type: "sala_privativa",
     identifier: "101",
-    available: false,
+    available: true,
     area: 15
   },
   {
@@ -387,13 +389,267 @@ export const locations: Location[] = [
     area: 20
   },
   {
+    id: "loc-103",
+    name: "Sala 103",
+    type: "sala_privativa",
+    identifier: "103",
+    available: true,
+    area: 18
+  },
+  {
+    id: "loc-104",
+    name: "Sala 104",
+    type: "sala_privativa",
+    identifier: "104",
+    available: true,
+    area: 16
+  },
+  {
+    id: "loc-105",
+    name: "Sala 105",
+    type: "sala_privativa",
+    identifier: "105",
+    available: true,
+    area: 22
+  },
+  {
+    id: "loc-106",
+    name: "Sala 106",
+    type: "sala_privativa",
+    identifier: "106",
+    available: true,
+    area: 19
+  },
+  {
+    id: "loc-107",
+    name: "Sala 107",
+    type: "sala_privativa",
+    identifier: "107",
+    available: true,
+    area: 17
+  },
+  
+  // Private rooms 201-219
+  {
     id: "loc-201",
-    name: "Sala de Reunião 201",
+    name: "Sala 201",
     type: "sala_reuniao",
     identifier: "201",
     available: true,
     capacity: 8
   },
+  {
+    id: "loc-202",
+    name: "Sala 202",
+    type: "sala_privativa",
+    identifier: "202",
+    available: true,
+    area: 18
+  },
+  {
+    id: "loc-203",
+    name: "Sala 203",
+    type: "sala_privativa",
+    identifier: "203",
+    available: true,
+    area: 20
+  },
+  {
+    id: "loc-204",
+    name: "Sala 204",
+    type: "sala_privativa",
+    identifier: "204",
+    available: true,
+    area: 22
+  },
+  {
+    id: "loc-205",
+    name: "Sala 205",
+    type: "sala_privativa",
+    identifier: "205",
+    available: true,
+    area: 15
+  },
+  {
+    id: "loc-206",
+    name: "Sala 206",
+    type: "sala_privativa",
+    identifier: "206",
+    available: true,
+    area: 17
+  },
+  {
+    id: "loc-207",
+    name: "Sala 207",
+    type: "sala_privativa",
+    identifier: "207",
+    available: true,
+    area: 19
+  },
+  {
+    id: "loc-208",
+    name: "Sala 208",
+    type: "sala_privativa",
+    identifier: "208",
+    available: true,
+    area: 21
+  },
+  {
+    id: "loc-209",
+    name: "Sala 209",
+    type: "sala_privativa",
+    identifier: "209",
+    available: true,
+    area: 16
+  },
+  {
+    id: "loc-210",
+    name: "Sala 210",
+    type: "sala_privativa",
+    identifier: "210",
+    available: true,
+    area: 18
+  },
+  {
+    id: "loc-211",
+    name: "Sala 211",
+    type: "sala_privativa",
+    identifier: "211",
+    available: true,
+    area: 20
+  },
+  {
+    id: "loc-212",
+    name: "Sala 212",
+    type: "sala_privativa",
+    identifier: "212",
+    available: true,
+    area: 22
+  },
+  {
+    id: "loc-213",
+    name: "Sala 213",
+    type: "sala_privativa",
+    identifier: "213",
+    available: true,
+    area: 17
+  },
+  {
+    id: "loc-214",
+    name: "Sala 214",
+    type: "sala_privativa",
+    identifier: "214",
+    available: true,
+    area: 19
+  },
+  {
+    id: "loc-215",
+    name: "Sala 215",
+    type: "sala_privativa",
+    identifier: "215",
+    available: true,
+    area: 21
+  },
+  {
+    id: "loc-216",
+    name: "Sala 216",
+    type: "sala_privativa",
+    identifier: "216",
+    available: true,
+    area: 16
+  },
+  {
+    id: "loc-217",
+    name: "Sala 217",
+    type: "sala_privativa",
+    identifier: "217",
+    available: true,
+    area: 18
+  },
+  {
+    id: "loc-219",
+    name: "Sala 219",
+    type: "sala_privativa",
+    identifier: "219",
+    available: true,
+    area: 20
+  },
+  
+  // Private rooms 301-310
+  {
+    id: "loc-301",
+    name: "Sala 301",
+    type: "sala_privativa",
+    identifier: "301",
+    available: true,
+    area: 22
+  },
+  {
+    id: "loc-302",
+    name: "Sala 302",
+    type: "sala_privativa",
+    identifier: "302",
+    available: true,
+    area: 18
+  },
+  {
+    id: "loc-303",
+    name: "Sala 303",
+    type: "sala_privativa",
+    identifier: "303",
+    available: true,
+    area: 20
+  },
+  {
+    id: "loc-304",
+    name: "Sala 304",
+    type: "sala_privativa",
+    identifier: "304",
+    available: true,
+    area: 16
+  },
+  {
+    id: "loc-305",
+    name: "Sala 305",
+    type: "sala_privativa",
+    identifier: "305",
+    available: true,
+    area: 18
+  },
+  {
+    id: "loc-306",
+    name: "Sala 306",
+    type: "sala_privativa",
+    identifier: "306",
+    available: true,
+    area: 22
+  },
+  {
+    id: "loc-308",
+    name: "Sala 308",
+    type: "sala_privativa",
+    identifier: "308",
+    available: true,
+    area: 20
+  },
+  {
+    id: "loc-309",
+    name: "Sala 309",
+    type: "sala_privativa",
+    identifier: "309",
+    available: true,
+    area: 18
+  },
+  {
+    id: "loc-310",
+    name: "Sala 310",
+    type: "sala_privativa",
+    identifier: "310",
+    available: true,
+    area: 16
+  },
+  
+  // Keep existing stations
   {
     id: "est-01",
     name: "Estação 01",
@@ -664,105 +920,3 @@ export const marketingROIData = [
     channel: "LinkedIn Ads",
     spend: 6500,
     revenue: 18500,
-    roi: 184.6,
-    leads: 85,
-    customers: 12,
-    cpl: 76.47,
-    cac: 541.67
-  }
-];
-
-export const trafficSourceData = {
-  labels: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun"],
-  datasets: [
-    {
-      label: "Visitas",
-      data: [2800, 3200, 3600, 4100, 4500, 5100],
-      borderColor: "rgba(75, 192, 192, 1)",
-      backgroundColor: "rgba(75, 192, 192, 0.2)",
-      borderWidth: 2,
-      fill: true,
-    },
-    {
-      label: "Leads",
-      data: [120, 145, 160, 190, 210, 245],
-      borderColor: "rgba(54, 162, 235, 1)",
-      backgroundColor: "rgba(54, 162, 235, 0.2)",
-      borderWidth: 2,
-      fill: true,
-    }
-  ]
-};
-
-export const metaVsGoogleData = {
-  labels: ["Cliques", "Conv.", "CPL", "CPC", "CTR", "ROI"],
-  datasets: [
-    {
-      label: "Google Ads",
-      data: [8742, 325, 45.20, 2.34, 4.66, 188],
-      backgroundColor: "rgba(54, 162, 235, 0.7)",
-    },
-    {
-      label: "Meta Ads",
-      data: [10543, 278, 46.67, 1.87, 3.37, 185],
-      backgroundColor: "rgba(102, 102, 255, 0.7)",
-    }
-  ]
-};
-
-export const growthMetrics = [
-  { 
-    label: "CPL Médio",
-    value: "R$ 48,32",
-    change: "12.4%",
-    changeDirection: "down",
-    badgeText: "Meta: R$ 50,00",
-    badgeVariant: "outline",
-    description: "Último período: R$ 55,12"
-  },
-  { 
-    label: "CAC Médio",
-    value: "R$ 392,15",
-    change: "8.7%",
-    changeDirection: "down",
-    badgeText: "Meta: R$ 400,00",
-    badgeVariant: "outline",
-    description: "Último período: R$ 429,45"
-  },
-  { 
-    label: "ROAS",
-    value: "248%",
-    change: "15.8%",
-    changeDirection: "up",
-    badgeText: "Meta: 200%",
-    badgeVariant: "outline",
-    description: "Retorno sobre investimento em ads"
-  },
-  { 
-    label: "Leads Gerados",
-    value: "754",
-    change: "23.5%",
-    changeDirection: "up",
-    badgeText: "Este mês",
-    badgeVariant: "secondary",
-    description: "Mês anterior: 611 leads"
-  },
-  { 
-    label: "Taxa de Conversão",
-    value: "3.8%",
-    change: "0.5%",
-    changeDirection: "up",
-    badgeText: "Meta: 3.5%",
-    badgeVariant: "outline",
-    description: "Leads que se tornaram clientes"
-  },
-  { 
-    label: "Valor Médio",
-    value: "R$ 1.850",
-    change: "5.2%",
-    changeDirection: "up",
-    badgeText: "Por cliente",
-    badgeVariant: "secondary",
-    description: "Valor médio da primeira venda"
-  }
-];
