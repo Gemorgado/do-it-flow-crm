@@ -1,3 +1,4 @@
+
 import { BarChart, LineChart, PieChart } from "@/components/ui/chart";
 import { StatCard } from "@/components/Dashboard/StatCard";
 import { ChartCard } from "@/components/Dashboard/ChartCard";
@@ -64,6 +65,9 @@ export default function Dashboard() {
   const transformedRevenueData = transformChartData(revenueChartData);
   const transformedLeadSourceData = transformPieChartData(leadSourceChartData);
 
+  // Define empty config object for charts (required by component props)
+  const chartConfig = {};
+
   return (
     <div className="animate-fade-in">
       <div className="flex flex-col md:flex-row justify-between mb-6 gap-4">
@@ -105,12 +109,20 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
         <ChartCard title="Leads vs. Tempo">
           <div className="p-4">
-            <LineChart className="h-64" data={transformedLeadsData} />
+            <LineChart 
+              className="h-64" 
+              data={transformedLeadsData} 
+              config={chartConfig}
+            />
           </div>
         </ChartCard>
         <ChartCard title="Taxa de Conversão">
           <div className="p-4">
-            <LineChart className="h-64" data={transformedConversionData} />
+            <LineChart 
+              className="h-64" 
+              data={transformedConversionData} 
+              config={chartConfig}
+            />
           </div>
         </ChartCard>
       </div>
@@ -118,12 +130,20 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
         <ChartCard title="Origem dos Leads" className="col-span-1">
           <div className="p-4">
-            <PieChart className="h-64" data={transformedLeadSourceData} />
+            <PieChart 
+              className="h-64" 
+              data={transformedLeadSourceData}
+              config={chartConfig}
+            />
           </div>
         </ChartCard>
         <ChartCard title="Receita Mensal" className="col-span-2">
           <div className="p-4">
-            <BarChart className="h-64" data={transformedRevenueData} />
+            <BarChart 
+              className="h-64" 
+              data={transformedRevenueData}
+              config={chartConfig}
+            />
           </div>
         </ChartCard>
       </div>
@@ -252,13 +272,5 @@ export default function Dashboard() {
         </Tabs>
       </div>
     </div>
-  );
-}
-
-function Badge({ variant, className, children }: any) {
-  return (
-    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${className}`}>
-      {children}
-    </span>
   );
 }
