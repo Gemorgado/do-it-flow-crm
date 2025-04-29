@@ -13,6 +13,7 @@ import { MetricsSummary, MetricProps } from "@/components/Growth/MetricsSummary"
 import { OverviewTabContent } from "@/components/Growth/OverviewTabContent";
 import { CampaignsTabContent } from "@/components/Growth/CampaignsTabContent";
 import { ChannelsTabContent } from "@/components/Growth/ChannelsTabContent";
+import { LeadsTimeChart } from "@/components/Growth/LeadsTimeChart";
 import { 
   transformChartData, 
   toPieSliceArray, 
@@ -27,7 +28,8 @@ import {
   marketingROIData, 
   trafficSourceData, 
   metaVsGoogleData,
-  growthMetrics
+  growthMetrics,
+  leadsTimeData
 } from "@/data/mockData";
 
 export default function GrowthDashboard() {
@@ -80,6 +82,13 @@ export default function GrowthDashboard() {
 
       {/* Métricas principais em cards */}
       <MetricsSummary metrics={typedMetrics} />
+
+      {/* Adicionando o novo componente de visualização de leads por tempo */}
+      <LeadsTimeChart 
+        dailyData={leadsTimeData.daily}
+        weeklyData={leadsTimeData.weekly}
+        monthlyTotal={leadsTimeData.monthlyTotal}
+      />
 
       <Tabs defaultValue="overview" onValueChange={handleTabChange}>
         <TabsList className="mb-4">

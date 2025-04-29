@@ -3,7 +3,7 @@
 // to maintain compatibility with existing imports
 
 // Import from all our separate data files
-import { dashboardStats, leadsChartData, conversionChartData, revenueChartData, leadSourceChartData, leadSourceData, campaignPerformanceData, trafficSourceData, metaVsGoogleData, growthMetrics } from "./dashboardData";
+import { dashboardStats, leadsChartData, conversionChartData, revenueChartData, leadSourceChartData, leadSourceData, campaignPerformanceData, trafficSourceData, metaVsGoogleData, growthMetrics, leadsTimeData } from "./dashboardData";
 import { marketingROIData } from "./marketingData";
 import { users, tasks } from "./usersData";
 import { leads, pipelineStages } from "./leadsData";
@@ -22,6 +22,7 @@ export {
   trafficSourceData,
   metaVsGoogleData,
   growthMetrics,
+  leadsTimeData,
   marketingROIData,
   users,
   tasks,

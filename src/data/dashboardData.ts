@@ -1,4 +1,3 @@
-
 import { DashboardStats, ChartData } from "@/types";
 
 export const dashboardStats: DashboardStats = {
@@ -171,3 +170,46 @@ export const growthMetrics = [
     badgeVariant: "default"
   }
 ];
+
+// Dados para visualização de leads por tempo (últimos 30 dias)
+export const leadsTimeData = {
+  daily: [
+    { name: "01/04", Leads: 8 },
+    { name: "02/04", Leads: 10 },
+    { name: "03/04", Leads: 7 },
+    { name: "04/04", Leads: 12 },
+    { name: "05/04", Leads: 9 },
+    { name: "06/04", Leads: 5 },
+    { name: "07/04", Leads: 4 },
+    { name: "08/04", Leads: 11 },
+    { name: "09/04", Leads: 13 },
+    { name: "10/04", Leads: 8 },
+    { name: "11/04", Leads: 10 },
+    { name: "12/04", Leads: 14 },
+    { name: "13/04", Leads: 6 },
+    { name: "14/04", Leads: 5 },
+    { name: "15/04", Leads: 9 },
+    { name: "16/04", Leads: 12 },
+    { name: "17/04", Leads: 15 },
+    { name: "18/04", Leads: 11 },
+    { name: "19/04", Leads: 8 },
+    { name: "20/04", Leads: 10 },
+    { name: "21/04", Leads: 7 },
+    { name: "22/04", Leads: 13 },
+    { name: "23/04", Leads: 16 },
+    { name: "24/04", Leads: 12 },
+    { name: "25/04", Leads: 9 },
+    { name: "26/04", Leads: 11 },
+    { name: "27/04", Leads: 8 },
+    { name: "28/04", Leads: 10 },
+    { name: "29/04", Leads: 14 },
+    { name: "30/04", Leads: 12 }
+  ],
+  weekly: [
+    { name: "Semana 1", Leads: 55 },
+    { name: "Semana 2", Leads: 63 },
+    { name: "Semana 3", Leads: 70 },
+    { name: "Semana 4", Leads: 68 }
+  ],
+  monthlyTotal: 256
+};
