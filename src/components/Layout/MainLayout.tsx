@@ -3,6 +3,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
 import { ReactNode } from "react";
+import { Outlet } from "react-router-dom";
 
 interface MainLayoutProps {
   children: ReactNode;
