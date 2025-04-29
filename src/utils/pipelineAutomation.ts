@@ -1,6 +1,7 @@
 
 import { Lead } from "@/types";
 import { toast } from "@/hooks/use-toast";
+import { trackLeadEvent } from "./trackingUtils";
 
 // Time thresholds for triggering alerts (in milliseconds)
 export const STALE_LEAD_THRESHOLD = 7 * 24 * 60 * 60 * 1000; // 7 days
@@ -11,27 +12,32 @@ export const automationTriggers = {
   "1": { // New leads
     action: "followUpReminder",
     days: 1,
-    message: "Lembrete: Entre em contato com o novo lead"
+    message: "Lembrete: Entre em contato com o novo lead",
+    trackingEvent: "lead_new"
   },
   "2": { // Qualified
     action: "sendProposal",
     days: 2,
-    message: "Envie uma proposta para o lead qualificado"
+    message: "Envie uma proposta para o lead qualificado",
+    trackingEvent: "lead_qualified"
   },
   "3": { // Proposal
     action: "followUpProposal",
     days: 3,
-    message: "Lembrete: Faça follow-up da proposta enviada"
+    message: "Lembrete: Faça follow-up da proposta enviada",
+    trackingEvent: "lead_proposal_sent"
   },
   "4": { // Negotiation
     action: "scheduleCall",
     days: 2,
-    message: "Agende uma reunião para negociação final"
+    message: "Agende uma reunião para negociação final",
+    trackingEvent: "lead_negotiation"
   },
   "5": { // Closed
     action: "sendSatisfactionSurvey",
     days: 7,
-    message: "Envie pesquisa de satisfação para o novo cliente"
+    message: "Envie pesquisa de satisfação para o novo cliente",
+    trackingEvent: "lead_closed_won"
   }
 };
 
@@ -69,6 +75,16 @@ export function triggerAutomation(lead: Lead): void {
     // In a production app, this would call an API or trigger a workflow
     console.log(`Triggering automation: ${stageConfig.action} for lead ${lead.id}`);
     
+    // Track the event in GTM and FB Pixel
+    if (stageConfig.trackingEvent) {
+      trackLeadEvent(stageConfig.trackingEvent, {
+        lead_id: lead.id,
+        lead_name: lead.name,
+        lead_stage: lead.stage.name,
+        lead_value: lead.value || 0
+      });
+    }
+    
     toast({
       title: "Automação ativada",
       description: stageConfig.message,
@@ -98,4 +114,19 @@ export function getLeadAlertMessage(lead: Lead): string | null {
   }
   
   return null;
+}
+
+// Track lead stage change and store UTM data
+export function trackStageChange(lead: Lead, newStageId: string): void {
+  const newStage = automationTriggers[newStageId as keyof typeof automationTriggers];
+  
+  if (newStage?.trackingEvent) {
+    trackLeadEvent(newStage.trackingEvent, {
+      lead_id: lead.id,
+      lead_name: lead.name,
+      previous_stage: lead.stage.name,
+      new_stage_id: newStageId,
+      lead_value: lead.value || 0
+    });
+  }
 }

@@ -16,4 +16,29 @@
   .tooltip-trigger:hover .tooltip-text {
     @apply visible;
   }
+  
+  /* Campaign source badges */
+  .campaign-badge {
+    @apply px-2 py-0.5 text-xs font-medium rounded-full;
+  }
+  
+  .campaign-google {
+    @apply bg-blue-100 text-blue-800;
+  }
+  
+  .campaign-facebook {
+    @apply bg-indigo-100 text-indigo-800;
+  }
+  
+  .campaign-instagram {
+    @apply bg-purple-100 text-purple-800;
+  }
+  
+  .campaign-direct {
+    @apply bg-gray-100 text-gray-800;
+  }
+  
+  .campaign-email {
+    @apply bg-green-100 text-green-800;
+  }
 }

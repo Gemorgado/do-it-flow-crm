@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,8 +13,13 @@ import { leads, pipelineStages } from "@/data/mockData";
 import { Lead, PipelineStage } from "@/types";
 import { toast } from "@/hooks/use-toast";
 import { PipelineColumn } from "@/components/Pipeline/PipelineColumn";
-import { getLeadsNeedingAttention, triggerAutomation } from "@/utils/pipelineAutomation";
+import { 
+  getLeadsNeedingAttention, 
+  triggerAutomation, 
+  trackStageChange 
+} from "@/utils/pipelineAutomation";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { trackLeadEvent } from "@/utils/trackingUtils";
 
 export default function Pipeline() {
   const [filteredLeads, setFilteredLeads] = useState<Lead[]>(leads);
@@ -31,8 +35,15 @@ export default function Pipeline() {
     );
   });
 
-  // Check for leads needing attention when filtered leads change
+  // Track page view on component mount
   useEffect(() => {
+    // Track page view
+    trackLeadEvent('pipeline_view', {
+      leads_count: filteredLeads.length,
+      page_name: 'Pipeline de Vendas'
+    });
+    
+    // Track leads needing attention
     const needAttention = getLeadsNeedingAttention(filteredLeads);
     setLeadsNeedingAttention(needAttention);
     
@@ -73,16 +84,21 @@ export default function Pipeline() {
   };
 
   const updateLeadStage = (leadId: string, targetStageId: string) => {
-    // Find the target stage
+    // Find the lead and target stage
+    const lead = filteredLeads.find(l => l.id === leadId);
     const targetStage = pipelineStages.find(stage => stage.id === targetStageId);
-    if (!targetStage) return;
+    
+    if (!lead || !targetStage) return;
+
+    // Track stage change for analytics
+    trackStageChange(lead, targetStageId);
 
     // Update the lead's stage and updatedAt timestamp
     const now = new Date().toISOString();
-    const updatedLeads = filteredLeads.map(lead => 
-      lead.id === leadId 
-        ? { ...lead, stage: targetStage, updatedAt: now }
-        : lead
+    const updatedLeads = filteredLeads.map(l => 
+      l.id === leadId 
+        ? { ...l, stage: targetStage, updatedAt: now }
+        : l
     );
 
     // Update state
@@ -90,11 +106,9 @@ export default function Pipeline() {
     setDraggedLead(null);
     
     // Show a success toast
-    const leadName = filteredLeads.find(lead => lead.id === leadId)?.name;
-    
     toast({
       title: "Lead movido com sucesso",
-      description: `${leadName} foi movido para ${targetStage.name}`,
+      description: `${lead.name} foi movido para ${targetStage.name}`,
       duration: 3000,
     });
   };
@@ -133,7 +147,10 @@ export default function Pipeline() {
           <h1 className="text-3xl font-bold tracking-tight">Pipeline de Vendas</h1>
           <p className="text-gray-500">Gerencie seu funil de vendas de forma visual e eficiente</p>
         </div>
-        <Button className="bg-doIt-primary hover:bg-doIt-dark">
+        <Button 
+          className="bg-doIt-primary hover:bg-doIt-dark"
+          onClick={() => trackLeadEvent('new_lead_button_click', {})}
+        >
           <Plus className="mr-2 h-4 w-4" /> Novo Lead
         </Button>
       </div>

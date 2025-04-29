@@ -52,6 +52,24 @@ export function LeadCard({ lead, onDragStart, onStageUpdate }: LeadCardProps) {
   const alertMessage = getLeadAlertMessage(lead);
   const needsAttention = isLeadStale(lead) || needsFollowUp(lead);
 
+  // Determine source badge class (simplified for now - in a real app this would come from lead data)
+  const getCampaignBadgeClass = () => {
+    // This would come from actual lead data in a real app
+    // For demo, we'll randomly assign sources
+    const sources = ['google', 'facebook', 'instagram', 'direct', 'email'];
+    const sourceIndex = parseInt(lead.id) % sources.length;
+    return `campaign-badge campaign-${sources[sourceIndex]}`;
+  };
+
+  // Get source display name
+  const getCampaignSource = () => {
+    // This would come from actual lead data in a real app
+    // For demo, we'll randomly assign sources
+    const sources = ['Google Ads', 'Facebook Ads', 'Instagram', 'Direto', 'Email'];
+    const sourceIndex = parseInt(lead.id) % sources.length;
+    return sources[sourceIndex];
+  };
+
   return (
     <div 
       className="bg-white border rounded-md shadow-sm p-3 cursor-move hover:shadow-md transition-shadow"
@@ -80,6 +98,13 @@ export function LeadCard({ lead, onDragStart, onStageUpdate }: LeadCardProps) {
       {lead.company && (
         <p className="text-sm text-gray-600 mb-2">{lead.company}</p>
       )}
+      
+      {/* Campaign source badge */}
+      <div className="mb-2">
+        <span className={getCampaignBadgeClass()}>
+          {getCampaignSource()}
+        </span>
+      </div>
       
       {/* Show next follow up date if it exists */}
       {lead.nextFollowUp && (
