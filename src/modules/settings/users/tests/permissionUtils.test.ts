@@ -1,6 +1,7 @@
 
 import { hasAccess, filterTabs } from '../permissionUtils';
 import { User, TabKey, Route } from '../types';
+import '@types/jest';
 
 describe('Permission Utils', () => {
   const mockUser: User = {
