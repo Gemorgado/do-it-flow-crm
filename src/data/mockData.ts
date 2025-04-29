@@ -420,7 +420,163 @@ export const pipelineStages: PipelineStage[] = [
   }
 ];
 
-export const clients: Client[] = [
+export const locations: Location[] = [
+  {
+    id: "loc-101",
+    name: "Sala 101",
+    type: "sala_privativa",
+    identifier: "101",
+    available: false,
+    area: 15
+  },
+  {
+    id: "loc-102",
+    name: "Sala 102",
+    type: "sala_privativa",
+    identifier: "102",
+    available: true,
+    area: 20
+  },
+  {
+    id: "loc-201",
+    name: "Sala de Reunião 201",
+    type: "sala_reuniao",
+    identifier: "201",
+    available: true,
+    capacity: 8
+  },
+  {
+    id: "est-01",
+    name: "Estação 01",
+    type: "estacao",
+    identifier: "01",
+    available: false
+  },
+  {
+    id: "est-02",
+    name: "Estação 02",
+    type: "estacao",
+    identifier: "02",
+    available: false
+  },
+  {
+    id: "est-03",
+    name: "Estação 03",
+    type: "estacao",
+    identifier: "03",
+    available: true
+  },
+  {
+    id: "end-fiscal",
+    name: "Endereço Fiscal",
+    type: "endereco_fiscal",
+    identifier: "EF-001",
+    available: true
+  }
+];
+
+export const clientServices = [
+  {
+    id: "srv-001",
+    clientId: "1",
+    type: "sala_privativa" as ServiceType,
+    description: "Sala Privativa 15m² - Plano Anual",
+    locationId: "loc-101",
+    contractStart: "2024-01-15",
+    contractEnd: "2025-01-15",
+    value: 3500,
+    billingCycle: "mensal" as const,
+    status: "ativo" as ServiceStatus,
+    createdAt: "2023-12-20",
+    updatedAt: "2024-01-15"
+  },
+  {
+    id: "srv-002",
+    clientId: "1",
+    type: "endereco_fiscal" as ServiceType,
+    description: "Endereço Fiscal - Plano Anual",
+    locationId: "end-fiscal",
+    contractStart: "2024-01-15",
+    contractEnd: "2025-01-15",
+    value: 200,
+    billingCycle: "mensal" as const,
+    status: "ativo" as ServiceStatus,
+    createdAt: "2023-12-20",
+    updatedAt: "2024-01-15"
+  },
+  {
+    id: "srv-003",
+    clientId: "2",
+    type: "estacao" as ServiceType,
+    description: "Estação Flexível - Mensal",
+    locationId: "est-01",
+    contractStart: "2024-03-10",
+    contractEnd: "2025-03-10",
+    value: 800,
+    billingCycle: "mensal" as const,
+    status: "ativo" as ServiceStatus,
+    createdAt: "2024-02-28",
+    updatedAt: "2024-03-10"
+  },
+  {
+    id: "srv-004",
+    clientId: "3",
+    type: "sala_privativa" as ServiceType,
+    description: "Sala Privativa 20m² - Plano Anual",
+    locationId: "loc-102",
+    contractStart: "2023-11-05",
+    contractEnd: "2024-11-05",
+    value: 4500,
+    billingCycle: "mensal" as const,
+    status: "em_renovacao" as ServiceStatus,
+    createdAt: "2023-10-25",
+    updatedAt: "2024-04-10"
+  },
+  {
+    id: "srv-005",
+    clientId: "4",
+    type: "estacao" as ServiceType,
+    description: "Estação Dedicada - Anual",
+    locationId: "est-02",
+    contractStart: "2023-08-15",
+    contractEnd: "2024-08-15",
+    value: 700,
+    billingCycle: "mensal" as const,
+    status: "ativo" as ServiceStatus,
+    createdAt: "2023-08-10",
+    updatedAt: "2024-02-15"
+  },
+  {
+    id: "srv-006",
+    clientId: "4",
+    type: "sala_reuniao" as ServiceType,
+    description: "Sala de Reunião - Pacote 10h/mês",
+    locationId: "loc-201",
+    contractStart: "2023-08-15",
+    contractEnd: "2024-08-15",
+    value: 300,
+    billingCycle: "mensal" as const,
+    status: "ativo" as ServiceStatus,
+    createdAt: "2023-08-10",
+    updatedAt: "2024-02-15"
+  },
+  {
+    id: "srv-007",
+    clientId: "5",
+    type: "endereco_fiscal" as ServiceType,
+    description: "Endereço Fiscal - Plano Anual",
+    locationId: "end-fiscal",
+    contractStart: "2024-02-01",
+    contractEnd: "2025-02-01",
+    value: 200,
+    billingCycle: "mensal" as const,
+    status: "cancelado" as ServiceStatus,
+    createdAt: "2024-01-25",
+    updatedAt: "2024-05-10"
+  }
+];
+
+export const clients = [
   {
     id: "1",
     name: "Empresa XYZ",
@@ -428,10 +584,7 @@ export const clients: Client[] = [
     email: "contato@xyz.com",
     phone: "11987654321",
     address: "Av. Paulista, 1000",
-    contractStart: "2024-01-15",
-    contractEnd: "2025-01-15",
-    contractValue: 5000,
-    plan: "Premium",
+    services: clientServices.filter(service => service.clientId === "1"),
     status: "ativo" as const,
     createdAt: "2023-12-20",
     updatedAt: "2024-01-15",
@@ -444,10 +597,7 @@ export const clients: Client[] = [
     company: "ABC Comércio e Serviços",
     email: "contato@abc.com",
     phone: "11976543210",
-    contractStart: "2024-03-10",
-    contractEnd: "2025-03-10",
-    contractValue: 3500,
-    plan: "Standard",
+    services: clientServices.filter(service => service.clientId === "2"),
     status: "ativo" as const,
     createdAt: "2024-02-28",
     updatedAt: "2024-03-10",
@@ -460,10 +610,7 @@ export const clients: Client[] = [
     email: "atendimento@123consultoria.com",
     phone: "11965432109",
     address: "Rua Augusta, 500",
-    contractStart: "2023-11-05",
-    contractEnd: "2024-11-05",
-    contractValue: 7500,
-    plan: "Enterprise",
+    services: clientServices.filter(service => service.clientId === "3"),
     status: "inadimplente" as const,
     createdAt: "2023-10-25",
     updatedAt: "2024-04-10",
@@ -476,10 +623,7 @@ export const clients: Client[] = [
     company: "QWE Indústria Alimentícia",
     email: "comercial@qwe.com.br",
     phone: "11954321098",
-    contractStart: "2023-08-15",
-    contractEnd: "2024-08-15",
-    contractValue: 6000,
-    plan: "Premium",
+    services: clientServices.filter(service => service.clientId === "4"),
     status: "ativo" as const,
     createdAt: "2023-08-10",
     updatedAt: "2024-02-15",
@@ -492,10 +636,7 @@ export const clients: Client[] = [
     email: "atendimento@rty.com",
     phone: "11943210987",
     address: "Rua Vergueiro, 1500",
-    contractStart: "2024-02-01",
-    contractEnd: "2025-02-01",
-    contractValue: 4500,
-    plan: "Standard",
+    services: clientServices.filter(service => service.clientId === "5"),
     status: "cancelado" as const,
     createdAt: "2024-01-25",
     updatedAt: "2024-05-10",

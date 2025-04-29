@@ -1,4 +1,3 @@
-
 export interface Lead {
   id: string;
   name: string;
@@ -44,15 +43,48 @@ export interface Client {
   email: string;
   phone: string;
   address?: string;
-  contractStart?: string;
-  contractEnd?: string;
-  contractValue: number;
-  plan: string;
+  services: ClientService[];
   status: "ativo" | "inativo" | "inadimplente" | "cancelado";
   createdAt: string;
   updatedAt: string;
   notes?: string;
   assignedTo?: string;
+}
+
+export type ServiceType = 
+  | "sala_privativa" 
+  | "estacao" 
+  | "endereco_fiscal" 
+  | "sala_reuniao";
+
+export type ServiceStatus = 
+  | "ativo" 
+  | "em_renovacao" 
+  | "cancelado";
+
+export interface ClientService {
+  id: string;
+  clientId: string;
+  type: ServiceType;
+  description: string;
+  locationId: string;
+  contractStart: string;
+  contractEnd: string;
+  value: number;
+  billingCycle: "mensal" | "anual";
+  status: ServiceStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Location {
+  id: string;
+  name: string;
+  type: ServiceType;
+  identifier: string;
+  available: boolean;
+  capacity?: number;
+  area?: number;
 }
 
 export interface Interaction {
