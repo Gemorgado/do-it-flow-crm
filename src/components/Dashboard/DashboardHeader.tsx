@@ -2,14 +2,20 @@
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { trackCustomMetaPixelEvent } from "@/utils/metaPixelUtils";
+import { useLeadModal } from "@/components/CRM/hooks/useModalContext";
 
 export function DashboardHeader() {
+  const { open } = useLeadModal();
+
   const handleNewLeadClick = () => {
     // Rastrear evento de clique no botão "Novo Lead"
     trackCustomMetaPixelEvent("new_lead_button_click", {
       location: "dashboard_header",
       timestamp: new Date().toISOString()
     });
+    
+    // Abrir o modal de novo lead
+    open();
   };
 
   return (

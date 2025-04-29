@@ -8,13 +8,14 @@ import { LeadsTable } from "@/components/Contacts/LeadsTable";
 import { ClientsTable } from "@/components/Contacts/ClientsTable";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { NewContactDrawer } from "@/components/Contacts/NewContactDrawer";
+import { useLeadModal, useContactModal } from "@/components/CRM/hooks/useModalContext";
 
 export default function Contacts() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [showNewContact, setShowNewContact] = useState(false);
-  const [contactType, setContactType] = useState<"lead" | "client">("lead");
   const [activeTab, setActiveTab] = useState("leads");
+  
+  const leadModal = useLeadModal();
+  const contactModal = useContactModal();
   
   // Simple filtering by name, email, or company
   const filteredLeads = leads.filter(lead => 
@@ -30,13 +31,11 @@ export default function Contacts() {
   );
 
   const handleNewContact = () => {
-    setContactType("lead");
-    setShowNewContact(true);
+    contactModal.open();
   };
 
   const handleNewClient = () => {
-    setContactType("client");
-    setShowNewContact(true);
+    contactModal.open();
   };
 
   return (
@@ -77,12 +76,6 @@ export default function Contacts() {
           <ClientsTable clients={filteredClients} />
         </TabsContent>
       </Tabs>
-
-      <NewContactDrawer 
-        isOpen={showNewContact}
-        onClose={() => setShowNewContact(false)}
-        type={contactType}
-      />
     </div>
   );
 }
