@@ -18,6 +18,8 @@ import GrowthDashboard from "./pages/GrowthDashboard";
 import SpaceManagement from "./pages/SpaceManagement";
 import PlansAndServices from "./pages/PlansAndServices";
 import GrowthReports from "./pages/GrowthReports";
+import Automations from "./pages/Automations";
+import Integrations from "./pages/Integrations";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +43,8 @@ const App = () => (
             <Route path="/espacos" element={<SpaceManagement />} />
             <Route path="/planos" element={<PlansAndServices />} />
             <Route path="/relatorios" element={<GrowthReports />} />
+            <Route path="/automacoes" element={<Automations />} />
+            <Route path="/integracoes" element={<Integrations />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </MainLayout>

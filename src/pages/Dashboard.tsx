@@ -18,7 +18,6 @@ import { FunnelSourceSection } from "@/components/Dashboard/FunnelSourceSection"
 import { ClientRevenueCard } from "@/components/Dashboard/ClientRevenueCard";
 import { ChartsSection } from "@/components/Dashboard/ChartsSection";
 import { TasksLeadsSection } from "@/components/Dashboard/TasksLeadsSection";
-import { AutomationsIntegrationsCard } from "@/components/Dashboard/AutomationsIntegrationsCard";
 import { transformChartData, transformPieChartData } from "@/components/Dashboard/ChartDataUtils";
 
 export default function Dashboard() {
@@ -178,10 +177,6 @@ export default function Dashboard() {
         tasks={typedTasks}
         leads={leads as Lead[]}
       />
-
-      <div className="mt-6">
-        <AutomationsIntegrationsCard />
-      </div>
     </div>
   );
 }

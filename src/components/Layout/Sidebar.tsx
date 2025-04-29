@@ -20,7 +20,9 @@ import {
   Settings,
   Building,
   BarChart,
-  FileBarChart
+  FileBarChart,
+  Zap,
+  Plug
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -38,6 +40,11 @@ export function Sidebar() {
     { title: "Relatórios", url: "/relatorios", icon: FileBarChart },
     { title: "Espaços", url: "/espacos", icon: Building },
     { title: "Planos e Serviços", url: "/planos", icon: FileText },
+  ];
+
+  const automationItems = [
+    { title: "Automações", url: "/automacoes", icon: Zap },
+    { title: "Integrações", url: "/integracoes", icon: Plug },
   ];
 
   const configMenuItems = [
@@ -65,6 +72,27 @@ export function Sidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {mainMenuItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton 
+                    asChild
+                    className={isActiveLink(item.url) ? "bg-doIt-light text-doIt-primary" : ""}
+                  >
+                    <Link to={item.url} className="flex items-center gap-3">
+                      <item.icon className="h-5 w-5" />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        
+        <SidebarGroup>
+          <SidebarGroupLabel>Automação</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {automationItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
                     asChild
