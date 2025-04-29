@@ -1,3 +1,4 @@
+
 import React, { useMemo } from "react";
 import { Location } from "@/types";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -96,7 +97,7 @@ export function BuildingMap({ spaces, onSpaceClick }: BuildingMapProps) {
             key={floor}
             floorNumber={floor}
             privateRooms={groupedSpaces[floor].sala_privativa}
-            meetingRooms={[]} {/* Passamos um array vazio para as salas de reunião */}
+            meetingRooms={[]} 
             workstations={workstationsByFloor[floor] || []}
             onSpaceClick={onSpaceClick}
           />
@@ -110,7 +111,7 @@ export function BuildingMap({ spaces, onSpaceClick }: BuildingMapProps) {
               key={floor}
               floorNumber={floor}
               privateRooms={[]}
-              meetingRooms={[]} {/* Passamos um array vazio para as salas de reunião */}
+              meetingRooms={[]} 
               workstations={workstationsByFloor[floor]}
               onSpaceClick={onSpaceClick}
             />
