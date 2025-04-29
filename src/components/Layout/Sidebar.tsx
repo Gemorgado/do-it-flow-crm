@@ -1,4 +1,3 @@
-
 import {
   Sidebar as SidebarContainer,
   SidebarContent,
@@ -23,7 +22,8 @@ import {
   FileBarChart,
   Zap,
   Plug,
-  DoorClosed
+  DoorClosed,
+  Badge
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -42,6 +42,7 @@ export function Sidebar() {
     { title: "Relatórios", url: "/relatorios", icon: FileBarChart },
     { title: "Espaços", url: "/espacos", icon: Building },
     { title: "Planos e Serviços", url: "/planos", icon: FileText },
+    { title: "Endereços Fiscais", url: "/enderecos-fiscais", icon: Badge },
   ];
 
   const automationItems = [
