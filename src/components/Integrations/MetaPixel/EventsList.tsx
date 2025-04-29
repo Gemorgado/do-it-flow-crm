@@ -1,15 +1,9 @@
 
 import { Badge } from "@/components/ui/badge";
-
-interface Event {
-  name: string;
-  description: string;
-  tracked: number;
-  custom?: boolean;
-}
+import { PixelEvent } from "@/hooks/usePixelIntegration";
 
 interface EventsListProps {
-  events: Event[];
+  events: PixelEvent[];
 }
 
 export function EventsList({ events }: EventsListProps) {
