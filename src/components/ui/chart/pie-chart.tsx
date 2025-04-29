@@ -4,11 +4,12 @@ import * as RechartsPrimitive from "recharts";
 import { ChartContainer } from "./chart-container";
 import { ChartTooltip, ChartTooltipContent } from "./chart-tooltip";
 import { ChartLegend, ChartLegendContent } from "./chart-legend";
+import { PieSlice } from "@/components/Growth/chartUtils";
 
 const PieChart = React.forwardRef<
   HTMLDivElement,
   Omit<React.ComponentProps<typeof ChartContainer>, "children"> & {
-    data?: Array<Record<string, any>>;
+    data?: PieSlice[];
     dataKey?: string;
     nameKey?: string;
   }

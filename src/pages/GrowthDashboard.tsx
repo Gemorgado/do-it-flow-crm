@@ -11,7 +11,13 @@ import { MetricsSummary, MetricProps } from "@/components/Growth/MetricsSummary"
 import { OverviewTabContent } from "@/components/Growth/OverviewTabContent";
 import { CampaignsTabContent } from "@/components/Growth/CampaignsTabContent";
 import { ChannelsTabContent } from "@/components/Growth/ChannelsTabContent";
-import { transformChartData, transformPieData, getChannelData } from "@/components/Growth/chartUtils";
+import { 
+  transformChartData, 
+  transformPieData, 
+  getChannelData, 
+  ChartDataFormat, 
+  PieSlice 
+} from "@/components/Growth/chartUtils";
 
 // Import mock data
 import { 
@@ -52,10 +58,13 @@ export default function GrowthDashboard() {
     changeDirection: metric.changeDirection as "up" | "down" | "neutral"
   }));
 
-  // Transform the data for our components
-  // Pre-transform the data to match the expected format for PieChart component
-  const formattedLeadSourceData = transformPieData(leadSourceData);
-  const formattedTrafficData = transformPieData(trafficSourceData);
+  // Type assertion for our chart data
+  const typedLeadSourceData = leadSourceData as ChartDataFormat;
+  const typedTrafficSourceData = trafficSourceData as ChartDataFormat;
+
+  // Transform the data to match the expected format for PieChart component
+  const formattedLeadSourceData: PieSlice[] = transformPieData(typedLeadSourceData);
+  const formattedTrafficData: PieSlice[] = transformPieData(typedTrafficSourceData);
 
   return (
     <div className="animate-fade-in space-y-6">
