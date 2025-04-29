@@ -6,6 +6,9 @@ import { TaskList } from "@/components/Dashboard/TaskList";
 import { LeadsList } from "@/components/Dashboard/LeadsList";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CRMMetricsCard } from "@/components/Dashboard/CRMMetricsCard";
+import { ConversionFunnelCard } from "@/components/Dashboard/ConversionFunnelCard";
+import { ClientRevenueCard } from "@/components/Dashboard/ClientRevenueCard";
 import { 
   Users, 
   MessageSquare, 
@@ -25,6 +28,7 @@ import {
   leads
 } from "@/data/mockData";
 import { Badge } from "@/components/ui/badge";
+import { getUTMParameters } from "@/utils/trackingUtils";
 
 // Helper function to transform ChartData to format expected by chart components
 const transformChartData = (chartData) => {
@@ -68,6 +72,97 @@ export default function Dashboard() {
   // Define empty config object for charts (required by component props)
   const chartConfig = {};
 
+  // Mock data for CRM metrics
+  const crmMetrics = [
+    { 
+      label: "Leads novos (mês)", 
+      value: "256", 
+      tooltipText: "Total de leads novos no último mês",
+      changeValue: "12%",
+      changeDirection: "up" 
+    },
+    { 
+      label: "Taxa de conversão", 
+      value: "23,5%", 
+      tooltipText: "Percentual de leads que se tornaram clientes",
+      changeValue: "3.2%",
+      changeDirection: "up" 
+    },
+    { 
+      label: "Taxa de churn", 
+      value: "3.8%", 
+      tooltipText: "Percentual de cancelamentos no último mês",
+      changeValue: "0.5%",
+      changeDirection: "down" 
+    },
+    { 
+      label: "Tempo médio de conversão", 
+      value: "14 dias", 
+      tooltipText: "Média entre primeiro contato e fechamento" 
+    },
+    { 
+      label: "LTV médio", 
+      value: "R$ 24k", 
+      tooltipText: "Valor médio de vida útil dos clientes",
+      changeValue: "6.7%",
+      changeDirection: "up" 
+    },
+    { 
+      label: "Renovações próximas", 
+      value: "8", 
+      tooltipText: "Contratos com vencimento nos próximos 30 dias" 
+    }
+  ];
+
+  // Mock data for funnel stages
+  const funnelData = [
+    { stage: "Novo lead", count: 256, conversionRate: 100, dropoffRate: 0 },
+    { stage: "Qualificado", count: 172, conversionRate: 67, dropoffRate: 33 },
+    { stage: "Apresentação", count: 115, conversionRate: 45, dropoffRate: 22 },
+    { stage: "Proposta", count: 83, conversionRate: 32, dropoffRate: 13 },
+    { stage: "Negociação", count: 67, conversionRate: 26, dropoffRate: 6 },
+    { stage: "Fechado", count: 60, conversionRate: 23.5, dropoffRate: 2.5 }
+  ];
+
+  // Mock data for client revenue
+  const clientRevenueData = [
+    { 
+      name: "Empresa ABC Ltda", 
+      company: "Agência de Marketing", 
+      monthlyRevenue: 3500, 
+      renewalDate: "2025-06-15",
+      status: "ativo" 
+    },
+    { 
+      name: "Tech Solutions", 
+      company: "Startup de Tecnologia", 
+      monthlyRevenue: 2800, 
+      renewalDate: "2025-05-22",
+      status: "ativo" 
+    },
+    { 
+      name: "Consultor Independente", 
+      company: "João Silva", 
+      monthlyRevenue: 1200, 
+      renewalDate: "2025-05-10",
+      status: "risco" 
+    },
+    { 
+      name: "Creative Studios", 
+      company: "Design & Produção", 
+      monthlyRevenue: 2200, 
+      renewalDate: "2025-07-05",
+      status: "ativo" 
+    },
+    { 
+      name: "Instituto Educacional", 
+      company: "Cursos Online", 
+      monthlyRevenue: 4500, 
+      renewalDate: "2025-05-28",
+      status: "pendente" 
+    }
+  ];
+
   return (
     <div className="animate-fade-in">
       <div className="flex flex-col md:flex-row justify-between mb-6 gap-4">
@@ -106,6 +201,38 @@ export default function Dashboard() {
         />
       </div>
 
+      <div className="mt-6">
+        <CRMMetricsCard
+          title="Métricas Comerciais (CRM)"
+          metrics={crmMetrics}
+        />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        <ConversionFunnelCard
+          title="Funil de Conversão"
+          funnelData={funnelData}
+        />
+        <ChartCard title="Origem dos Leads">
+          <div className="p-4">
+            <PieChart 
+              className="h-64" 
+              data={transformedLeadSourceData}
+              config={chartConfig}
+            />
+          </div>
+        </ChartCard>
+      </div>
+
+      <div className="mt-6">
+        <ClientRevenueCard
+          title="Receita por Cliente"
+          clients={clientRevenueData}
+          totalRevenue={14200}
+          projectedRevenue={178000}
+        />
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
         <ChartCard title="Leads vs. Tempo">
           <div className="p-4">
@@ -116,28 +243,7 @@ export default function Dashboard() {
             />
           </div>
         </ChartCard>
-        <ChartCard title="Taxa de Conversão">
-          <div className="p-4">
-            <LineChart 
-              className="h-64" 
-              data={transformedConversionData} 
-              config={chartConfig}
-            />
-          </div>
-        </ChartCard>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-        <ChartCard title="Origem dos Leads" className="col-span-1">
-          <div className="p-4">
-            <PieChart 
-              className="h-64" 
-              data={transformedLeadSourceData}
-              config={chartConfig}
-            />
-          </div>
-        </ChartCard>
-        <ChartCard title="Receita Mensal" className="col-span-2">
+        <ChartCard title="Receita Mensal">
           <div className="p-4">
             <BarChart 
               className="h-64" 
