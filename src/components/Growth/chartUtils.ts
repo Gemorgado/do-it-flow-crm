@@ -20,7 +20,7 @@ export function transformPieData(chartData: any): any[] {
     return [];
   }
   
-  // Create and return an array of objects for the PieChart component
+  // Return an array of objects with name, value, and color properties
   return chartData.labels.map((label: string, index: number) => ({
     name: label,
     value: chartData.datasets[0].data[index],
