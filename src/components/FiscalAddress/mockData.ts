@@ -7,12 +7,12 @@ const formatDate = (date: Date): string => format(date, 'yyyy-MM-dd');
 
 // Current date references
 const today = new Date();
+const expired30Days = subDays(today, 30);
+const expired60Days = subDays(today, 60);
 const in30Days = addDays(today, 30);
 const in60Days = addDays(today, 60);
 const in90Days = addDays(today, 90);
 const in120Days = addDays(today, 120);
-const expired30Days = subDays(today, 30);
-const expired60Days = subDays(today, 60);
 
 /**
  * Mock fiscal address contracts for development and testing
@@ -83,4 +83,3 @@ export const mockContracts: FiscalAddressContract[] = [
     isDelinquent: false
   }
 ];
-
