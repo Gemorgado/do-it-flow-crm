@@ -11,7 +11,7 @@ const PieChart = React.forwardRef<
   HTMLDivElement,
   Omit<React.ComponentProps<typeof ChartContainer>, "children"> & {
     data: ChartData<"pie"> | { name: string; value: number; color: string }[];
-    config?: ChartConfig;
+    config?: any;
     options?: ChartOptions<"pie">;
   }
 >(({ data, config = {}, ...props }, ref) => {
