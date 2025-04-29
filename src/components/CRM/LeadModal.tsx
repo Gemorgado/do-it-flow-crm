@@ -65,7 +65,7 @@ const leadFormSchema = z.object({
  */
 export function LeadModal() {
   const { isOpen, close } = useLeadModal();
-  const { mutate, isLoading } = useCreateLead();
+  const { mutate, isPending } = useCreateLead();
 
   const form = useForm<LeadFormValues>({
     resolver: zodResolver(leadFormSchema),
@@ -271,8 +271,8 @@ export function LeadModal() {
               <Button type="button" variant="outline" onClick={close}>
                 Cancelar
               </Button>
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? "Salvando..." : "Salvar"}
+              <Button type="submit" disabled={isPending}>
+                {isPending ? "Salvando..." : "Salvar"}
               </Button>
             </DialogFooter>
           </form>

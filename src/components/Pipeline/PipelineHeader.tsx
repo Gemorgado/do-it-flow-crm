@@ -4,19 +4,19 @@ import { Plus, AlertTriangle } from "lucide-react";
 import { Lead } from "@/types";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useState } from "react";
-import { NewContactDrawer } from "@/components/Contacts/NewContactDrawer";
 import { trackLeadEvent } from "@/utils/trackingUtils";
+import { useLeadModal } from "@/components/CRM/hooks/useModalContext";
 
 interface PipelineHeaderProps {
   leadsNeedingAttention: Lead[];
 }
 
 export function PipelineHeader({ leadsNeedingAttention }: PipelineHeaderProps) {
-  const [showNewLead, setShowNewLead] = useState(false);
+  const { open } = useLeadModal();
 
   const handleNewLead = () => {
     trackLeadEvent('new_lead_button_click', {});
-    setShowNewLead(true);
+    open();
   };
 
   return (
@@ -50,12 +50,6 @@ export function PipelineHeader({ leadsNeedingAttention }: PipelineHeaderProps) {
           </AlertDescription>
         </Alert>
       )}
-
-      <NewContactDrawer 
-        isOpen={showNewLead}
-        onClose={() => setShowNewLead(false)}
-        type="lead"
-      />
     </>
   );
 }

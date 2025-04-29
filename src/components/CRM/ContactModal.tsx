@@ -68,7 +68,7 @@ const contactFormSchema = z.object({
  */
 export function ContactModal() {
   const { isOpen, close } = useContactModal();
-  const { mutate, isLoading } = useCreateContact();
+  const { mutate, isPending } = useCreateContact();
 
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactFormSchema),
@@ -293,8 +293,8 @@ export function ContactModal() {
               <Button type="button" variant="outline" onClick={close}>
                 Cancelar
               </Button>
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? "Salvando..." : "Salvar"}
+              <Button type="submit" disabled={isPending}>
+                {isPending ? "Salvando..." : "Salvar"}
               </Button>
             </DialogFooter>
           </form>
