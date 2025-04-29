@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CRMMetricsCard } from "@/components/Dashboard/CRMMetricsCard";
 import { ConversionFunnelCard } from "@/components/Dashboard/ConversionFunnelCard";
 import { ClientRevenueCard } from "@/components/Dashboard/ClientRevenueCard";
+import { LeadsTimeChart } from "@/components/Growth/LeadsTimeChart";
 import { 
   Users, 
   MessageSquare, 
@@ -25,7 +26,8 @@ import {
   revenueChartData, 
   leadSourceChartData,
   tasks,
-  leads
+  leads,
+  leadsTimeData
 } from "@/data/mockData";
 import { Badge } from "@/components/ui/badge";
 import { getUTMParameters } from "@/utils/trackingUtils";
@@ -206,6 +208,15 @@ export default function Dashboard() {
           value={`R$ ${(dashboardStats.revenueMTD / 1000).toFixed(1)}k`}
           icon={<FileText className="h-5 w-5" />}
           description="Mês atual"
+        />
+      </div>
+
+      {/* Adicionando o componente de visualização de leads por tempo */}
+      <div className="mt-6">
+        <LeadsTimeChart 
+          dailyData={leadsTimeData.daily}
+          weeklyData={leadsTimeData.weekly}
+          monthlyTotal={leadsTimeData.monthlyTotal}
         />
       </div>
 
