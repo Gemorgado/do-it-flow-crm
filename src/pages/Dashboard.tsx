@@ -1,4 +1,3 @@
-
 import { BarChart, LineChart, PieChart } from "@/components/ui/chart";
 import { StatCard } from "@/components/Dashboard/StatCard";
 import { ChartCard } from "@/components/Dashboard/ChartCard";
@@ -24,8 +23,47 @@ import {
   tasks,
   leads
 } from "@/data/mockData";
+import { Badge } from "@/components/ui/badge";
+
+// Helper function to transform ChartData to format expected by chart components
+const transformChartData = (chartData) => {
+  if (!chartData || !chartData.labels || !chartData.datasets) {
+    return [];
+  }
+  
+  return chartData.labels.map((label, index) => {
+    const dataPoint = { name: label };
+    
+    chartData.datasets.forEach((dataset) => {
+      dataPoint[dataset.label] = dataset.data[index];
+    });
+    
+    return dataPoint;
+  });
+};
+
+// Transform pie chart data specifically
+const transformPieChartData = (chartData) => {
+  if (!chartData || !chartData.labels || !chartData.datasets || !chartData.datasets[0]) {
+    return [];
+  }
+  
+  return chartData.labels.map((label, index) => ({
+    name: label,
+    value: chartData.datasets[0].data[index],
+    color: chartData.datasets[0].backgroundColor instanceof Array 
+      ? chartData.datasets[0].backgroundColor[index] 
+      : chartData.datasets[0].backgroundColor
+  }));
+};
 
 export default function Dashboard() {
+  // Transform chart data for the components
+  const transformedLeadsData = transformChartData(leadsChartData);
+  const transformedConversionData = transformChartData(conversionChartData);
+  const transformedRevenueData = transformChartData(revenueChartData);
+  const transformedLeadSourceData = transformPieChartData(leadSourceChartData);
+
   return (
     <div className="animate-fade-in">
       <div className="flex flex-col md:flex-row justify-between mb-6 gap-4">
@@ -67,12 +105,12 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
         <ChartCard title="Leads vs. Tempo">
           <div className="p-4">
-            <LineChart className="h-64" data={leadsChartData} />
+            <LineChart className="h-64" data={transformedLeadsData} />
           </div>
         </ChartCard>
         <ChartCard title="Taxa de Conversão">
           <div className="p-4">
-            <LineChart className="h-64" data={conversionChartData} />
+            <LineChart className="h-64" data={transformedConversionData} />
           </div>
         </ChartCard>
       </div>
@@ -80,12 +118,12 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
         <ChartCard title="Origem dos Leads" className="col-span-1">
           <div className="p-4">
-            <PieChart className="h-64" data={leadSourceChartData} />
+            <PieChart className="h-64" data={transformedLeadSourceData} />
           </div>
         </ChartCard>
         <ChartCard title="Receita Mensal" className="col-span-2">
           <div className="p-4">
-            <BarChart className="h-64" data={revenueChartData} />
+            <BarChart className="h-64" data={transformedRevenueData} />
           </div>
         </ChartCard>
       </div>

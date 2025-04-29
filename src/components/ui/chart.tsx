@@ -1,4 +1,3 @@
-
 import * as React from "react"
 import * as RechartsPrimitive from "recharts"
 
@@ -354,7 +353,7 @@ function getPayloadConfigFromPayload(
     : config[key as keyof typeof config]
 }
 
-// Add the specific chart components that are being imported in Dashboard.tsx
+// Chart components
 const LineChart = React.forwardRef<
   HTMLDivElement,
   Omit<React.ComponentProps<typeof ChartContainer>, "children"> & {
@@ -423,13 +422,16 @@ const PieChart = React.forwardRef<
     nameKey?: string
   }
 >(({ data = [], dataKey = "value", nameKey = "name", config = {}, ...props }, ref) => {
+  // Ensure data is an array before trying to map it
+  const safeData = Array.isArray(data) ? data : [];
+  
   return (
     <ChartContainer ref={ref} config={config} {...props}>
       <RechartsPrimitive.PieChart>
         <ChartTooltip content={<ChartTooltipContent />} />
         <ChartLegend content={<ChartLegendContent />} />
         <RechartsPrimitive.Pie
-          data={data}
+          data={safeData}
           cx="50%"
           cy="50%"
           labelLine={false}
@@ -438,7 +440,7 @@ const PieChart = React.forwardRef<
           dataKey={dataKey}
           nameKey={nameKey}
         >
-          {data.map((entry, index) => (
+          {safeData.map((entry, index) => (
             <RechartsPrimitive.Cell 
               key={`cell-${index}`} 
               fill={entry.color || `var(--color-${entry[nameKey]}, #8884d8)`} 
@@ -462,4 +464,3 @@ export {
   BarChart,
   PieChart
 }
-
