@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DateRange } from "react-day-picker";
@@ -50,9 +51,6 @@ export default function GrowthDashboard() {
     badgeVariant: metric.badgeVariant as "outline" | "secondary" | "default" | "destructive",
     changeDirection: metric.changeDirection as "up" | "down" | "neutral"
   }));
-
-  // Transform the lead source data for the pie chart
-  const transformedLeadSourceData = transformPieData(leadSourceData);
 
   return (
     <div className="animate-fade-in space-y-6">
