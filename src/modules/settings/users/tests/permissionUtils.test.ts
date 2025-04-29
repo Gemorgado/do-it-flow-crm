@@ -13,9 +13,9 @@ describe('Permission Utils', () => {
   };
 
   const mockRoutes: Route[] = [
-    { path: '/pipeline', tabKey: 'PIPELINE', label: 'Pipeline', element: <div>Pipeline</div> },
-    { path: '/growth', tabKey: 'GROWTH', label: 'Growth', element: <div>Growth</div> },
-    { path: '/reports', tabKey: 'REPORTS', label: 'Reports', element: <div>Reports</div> }
+    { path: '/pipeline', tabKey: 'PIPELINE', label: 'Pipeline', element: /* @ts-ignore */ '<div>Pipeline</div>' },
+    { path: '/growth', tabKey: 'GROWTH', label: 'Growth', element: /* @ts-ignore */ '<div>Growth</div>' },
+    { path: '/reports', tabKey: 'REPORTS', label: 'Reports', element: /* @ts-ignore */ '<div>Reports</div>' }
   ];
 
   describe('hasAccess', () => {
