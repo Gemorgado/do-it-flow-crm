@@ -1,4 +1,3 @@
-
 import { BarChart, LineChart, PieChart } from "@/components/ui/chart";
 import { StatCard } from "@/components/Dashboard/StatCard";
 import { ChartCard } from "@/components/Dashboard/ChartCard";
@@ -72,28 +71,28 @@ export default function Dashboard() {
   // Define empty config object for charts (required by component props)
   const chartConfig = {};
 
-  // Mock data for CRM metrics
+  // Mock data for CRM metrics with properly typed changeDirection
   const crmMetrics = [
     { 
       label: "Leads novos (mês)", 
       value: "256", 
       tooltipText: "Total de leads novos no último mês",
       changeValue: "12%",
-      changeDirection: "up" 
+      changeDirection: "up" as const
     },
     { 
       label: "Taxa de conversão", 
       value: "23,5%", 
       tooltipText: "Percentual de leads que se tornaram clientes",
       changeValue: "3.2%",
-      changeDirection: "up" 
+      changeDirection: "up" as const
     },
     { 
       label: "Taxa de churn", 
       value: "3.8%", 
       tooltipText: "Percentual de cancelamentos no último mês",
       changeValue: "0.5%",
-      changeDirection: "down" 
+      changeDirection: "down" as const
     },
     { 
       label: "Tempo médio de conversão", 
@@ -105,7 +104,7 @@ export default function Dashboard() {
       value: "R$ 24k", 
       tooltipText: "Valor médio de vida útil dos clientes",
       changeValue: "6.7%",
-      changeDirection: "up" 
+      changeDirection: "up" as const
     },
     { 
       label: "Renovações próximas", 
@@ -124,42 +123,42 @@ export default function Dashboard() {
     { stage: "Fechado", count: 60, conversionRate: 23.5, dropoffRate: 2.5 }
   ];
 
-  // Mock data for client revenue
+  // Mock data for client revenue with properly typed status
   const clientRevenueData = [
     { 
       name: "Empresa ABC Ltda", 
       company: "Agência de Marketing", 
       monthlyRevenue: 3500, 
       renewalDate: "2025-06-15",
-      status: "ativo" 
+      status: "ativo" as const
     },
     { 
       name: "Tech Solutions", 
       company: "Startup de Tecnologia", 
       monthlyRevenue: 2800, 
       renewalDate: "2025-05-22",
-      status: "ativo" 
+      status: "ativo" as const
     },
     { 
       name: "Consultor Independente", 
       company: "João Silva", 
       monthlyRevenue: 1200, 
       renewalDate: "2025-05-10",
-      status: "risco" 
+      status: "risco" as const
     },
     { 
       name: "Creative Studios", 
       company: "Design & Produção", 
       monthlyRevenue: 2200, 
       renewalDate: "2025-07-05",
-      status: "ativo" 
+      status: "ativo" as const
     },
     { 
       name: "Instituto Educacional", 
       company: "Cursos Online", 
       monthlyRevenue: 4500, 
       renewalDate: "2025-05-28",
-      status: "pendente" 
+      status: "pendente" as const
     }
   ];
 
