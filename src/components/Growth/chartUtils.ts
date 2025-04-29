@@ -15,6 +15,10 @@ export function transformChartData(chartData: any) {
   });
 }
 
+/**
+ * Transforma dados de gráfico de pizza no formato { labels, datasets } para um array de objetos
+ * com { name, value, color } que é compatível com o componente PieChart
+ */
 export function transformPieData(chartData: any): any[] {
   if (!chartData || !chartData.labels || !chartData.datasets || !chartData.datasets[0]) {
     return [];
