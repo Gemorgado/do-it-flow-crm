@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { WhatsApp, Send, Archive } from "lucide-react";
+import { MessageCircle, Send, Archive } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 interface WhatsAppDialogProps {
@@ -87,7 +87,7 @@ export function WhatsAppDialog({ open, onOpenChange, lead, onMessageSent }: What
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <WhatsApp className="h-5 w-5 text-green-600" /> 
+            <MessageCircle className="h-5 w-5 text-green-600" /> 
             WhatsApp - {lead.name}
           </DialogTitle>
         </DialogHeader>

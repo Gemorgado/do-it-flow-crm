@@ -1,7 +1,7 @@
 
 import { Lead } from "@/types";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, UserPlus, Calendar, FileText, WhatsApp } from "lucide-react";
+import { MessageSquare, UserPlus, Calendar, FileText, MessageCircle } from "lucide-react";
 import { useState } from "react";
 import { WhatsAppDialog } from "./WhatsAppDialog";
 import { toast } from "@/hooks/use-toast";
@@ -81,7 +81,7 @@ export function LeadCard({ lead, onDragStart, onStageUpdate }: LeadCardProps) {
           className="h-8 w-8 text-green-500 hover:text-green-600 hover:bg-green-50"
           onClick={() => setOpenWhatsApp(true)}
         >
-          <WhatsApp className="h-4 w-4" />
+          <MessageCircle className="h-4 w-4" />
         </Button>
         <Button variant="ghost" size="icon" className="h-8 w-8">
           <MessageSquare className="h-4 w-4" />
