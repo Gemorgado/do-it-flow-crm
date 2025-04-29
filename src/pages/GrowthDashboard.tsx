@@ -20,6 +20,7 @@ import {
 import { trackGTMEvent, trackFBPixelEvent } from "@/utils/trackingUtils";
 import { format, subDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { Badge } from "@/components/ui/badge";
 
 export default function GrowthDashboard() {
   // Initialize date range to last 30 days
@@ -159,7 +160,7 @@ export default function GrowthDashboard() {
           
           <MarketingROICard 
             title="ROI de Marketing por Canal"
-            data={marketingROIData}
+            roiData={marketingROIData}
           />
         </TabsContent>
         
@@ -362,6 +363,3 @@ function getChannelData(channelName: string) {
     cac: 0
   };
 }
-
-// This component would be defined in its own file, but we're including it here for simplicity
-import { Badge } from "@/components/ui/badge";

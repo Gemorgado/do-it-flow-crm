@@ -59,42 +59,48 @@ export function MarketingROICard({ title, roiData, className }: MarketingROICard
                 <TableHead className="text-right">
                   <div className="flex items-center justify-end gap-1">
                     <span>ROAS</span>
-                    <Tooltip>
-                      <TooltipTrigger className="cursor-help">
-                        <HelpCircle size={14} className="text-muted-foreground" />
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="bg-gray-800 text-white">
-                        Retorno sobre Investimento em Publicidade
-                      </TooltipContent>
-                    </Tooltip>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger className="cursor-help">
+                          <HelpCircle size={14} className="text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="bg-gray-800 text-white">
+                          Retorno sobre Investimento em Publicidade
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                 </TableHead>
                 <TableHead className="text-right">Leads</TableHead>
                 <TableHead className="text-right">
                   <div className="flex items-center justify-end gap-1">
                     <span>CPL</span>
-                    <Tooltip>
-                      <TooltipTrigger className="cursor-help">
-                        <HelpCircle size={14} className="text-muted-foreground" />
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="bg-gray-800 text-white">
-                        Custo por Lead
-                      </TooltipContent>
-                    </Tooltip>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger className="cursor-help">
+                          <HelpCircle size={14} className="text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="bg-gray-800 text-white">
+                          Custo por Lead
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                 </TableHead>
                 <TableHead className="text-right">Clientes</TableHead>
                 <TableHead className="text-right">
                   <div className="flex items-center justify-end gap-1">
                     <span>CAC</span>
-                    <Tooltip>
-                      <TooltipTrigger className="cursor-help">
-                        <HelpCircle size={14} className="text-muted-foreground" />
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="bg-gray-800 text-white">
-                        Custo de Aquisição de Cliente
-                      </TooltipContent>
-                    </Tooltip>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger className="cursor-help">
+                          <HelpCircle size={14} className="text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="bg-gray-800 text-white">
+                          Custo de Aquisição de Cliente
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                 </TableHead>
               </TableRow>

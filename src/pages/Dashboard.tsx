@@ -164,6 +164,13 @@ export default function Dashboard() {
     }
   ];
 
+  // Convert tasks to the correct type with proper union types for priority and status
+  const typedTasks = tasks.map(task => ({
+    ...task,
+    priority: task.priority as "alta" | "média" | "baixa",
+    status: task.status as "pendente" | "em_progresso" | "concluída" | "cancelada"
+  }));
+
   return (
     <div className="animate-fade-in">
       <div className="flex flex-col md:flex-row justify-between mb-6 gap-4">
@@ -264,7 +271,7 @@ export default function Dashboard() {
                 Ver todas
               </Button>
             </div>
-            <TaskList tasks={tasks.filter(task => task.status !== "concluída" && task.status !== "cancelada")} />
+            <TaskList tasks={typedTasks.filter(task => task.status !== "concluída" && task.status !== "cancelada")} />
           </div>
         </div>
         
@@ -276,7 +283,7 @@ export default function Dashboard() {
                 Ver todos
               </Button>
             </div>
-            <LeadsList leads={leads} />
+            <LeadsList leads={leads as Lead[]} />
           </div>
         </div>
       </div>
