@@ -5,6 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { UserManagementTab } from "@/modules/settings/users/UserManagementTab";
 
 export default function Settings() {
   return (
@@ -15,6 +16,7 @@ export default function Settings() {
         <TabsList className="mb-6">
           <TabsTrigger value="perfil">Perfil</TabsTrigger>
           <TabsTrigger value="empresa">Empresa</TabsTrigger>
+          <TabsTrigger value="usuarios">Usuários</TabsTrigger>
           <TabsTrigger value="notificacoes">Notificações</TabsTrigger>
           <TabsTrigger value="integracao">Integrações</TabsTrigger>
         </TabsList>
@@ -75,6 +77,12 @@ export default function Settings() {
                 <Button>Salvar Alterações</Button>
               </div>
             </div>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="usuarios">
+          <Card className="p-6">
+            <UserManagementTab />
           </Card>
         </TabsContent>
         

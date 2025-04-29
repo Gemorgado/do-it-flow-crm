@@ -1,3 +1,4 @@
+
 import {
   Sidebar as SidebarContainer,
   SidebarContent,
@@ -26,33 +27,62 @@ import {
   Badge
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useCurrentUser } from "@/modules/settings/users/hooks/useCurrentUser";
+import { TabKey } from "@/modules/settings/users/types";
+
+interface SidebarRoute {
+  title: string;
+  url: string;
+  icon: React.ComponentType;
+  tabKey?: TabKey;
+}
 
 export function Sidebar() {
   const location = useLocation();
+  const { currentUser } = useCurrentUser();
+  const [filteredMenuItems, setFilteredMenuItems] = useState<SidebarRoute[]>([]);
 
-  const mainMenuItems = [
-    { title: "Dashboard", url: "/", icon: LayoutDashboard },
-    { title: "Pipeline", url: "/pipeline", icon: ArrowRight },
-    { title: "Leads e Clientes", url: "/contatos", icon: Users },
-    { title: "Propostas", url: "/propostas", icon: FileText },
-    { title: "Agendamentos", url: "/agendamentos", icon: CalendarCheck },
-    { title: "Salas de Reunião", url: "/salas-reuniao", icon: DoorClosed },
-    { title: "Mensagens", url: "/mensagens", icon: MessageSquare },
-    { title: "Growth", url: "/growth", icon: BarChart },
-    { title: "Relatórios", url: "/relatorios", icon: FileBarChart },
-    { title: "Espaços", url: "/espacos", icon: Building },
-    { title: "Planos e Serviços", url: "/planos", icon: FileText },
-    { title: "Endereços Fiscais", url: "/enderecos-fiscais", icon: Badge },
+  // Define all menu items with their corresponding tab keys
+  const mainMenuItems: SidebarRoute[] = [
+    { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+    { title: "Pipeline", url: "/pipeline", icon: ArrowRight, tabKey: "PIPELINE" },
+    { title: "Leads e Clientes", url: "/contacts", icon: Users },
+    { title: "Propostas", url: "/proposals", icon: FileText },
+    { title: "Agendamentos", url: "/schedule", icon: CalendarCheck },
+    { title: "Salas de Reunião", url: "/meeting-rooms", icon: DoorClosed },
+    { title: "Mensagens", url: "/messages", icon: MessageSquare },
+    { title: "Growth", url: "/growth", icon: BarChart, tabKey: "GROWTH" },
+    { title: "Relatórios", url: "/growth-reports", icon: FileBarChart, tabKey: "REPORTS" },
+    { title: "Espaços", url: "/spaces", icon: Building, tabKey: "OCCUPANCY_MAP" },
+    { title: "Planos e Serviços", url: "/plans", icon: FileText },
+    { title: "Endereços Fiscais", url: "/fiscal-addresses", icon: Badge },
   ];
 
-  const automationItems = [
-    { title: "Automações", url: "/automacoes", icon: Zap },
-    { title: "Integrações", url: "/integracoes", icon: Plug },
+  const automationItems: SidebarRoute[] = [
+    { title: "Automações", url: "/automations", icon: Zap },
+    { title: "Integrações", url: "/integrations", icon: Plug },
   ];
 
-  const configMenuItems = [
-    { title: "Configurações", url: "/configuracoes", icon: Settings },
+  const configMenuItems: SidebarRoute[] = [
+    { title: "Configurações", url: "/settings", icon: Settings },
   ];
+
+  // Filter menu items based on user permissions
+  useEffect(() => {
+    if (currentUser) {
+      // For tabs that require permissions, filter them
+      // For tabs without a tabKey, always show them (they don't require specific permissions)
+      const filtered = mainMenuItems.filter(item => 
+        !item.tabKey || currentUser.allowedTabs.includes(item.tabKey)
+      );
+      
+      setFilteredMenuItems(filtered);
+    } else {
+      // If no user data yet, show all menu items
+      setFilteredMenuItems(mainMenuItems);
+    }
+  }, [currentUser]);
 
   const isActiveLink = (url: string) => {
     return location.pathname === url;
@@ -74,7 +104,7 @@ export function Sidebar() {
           <SidebarGroupLabel>Principal</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {mainMenuItems.map((item) => (
+              {filteredMenuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
                     asChild

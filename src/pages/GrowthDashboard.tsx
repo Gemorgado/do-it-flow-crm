@@ -6,6 +6,7 @@ import { trackGTMEvent } from "@/utils/trackingUtils";
 import { subDays } from "date-fns";
 import type { ChartData } from "chart.js";
 import { PieSlice } from "@/types/pie";
+import { useProtectedRoute } from "@/modules/settings/users/hooks/useProtectedRoute";
 
 // Import our newly created components
 import { GrowthHeader } from "@/components/Growth/GrowthHeader";
@@ -33,6 +34,9 @@ import {
 } from "@/data/mockData";
 
 export default function GrowthDashboard() {
+  // Protect this page - requires GROWTH permission
+  useProtectedRoute("GROWTH");
+
   // Initialize date range to last 30 days
   const [dateRange, setDateRange] = useState<DateRange>({
     from: subDays(new Date(), 30),

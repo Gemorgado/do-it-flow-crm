@@ -21,6 +21,7 @@ import Schedule from "@/pages/Schedule";
 import Settings from "@/pages/Settings";
 import Profile from "@/pages/Profile";
 import NotFound from "@/pages/NotFound";
+import AccessDenied from "@/pages/AccessDenied";
 import Index from "@/pages/Index";
 
 import { MainLayout } from "@/components/Layout/MainLayout";
@@ -36,6 +37,7 @@ function App() {
         <Router>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/403" element={<AccessDenied />} />
             <Route path="/" element={<MainLayout><Outlet /></MainLayout>}>
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="contacts" element={<Contacts />} />
