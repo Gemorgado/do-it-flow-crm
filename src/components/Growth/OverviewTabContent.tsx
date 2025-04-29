@@ -20,6 +20,9 @@ export function OverviewTabContent({
   transformChartData,
   transformPieData
 }: OverviewTabContentProps) {
+  // Transform the lead source data for the pie chart
+  const transformedLeadSourceData = transformPieData(leadSourceData);
+  
   return (
     <div className="space-y-6">
       <div className="grid gap-6 md:grid-cols-2">
@@ -31,7 +34,7 @@ export function OverviewTabContent({
           <CardContent className="pt-2">
             <PieChart 
               className="h-80" 
-              data={transformPieData(leadSourceData)}
+              data={transformedLeadSourceData}
               config={{}}
             />
           </CardContent>

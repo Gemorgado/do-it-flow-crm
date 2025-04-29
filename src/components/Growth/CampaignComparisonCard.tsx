@@ -30,8 +30,8 @@ export function CampaignComparisonCard({
   
   // Use provided metrics or defaults
   const metrics = {
-    google: defaultCampaignMetrics.google,
-    meta: defaultCampaignMetrics.meta
+    google: googleData || defaultCampaignMetrics.google,
+    meta: metaData || defaultCampaignMetrics.meta
   };
 
   return (
