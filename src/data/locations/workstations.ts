@@ -1,4 +1,3 @@
-
 import { Location } from "@/types";
 
 // Estações de trabalho organizadas por andar
@@ -458,34 +457,8 @@ export const secondFloorWorkstations: Location[] = [
   }
 ];
 
-export const otherWorkstations: Location[] = [
-  // Estações antigas sem formato específico de andar
-  {
-    id: "est-01",
-    name: "Estação 01",
-    type: "estacao",
-    identifier: "01",
-    available: false
-  },
-  {
-    id: "est-02",
-    name: "Estação 02",
-    type: "estacao",
-    identifier: "02",
-    available: false
-  },
-  {
-    id: "est-03",
-    name: "Estação 03",
-    type: "estacao",
-    identifier: "03",
-    available: true
-  }
-];
-
 // Exportar todas as estações de trabalho
 export const workstations = [
   ...firstFloorWorkstations,
-  ...secondFloorWorkstations,
-  ...otherWorkstations
+  ...secondFloorWorkstations
 ];
