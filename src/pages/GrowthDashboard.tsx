@@ -5,6 +5,7 @@ import { DateRange } from "react-day-picker";
 import { trackGTMEvent } from "@/utils/trackingUtils";
 import { subDays } from "date-fns";
 import type { ChartData } from "chart.js";
+import { PieSlice } from "@/types/pie";
 
 // Import our newly created components
 import { GrowthHeader } from "@/components/Growth/GrowthHeader";
@@ -14,7 +15,7 @@ import { CampaignsTabContent } from "@/components/Growth/CampaignsTabContent";
 import { ChannelsTabContent } from "@/components/Growth/ChannelsTabContent";
 import { 
   transformChartData, 
-  transformPieData, 
+  toPieSliceArray, 
   getChannelData,
   ChartDataFormat
 } from "@/components/Growth/chartUtils";
@@ -62,9 +63,9 @@ export default function GrowthDashboard() {
   const typedLeadSourceData = leadSourceData as ChartDataFormat;
   const typedTrafficSourceData = trafficSourceData as ChartDataFormat;
 
-  // Transform the data to match the expected format for PieChart component
-  const formattedLeadSourceData: ChartData<'pie'> = transformPieData(typedLeadSourceData);
-  const formattedTrafficData: ChartData<'pie'> = transformPieData(typedTrafficSourceData);
+  // Transform the data to PieSlice[] format for PieChart component
+  const leadSourcePieSlices: PieSlice[] = toPieSliceArray(typedLeadSourceData);
+  const trafficSourcePieSlices: PieSlice[] = toPieSliceArray(typedTrafficSourceData);
 
   return (
     <div className="animate-fade-in space-y-6">
@@ -82,12 +83,12 @@ export default function GrowthDashboard() {
         
         <TabsContent value="overview" className="space-y-6">
           <OverviewTabContent 
-            leadSourceData={formattedLeadSourceData}
-            trafficSourceData={formattedTrafficData}
+            leadSourceData={leadSourcePieSlices}
+            trafficSourceData={trafficSourcePieSlices}
             campaignPerformanceData={campaignPerformanceData}
             marketingROIData={marketingROIData}
             transformChartData={transformChartData}
-            transformPieData={transformPieData}
+            transformPieData={toPieSliceArray}
           />
         </TabsContent>
         

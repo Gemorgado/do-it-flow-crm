@@ -1,4 +1,3 @@
-
 import { DateRange } from "react-day-picker";
 import { ChartCard } from "@/components/Dashboard/ChartCard";
 import { CRMMetricsCard } from "@/components/Dashboard/CRMMetricsCard";
@@ -7,6 +6,8 @@ import { PieChart } from "@/components/ui/chart";
 import { Badge } from "@/components/ui/badge";
 import { FileChartPie } from "lucide-react";
 import type { ChartData } from "chart.js";
+import { toPieSliceArray } from "@/components/Growth/chartUtils";
+import { PieSlice } from "@/types/pie";
 
 interface ContractsReportProps {
   dateRange: DateRange;
@@ -46,6 +47,10 @@ export function ContractsReport({ dateRange }: ContractsReportProps) {
       }
     ]
   };
+
+  // Transform chart data to PieSlice[]
+  const contractStatusPieSlices: PieSlice[] = toPieSliceArray(contractStatusData);
+  const contractTypePieSlices: PieSlice[] = toPieSliceArray(contractTypeData);
 
   // Sample contracts expiring soon
   const contractsExpiringSoon = [
@@ -87,7 +92,7 @@ export function ContractsReport({ dateRange }: ContractsReportProps) {
         >
           <div className="p-6 h-80">
             <PieChart 
-              data={contractStatusData}
+              data={contractStatusPieSlices}
               config={contractStatusConfig}
             />
           </div>
@@ -100,7 +105,7 @@ export function ContractsReport({ dateRange }: ContractsReportProps) {
         >
           <div className="p-6 h-80">
             <PieChart 
-              data={contractTypeData} 
+              data={contractTypePieSlices} 
               config={contractTypeConfig}
             />
           </div>

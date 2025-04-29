@@ -4,29 +4,24 @@ import * as RechartsPrimitive from "recharts";
 import { ChartContainer } from "./chart-container";
 import { ChartTooltip, ChartTooltipContent } from "./chart-tooltip";
 import { ChartLegend, ChartLegendContent } from "./chart-legend";
-import type { ChartData, ChartOptions } from "chart.js";
-import { transformToPieSliceArray } from "@/components/Growth/chartUtils";
+import type { ChartOptions } from "chart.js";
+import { PieSlice } from "@/types/pie";
 
 const PieChart = React.forwardRef<
   HTMLDivElement,
   Omit<React.ComponentProps<typeof ChartContainer>, "children"> & {
-    data: ChartData<"pie">;
+    data: PieSlice[];
     config?: any;
     options?: ChartOptions<"pie">;
   }
 >(({ data, config = {}, ...props }, ref) => {
-  // Transform data from ChartData to array format for Recharts
-  const transformedData = React.useMemo(() => {
-    return transformToPieSliceArray(data);
-  }, [data]);
-  
   return (
     <ChartContainer ref={ref} config={config} {...props}>
       <RechartsPrimitive.PieChart>
         <ChartTooltip content={<ChartTooltipContent />} />
         <ChartLegend content={<ChartLegendContent />} />
         <RechartsPrimitive.Pie
-          data={transformedData}
+          data={data}
           cx="50%"
           cy="50%"
           labelLine={false}
@@ -35,7 +30,7 @@ const PieChart = React.forwardRef<
           dataKey="value"
           nameKey="name"
         >
-          {transformedData.map((entry, index) => (
+          {data.map((entry, index) => (
             <RechartsPrimitive.Cell 
               key={`cell-${index}`} 
               fill={entry.color || `var(--color-${entry.name}, #8884d8)`} 

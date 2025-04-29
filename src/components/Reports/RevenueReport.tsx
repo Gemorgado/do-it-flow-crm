@@ -1,4 +1,3 @@
-
 import { DateRange } from "react-day-picker";
 import { ChartCard } from "@/components/Dashboard/ChartCard";
 import { CRMMetricsCard } from "@/components/Dashboard/CRMMetricsCard";
@@ -6,6 +5,8 @@ import { LineChart, PieChart } from "@/components/ui/chart";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { FileChartLine, FileChartPie } from "lucide-react";
 import type { ChartData } from "chart.js";
+import { toPieSliceArray } from "@/components/Growth/chartUtils";
+import { PieSlice } from "@/types/pie";
 
 interface RevenueReportProps {
   dateRange: DateRange;
@@ -33,6 +34,9 @@ export function RevenueReport({ dateRange }: RevenueReportProps) {
       }
     ]
   };
+
+  // Transform to PieSlice[] for the PieChart component
+  const revenueByServicePieSlices: PieSlice[] = toPieSliceArray(revenueByServiceData);
 
   // Revenue over time
   const revenueOverTimeData = [
@@ -103,7 +107,7 @@ export function RevenueReport({ dateRange }: RevenueReportProps) {
       >
         <div className="p-6 h-80">
           <PieChart 
-            data={revenueByServiceData} 
+            data={revenueByServicePieSlices} 
             config={pieChartConfig}
           />
         </div>

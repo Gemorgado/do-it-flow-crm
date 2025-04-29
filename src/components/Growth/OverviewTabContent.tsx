@@ -2,16 +2,17 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { LineChart, PieChart, BarChart } from "@/components/ui/chart";
 import { MarketingROICard } from "@/components/Growth/MarketingROICard";
-import type { ChartData, ChartOptions } from "chart.js";
+import { PieSlice } from "@/types/pie";
+import type { ChartData } from "chart.js";
 import { ChartDataFormat } from "@/components/Growth/chartUtils";
 
 interface OverviewTabContentProps {
-  leadSourceData: ChartData<"pie">;
-  trafficSourceData: ChartData<"pie">;
+  leadSourceData: PieSlice[];
+  trafficSourceData: PieSlice[];
   campaignPerformanceData: any;
   marketingROIData: any;
   transformChartData: (data: any) => any[];
-  transformPieData: (data: ChartDataFormat) => ChartData<"pie">;
+  transformPieData: (data: ChartDataFormat) => PieSlice[];
 }
 
 export function OverviewTabContent({ 

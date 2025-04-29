@@ -1,5 +1,5 @@
-
 import type { ChartData } from "chart.js";
+import { PieSlice } from "@/types/pie";
 
 export type ChartDataFormat = { 
   labels: string[]; 
@@ -27,29 +27,10 @@ export function transformChartData(chartData: any) {
 }
 
 /**
- * Transforms chart data from { labels, datasets } format to Chart.js's native
- * ChartData<'pie'> format which is compatible with the PieChart component
+ * Transforms chart data from { labels, datasets } format to an array of PieSlice objects
+ * which is compatible with the PieChart component
  */
-export function transformPieData(chartData: ChartDataFormat): ChartData<'pie'> {
-  if (!chartData || !chartData.labels || !chartData.datasets || !chartData.datasets[0]) {
-    return { labels: [], datasets: [] };
-  }
-  
-  // Return data in Chart.js format
-  return {
-    labels: chartData.labels,
-    datasets: chartData.datasets.map(dataset => ({
-      label: dataset.label,
-      data: dataset.data,
-      backgroundColor: dataset.backgroundColor
-    }))
-  };
-}
-
-/**
- * Transforms ChartData<'pie'> to PieSlice[] format for components that expect array data
- */
-export function transformToPieSliceArray(data: ChartData<'pie'>): { name: string; value: number; color: string }[] {
+export function transformToPieSliceArray(data: ChartData<'pie'>): PieSlice[] {
   if (!data || !data.labels || !data.datasets || data.datasets.length === 0) {
     return [];
   }
@@ -60,6 +41,22 @@ export function transformToPieSliceArray(data: ChartData<'pie'>): { name: string
     color: Array.isArray(data.datasets[0].backgroundColor) 
       ? data.datasets[0].backgroundColor[index] as string
       : data.datasets[0].backgroundColor as string
+  }));
+}
+
+/**
+ * Transforms pie data from raw chart data format to PieSlice[]
+ */
+export function toPieSliceArray(raw: {
+  labels: string[];
+  datasets: { data: number[]; backgroundColor: string | string[] }[];
+}): PieSlice[] {
+  return raw.labels.map((lbl, i) => ({
+    name: lbl,
+    value: raw.datasets[0].data[i],
+    color: Array.isArray(raw.datasets[0].backgroundColor)
+      ? raw.datasets[0].backgroundColor[i]
+      : raw.datasets[0].backgroundColor
   }));
 }
 
