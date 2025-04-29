@@ -4,8 +4,8 @@ import { LineChart, PieChart, BarChart } from "@/components/ui/chart";
 import { MarketingROICard } from "@/components/Growth/MarketingROICard";
 
 interface OverviewTabContentProps {
-  leadSourceData: any;
-  trafficSourceData: any;
+  leadSourceData: any[];  // Changed type to array
+  trafficSourceData: any[];  // Changed type to array
   campaignPerformanceData: any;
   marketingROIData: any;
   transformChartData: (data: any) => any[];
@@ -20,9 +20,7 @@ export function OverviewTabContent({
   transformChartData,
   transformPieData
 }: OverviewTabContentProps) {
-  // Transform data for charts
-  const transformedLeadSourceData = transformPieData(leadSourceData);
-  
+  // The data is already transformed in GrowthDashboard, so we can use it directly
   return (
     <div className="space-y-6">
       <div className="grid gap-6 md:grid-cols-2">
@@ -34,7 +32,7 @@ export function OverviewTabContent({
           <CardContent className="pt-2">
             <PieChart 
               className="h-80" 
-              data={transformedLeadSourceData}
+              data={leadSourceData}
               config={{}}
             />
           </CardContent>

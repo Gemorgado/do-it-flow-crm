@@ -52,7 +52,8 @@ export default function GrowthDashboard() {
     changeDirection: metric.changeDirection as "up" | "down" | "neutral"
   }));
 
-  // Make sure we transform the data correctly for use in the components
+  // Transform the data for our components
+  // The key fix: pre-transform the data to match the expected format
   const formattedLeadSourceData = transformPieData(leadSourceData);
   const formattedTrafficData = transformPieData(trafficSourceData);
 
