@@ -28,9 +28,15 @@ export default function SpaceManagement() {
     }, {} as Record<string, number>);
 
     const availableByFloor = locations.reduce((acc, space) => {
-      if (space.available && space.type === "sala_privativa") {
-        const floor = space.identifier.substring(0, 1);
-        acc[floor] = (acc[floor] || 0) + 1;
+      if (space.available) {
+        if (space.type === "sala_privativa") {
+          const floor = space.identifier.substring(0, 1);
+          acc[floor] = (acc[floor] || 0) + 1;
+        } else if (space.type === "estacao" && space.identifier.includes("-")) {
+          // Para estações com formato "X-YY", pega o X como o andar
+          const floor = space.identifier.split("-")[0];
+          acc[floor] = (acc[floor] || 0) + 1;
+        }
       }
       return acc;
     }, {} as Record<string, number>);
@@ -52,6 +58,16 @@ export default function SpaceManagement() {
     }
     
     return locations.filter(space => {
+      if (space.type === "estacao") {
+        if (space.identifier.includes("-")) {
+          // Para estações com formato "X-YY", filtra pelo X (número do andar)
+          const floor = space.identifier.split("-")[0];
+          return floor === floorFilter;
+        }
+        // Para estações antigas sem o formato de andar
+        return floorFilter === "other";
+      }
+      
       if (space.type !== "sala_privativa" && space.type !== "sala_reuniao") {
         return floorFilter === "other";
       }
@@ -77,6 +93,10 @@ export default function SpaceManagement() {
     locations.forEach(space => {
       if (space.type === "sala_privativa" || space.type === "sala_reuniao") {
         const floor = space.identifier.substring(0, 1);
+        floors.add(floor);
+      } else if (space.type === "estacao" && space.identifier.includes("-")) {
+        // Para estações com formato "X-YY", pega o X como o andar
+        const floor = space.identifier.split("-")[0];
         floors.add(floor);
       }
     });

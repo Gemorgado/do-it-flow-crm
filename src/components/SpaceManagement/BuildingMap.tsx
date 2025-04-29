@@ -41,8 +41,41 @@ export function BuildingMap({ spaces, onSpaceClick }: BuildingMapProps) {
     return grouped;
   }, [spaces]);
   
-  // Filter stations and other space types
-  const workstations = spaces.filter(space => space.type === "estacao");
+  // Group workstations by floor
+  const workstationsByFloor = useMemo(() => {
+    const grouped: Record<string, Location[]> = {};
+    
+    spaces.filter(space => space.type === "estacao").forEach(station => {
+      let floor = "other";
+      
+      // Check if the station has a floor prefix like "1-01"
+      if (station.identifier.includes("-")) {
+        floor = station.identifier.split("-")[0];
+      }
+      
+      if (!grouped[floor]) {
+        grouped[floor] = [];
+      }
+      
+      grouped[floor].push(station);
+    });
+    
+    // Sort stations within each floor
+    for (const floor in grouped) {
+      grouped[floor].sort((a, b) => {
+        // Extract numeric part for sorting
+        const numA = a.identifier.includes("-") ? 
+          parseInt(a.identifier.split("-")[1]) : parseInt(a.identifier);
+        const numB = b.identifier.includes("-") ? 
+          parseInt(b.identifier.split("-")[1]) : parseInt(b.identifier);
+        return numA - numB;
+      });
+    }
+    
+    return grouped;
+  }, [spaces]);
+  
+  // Filter other space types
   const otherSpaces = spaces.filter(space => 
     space.type !== "sala_privativa" && 
     space.type !== "sala_reuniao" && 
@@ -51,6 +84,7 @@ export function BuildingMap({ spaces, onSpaceClick }: BuildingMapProps) {
   
   // Get sorted floors (1, 2, 3...)
   const floors = Object.keys(groupedSpaces).sort();
+  const workstationFloors = Object.keys(workstationsByFloor).sort();
 
   return (
     <div className="p-4 bg-gray-50 rounded-lg">
@@ -91,15 +125,53 @@ export function BuildingMap({ spaces, onSpaceClick }: BuildingMapProps) {
                 </div>
               </div>
             )}
+            
+            {/* Workstations on this floor */}
+            {workstationsByFloor[floor] && workstationsByFloor[floor].length > 0 && (
+              <div className="mb-4">
+                <h4 className="text-sm font-medium mb-2 text-gray-500">Estações de Trabalho</h4>
+                <div className="grid grid-cols-6 sm:grid-cols-10 md:grid-cols-12 gap-2">
+                  {workstationsByFloor[floor].map(station => (
+                    <SpaceUnit 
+                      key={station.id} 
+                      space={station} 
+                      onClick={() => onSpaceClick(station)} 
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         ))}
         
-        {/* Workstations section (not organized by floor) */}
-        {workstations.length > 0 && (
+        {/* Display workstation floors that don't have rooms */}
+        {workstationFloors
+          .filter(floor => !floors.includes(floor) && floor !== "other")
+          .map(floor => (
+            <div key={floor} className="mb-8">
+              <h3 className="text-md font-semibold mb-2">{floor}º Andar</h3>
+              
+              <div className="mb-4">
+                <h4 className="text-sm font-medium mb-2 text-gray-500">Estações de Trabalho</h4>
+                <div className="grid grid-cols-6 sm:grid-cols-10 md:grid-cols-12 gap-2">
+                  {workstationsByFloor[floor].map(station => (
+                    <SpaceUnit 
+                      key={station.id} 
+                      space={station} 
+                      onClick={() => onSpaceClick(station)} 
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        
+        {/* Other workstations section (not organized by floor) */}
+        {workstationsByFloor.other && workstationsByFloor.other.length > 0 && (
           <div className="mb-8">
-            <h3 className="text-sm font-medium mb-2 text-gray-500">Estações de Trabalho</h3>
+            <h3 className="text-sm font-medium mb-2 text-gray-500">Outras Estações</h3>
             <div className="grid grid-cols-6 sm:grid-cols-10 md:grid-cols-12 gap-2">
-              {workstations.map(station => (
+              {workstationsByFloor.other.map(station => (
                 <SpaceUnit 
                   key={station.id} 
                   space={station} 
