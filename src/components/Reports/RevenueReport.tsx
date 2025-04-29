@@ -4,7 +4,7 @@ import { ChartCard } from "@/components/Dashboard/ChartCard";
 import { CRMMetricsCard } from "@/components/Dashboard/CRMMetricsCard";
 import { LineChart, PieChart } from "@/components/ui/chart";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { FileBarChart, FilePieChart } from "lucide-react";
+import { FileChartLine, FileChartPie } from "lucide-react";
 
 interface RevenueReportProps {
   dateRange: DateRange;
@@ -14,11 +14,11 @@ export function RevenueReport({ dateRange }: RevenueReportProps) {
   // Mock revenue metrics
   const revenueMetrics = [
     { label: "Receita Mensal Atual", value: "R$ 145.800", tooltipText: "Receita recorrente mensal" },
-    { label: "Receita Projetada (12m)", value: "R$ 1.74M", tooltipText: "Projeção anualizada", changeValue: "8%", changeDirection: "up" },
-    { label: "Ticket Médio Mensal", value: "R$ 1.893", tooltipText: "Valor médio por contrato", changeValue: "3%", changeDirection: "up" },
-    { label: "Sala Privativa", value: "R$ 96.000", tooltipText: "Receita mensal de salas privativas", changeValue: "66%", changeDirection: "neutral" },
-    { label: "Estações", value: "R$ 37.500", tooltipText: "Receita mensal de estações", changeValue: "26%", changeDirection: "neutral" },
-    { label: "Outros Serviços", value: "R$ 12.300", tooltipText: "Receita mensal de outros serviços", changeValue: "8%", changeDirection: "neutral" },
+    { label: "Receita Projetada (12m)", value: "R$ 1.74M", tooltipText: "Projeção anualizada", changeValue: "8%", changeDirection: "up" as const },
+    { label: "Ticket Médio Mensal", value: "R$ 1.893", tooltipText: "Valor médio por contrato", changeValue: "3%", changeDirection: "up" as const },
+    { label: "Sala Privativa", value: "R$ 96.000", tooltipText: "Receita mensal de salas privativas", changeValue: "66%", changeDirection: "neutral" as const },
+    { label: "Estações", value: "R$ 37.500", tooltipText: "Receita mensal de estações", changeValue: "26%", changeDirection: "neutral" as const },
+    { label: "Outros Serviços", value: "R$ 12.300", tooltipText: "Receita mensal de outros serviços", changeValue: "8%", changeDirection: "neutral" as const },
   ];
 
   // Revenue by service type
@@ -55,9 +55,18 @@ export function RevenueReport({ dateRange }: RevenueReportProps) {
     { type: "Salas de Reunião", contracts: "-", totalRevenue: "R$ 4.800", avgRevenue: "-", share: "3%" },
   ];
 
+  // Create config objects for the charts
   const lineChartConfig = {
     Receita: { color: "#4f46e5" },
     Projeção: { color: "#d1d5db", strokeDasharray: "5 5" },
+  };
+  
+  const pieChartConfig = {
+    "Salas Privativas": { color: "#4f46e5" },
+    "Estações Fixas": { color: "#06b6d4" },
+    "Estações Flexíveis": { color: "#8b5cf6" },
+    "Endereço Fiscal": { color: "#f97316" },
+    "Salas de Reunião": { color: "#ec4899" },
   };
 
   return (
@@ -72,7 +81,7 @@ export function RevenueReport({ dateRange }: RevenueReportProps) {
       <ChartCard 
         title="Evolução de Receita Mensal" 
         description="Receita mensal atual e projetada para os próximos meses"
-        action={<FileBarChart className="h-4 w-4 text-muted-foreground" />}
+        action={<FileChartLine className="h-4 w-4 text-muted-foreground" />}
       >
         <div className="p-6">
           <LineChart 
@@ -86,13 +95,14 @@ export function RevenueReport({ dateRange }: RevenueReportProps) {
       <ChartCard 
         title="Distribuição de Receita por Tipo de Serviço" 
         description="Contribuição percentual de cada serviço na receita total"
-        action={<FilePieChart className="h-4 w-4 text-muted-foreground" />}
+        action={<FileChartPie className="h-4 w-4 text-muted-foreground" />}
       >
         <div className="p-6 h-80">
           <PieChart 
             data={revenueByServiceData} 
             dataKey="value"
             nameKey="name"
+            config={pieChartConfig}
           />
         </div>
       </ChartCard>

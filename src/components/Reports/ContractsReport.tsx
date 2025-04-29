@@ -5,7 +5,7 @@ import { CRMMetricsCard } from "@/components/Dashboard/CRMMetricsCard";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PieChart } from "@/components/ui/chart";
 import { Badge } from "@/components/ui/badge";
-import { FileChart } from "lucide-react";
+import { FileChartPie } from "lucide-react";
 
 interface ContractsReportProps {
   dateRange: DateRange;
@@ -15,10 +15,10 @@ export function ContractsReport({ dateRange }: ContractsReportProps) {
   // Mock contracts metrics
   const contractMetrics = [
     { label: "Contratos Ativos", value: "77", tooltipText: "Número total de contratos ativos" },
-    { label: "A vencer em 30 dias", value: "12", tooltipText: "Contratos que vencem nos próximos 30 dias", changeValue: "15%", changeDirection: "down" },
-    { label: "Renovados (últimos 30d)", value: "9", tooltipText: "Contratos renovados nos últimos 30 dias", changeValue: "3", changeDirection: "up" },
-    { label: "Cancelamentos (30d)", value: "4", tooltipText: "Contratos cancelados nos últimos 30 dias", changeValue: "5%", changeDirection: "down" },
-    { label: "Taxa de Renovação", value: "75%", tooltipText: "Porcentagem de contratos que são renovados", changeValue: "3%", changeDirection: "up" },
+    { label: "A vencer em 30 dias", value: "12", tooltipText: "Contratos que vencem nos próximos 30 dias", changeValue: "15%", changeDirection: "down" as const },
+    { label: "Renovados (últimos 30d)", value: "9", tooltipText: "Contratos renovados nos últimos 30 dias", changeValue: "3", changeDirection: "up" as const },
+    { label: "Cancelamentos (30d)", value: "4", tooltipText: "Contratos cancelados nos últimos 30 dias", changeValue: "5%", changeDirection: "down" as const },
+    { label: "Taxa de Renovação", value: "75%", tooltipText: "Porcentagem de contratos que são renovados", changeValue: "3%", changeDirection: "up" as const },
     { label: "Tempo Médio de Contrato", value: "14 meses", tooltipText: "Duração média dos contratos ativos" },
   ];
 
@@ -46,6 +46,20 @@ export function ContractsReport({ dateRange }: ContractsReportProps) {
     { id: "CT-2365", client: "Tech Solutions", type: "Estação Fixa", location: "E-12", expires: "25/05/2025", status: "a vencer" },
   ];
 
+  // Create config objects for the pie charts
+  const contractStatusConfig = {
+    Ativos: { color: "#22c55e" },
+    "A Vencer (30d)": { color: "#eab308" },
+    "Cancelados (30d)": { color: "#ef4444" },
+  };
+
+  const contractTypeConfig = {
+    "Sala Privativa": { color: "#4f46e5" },
+    "Estação Fixa": { color: "#06b6d4" },
+    "Estação Flexível": { color: "#8b5cf6" },
+    "Endereço Fiscal": { color: "#f97316" },
+  };
+
   return (
     <div className="space-y-6">
       {/* Metrics summary */}
@@ -59,13 +73,14 @@ export function ContractsReport({ dateRange }: ContractsReportProps) {
         <ChartCard 
           title="Distribuição por Status" 
           description="Status dos contratos atuais"
-          action={<FileChart className="h-4 w-4 text-muted-foreground" />}
+          action={<FileChartPie className="h-4 w-4 text-muted-foreground" />}
         >
           <div className="p-6 h-80">
             <PieChart 
               data={contractStatusData}
               dataKey="value"
               nameKey="name"
+              config={contractStatusConfig}
             />
           </div>
         </ChartCard>
@@ -73,13 +88,14 @@ export function ContractsReport({ dateRange }: ContractsReportProps) {
         <ChartCard 
           title="Distribuição por Tipo de Serviço" 
           description="Contratos ativos por tipo de serviço"
-          action={<FileChart className="h-4 w-4 text-muted-foreground" />}
+          action={<FileChartPie className="h-4 w-4 text-muted-foreground" />}
         >
           <div className="p-6 h-80">
             <PieChart 
               data={contractTypeData} 
               dataKey="value"
               nameKey="name"
+              config={contractTypeConfig}
             />
           </div>
         </ChartCard>

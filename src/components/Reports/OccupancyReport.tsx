@@ -4,7 +4,7 @@ import { ChartCard } from "@/components/Dashboard/ChartCard";
 import { CRMMetricsCard } from "@/components/Dashboard/CRMMetricsCard";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { BarChart } from "@/components/ui/chart";
-import { FileBarChart } from "lucide-react";
+import { FileChartColumnIncreasing } from "lucide-react";
 
 interface OccupancyReportProps {
   dateRange: DateRange;
@@ -14,10 +14,10 @@ export function OccupancyReport({ dateRange }: OccupancyReportProps) {
   // Mock occupancy data
   const occupancyMetrics = [
     { label: "Total de Salas", value: "40", tooltipText: "Total de salas privativas disponíveis" },
-    { label: "Salas Ocupadas", value: "32", tooltipText: "Número de salas com contratos ativos", changeValue: "80%", changeDirection: "up" },
+    { label: "Salas Ocupadas", value: "32", tooltipText: "Número de salas com contratos ativos", changeValue: "80%", changeDirection: "up" as const },
     { label: "Salas Disponíveis", value: "8", tooltipText: "Número de salas sem contratos ativos" },
     { label: "Total de Estações", value: "60", tooltipText: "Total de estações de trabalho disponíveis" },
-    { label: "Estações Ocupadas", value: "45", tooltipText: "Número de estações com contratos ativos", changeValue: "75%", changeDirection: "up" },
+    { label: "Estações Ocupadas", value: "45", tooltipText: "Número de estações com contratos ativos", changeValue: "75%", changeDirection: "up" as const },
     { label: "Estações Disponíveis", value: "15", tooltipText: "Número de estações sem contratos ativos" },
   ];
 
@@ -56,7 +56,7 @@ export function OccupancyReport({ dateRange }: OccupancyReportProps) {
       <ChartCard 
         title="Evolução da Taxa de Ocupação" 
         description="Porcentagem de ocupação ao longo dos últimos 6 meses"
-        action={<FileBarChart className="h-4 w-4 text-muted-foreground" />}
+        action={<FileChartColumnIncreasing className="h-4 w-4 text-muted-foreground" />}
       >
         <div className="p-6">
           <BarChart 

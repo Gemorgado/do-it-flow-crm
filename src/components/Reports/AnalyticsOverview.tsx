@@ -4,7 +4,7 @@ import { ChartCard } from "@/components/Dashboard/ChartCard";
 import { CRMMetricsCard } from "@/components/Dashboard/CRMMetricsCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, BarChart } from "@/components/ui/chart";
-import { FileBarChart, TrendingUp } from "lucide-react";
+import { FileChartColumn, TrendingUp } from "lucide-react";
 
 interface AnalyticsOverviewProps {
   dateRange: DateRange;
@@ -15,10 +15,10 @@ export function AnalyticsOverview({ dateRange }: AnalyticsOverviewProps) {
   const analyticsMetrics = [
     { label: "Salas Disponíveis", value: "8", tooltipText: "Salas privativas disponíveis para locação" },
     { label: "Estações Disponíveis", value: "15", tooltipText: "Estações de trabalho disponíveis para locação" },
-    { label: "Receita Projetada (Anual)", value: "R$ 1.74M", tooltipText: "Projeção de receita anual com contratos atuais", changeValue: "8%", changeDirection: "up" },
+    { label: "Receita Projetada (Anual)", value: "R$ 1.74M", tooltipText: "Projeção de receita anual com contratos atuais", changeValue: "8%", changeDirection: "up" as const },
     { label: "Receita Potencial Máxima", value: "R$ 2.1M", tooltipText: "Receita máxima possível com 100% de ocupação" },
     { label: "Gap de Receita", value: "R$ 360K", tooltipText: "Diferença entre receita atual e potencial máxima" },
-    { label: "Taxa de Retenção", value: "75%", tooltipText: "Porcentagem de clientes que renovam contratos", changeValue: "5%", changeDirection: "up" },
+    { label: "Taxa de Retenção", value: "75%", tooltipText: "Porcentagem de clientes que renovam contratos", changeValue: "5%", changeDirection: "up" as const },
   ];
 
   // Client turnover data
@@ -70,7 +70,7 @@ export function AnalyticsOverview({ dateRange }: AnalyticsOverviewProps) {
         <ChartCard 
           title="Turnover de Clientes" 
           description="Entrada e saída de clientes por mês"
-          action={<FileBarChart className="h-4 w-4 text-muted-foreground" />}
+          action={<FileChartColumn className="h-4 w-4 text-muted-foreground" />}
         >
           <div className="p-6">
             <BarChart 

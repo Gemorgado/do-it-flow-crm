@@ -30,8 +30,8 @@ export default function GrowthReports() {
           <p className="text-gray-500">Análise detalhada de ocupação, contratos e receitas</p>
         </div>
         <DateRangePicker
-          date={dateRange}
-          onDateChange={handleDateRangeChange}
+          value={dateRange}
+          onValueChange={handleDateRangeChange}
           align="end"
         />
       </div>

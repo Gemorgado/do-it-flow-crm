@@ -52,6 +52,10 @@ export default function GrowthDashboard() {
     changeDirection: metric.changeDirection as "up" | "down" | "neutral"
   }));
 
+  // Make sure we transform the data correctly for use in the components
+  const formattedLeadSourceData = transformPieData(leadSourceData);
+  const formattedTrafficData = transformPieData(trafficSourceData);
+
   return (
     <div className="animate-fade-in space-y-6">
       <GrowthHeader dateRange={dateRange} onDateRangeChange={handleDateRangeChange} />
@@ -68,8 +72,8 @@ export default function GrowthDashboard() {
         
         <TabsContent value="overview" className="space-y-6">
           <OverviewTabContent 
-            leadSourceData={leadSourceData}
-            trafficSourceData={trafficSourceData}
+            leadSourceData={formattedLeadSourceData}
+            trafficSourceData={formattedTrafficData}
             campaignPerformanceData={campaignPerformanceData}
             marketingROIData={marketingROIData}
             transformChartData={transformChartData}
