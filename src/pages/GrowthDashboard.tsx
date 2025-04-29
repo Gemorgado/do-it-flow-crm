@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -334,21 +333,19 @@ function transformChartData(chartData: any) {
   });
 }
 
-function transformPieData(chartData: any) {
+function transformPieData(chartData: any): any[] {
   if (!chartData || !chartData.labels || !chartData.datasets || !chartData.datasets[0]) {
     return [];
   }
   
   // Transform ChartData to array of objects format required by PieChart component
-  const pieData = chartData.labels.map((label: string, index: number) => ({
+  return chartData.labels.map((label: string, index: number) => ({
     name: label,
     value: chartData.datasets[0].data[index],
     color: Array.isArray(chartData.datasets[0].backgroundColor) 
       ? chartData.datasets[0].backgroundColor[index] 
       : chartData.datasets[0].backgroundColor
   }));
-  
-  return pieData;
 }
 
 function getChannelData(channelName: string) {
