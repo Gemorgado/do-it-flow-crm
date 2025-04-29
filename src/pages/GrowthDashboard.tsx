@@ -339,14 +339,16 @@ function transformPieData(chartData: any) {
     return [];
   }
   
-  // Return an array of objects directly instead of the ChartData format
-  return chartData.labels.map((label: string, index: number) => ({
+  // Transform ChartData to array of objects format required by PieChart component
+  const pieData = chartData.labels.map((label: string, index: number) => ({
     name: label,
     value: chartData.datasets[0].data[index],
     color: Array.isArray(chartData.datasets[0].backgroundColor) 
       ? chartData.datasets[0].backgroundColor[index] 
       : chartData.datasets[0].backgroundColor
   }));
+  
+  return pieData;
 }
 
 function getChannelData(channelName: string) {
