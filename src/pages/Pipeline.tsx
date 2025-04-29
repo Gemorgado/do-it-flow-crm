@@ -10,13 +10,16 @@ import {
   UserPlus, 
   Calendar,
   MessageSquare,
-  FileText
+  FileText,
+  Move
 } from "lucide-react";
 import { leads, pipelineStages } from "@/data/mockData";
 import { Lead, PipelineStage } from "@/types";
+import { toast } from "@/hooks/use-toast";
 
 export default function Pipeline() {
   const [filteredLeads, setFilteredLeads] = useState<Lead[]>(leads);
+  const [draggedLead, setDraggedLead] = useState<Lead | null>(null);
   
   // Group leads by pipeline stage
   const leadsByStage: Record<string, Lead[]> = {};
@@ -26,6 +29,83 @@ export default function Pipeline() {
       lead => lead.stage.id === stage.id
     );
   });
+
+  const handleDragStart = (e: React.DragEvent, lead: Lead) => {
+    setDraggedLead(lead);
+    e.dataTransfer.effectAllowed = "move";
+    // Set a semi-transparent drag image
+    const dragIcon = document.createElement('div');
+    dragIcon.className = "bg-white p-3 rounded-md shadow-md opacity-80";
+    dragIcon.textContent = lead.name;
+    document.body.appendChild(dragIcon);
+    e.dataTransfer.setDragImage(dragIcon, 20, 20);
+    
+    // Clean up the drag image element after it's no longer needed
+    setTimeout(() => {
+      document.body.removeChild(dragIcon);
+    }, 0);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  };
+
+  const handleDrop = (e: React.DragEvent, targetStageId: string) => {
+    e.preventDefault();
+    
+    // Ensure we have a lead being dragged and it's not already in the target stage
+    if (!draggedLead || draggedLead.stage.id === targetStageId) return;
+
+    // Find the target stage
+    const targetStage = pipelineStages.find(stage => stage.id === targetStageId);
+    if (!targetStage) return;
+
+    // Update the lead's stage
+    const updatedLeads = filteredLeads.map(lead => 
+      lead.id === draggedLead.id 
+        ? { ...lead, stage: targetStage }
+        : lead
+    );
+
+    // Update state
+    setFilteredLeads(updatedLeads);
+    setDraggedLead(null);
+    
+    // Show a success toast
+    toast({
+      title: "Lead movido com sucesso",
+      description: `${draggedLead.name} foi movido para ${targetStage.name}`,
+      duration: 3000,
+    });
+  };
+
+  const handleSearchLeads = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const searchTerm = e.target.value.toLowerCase();
+    
+    if (!searchTerm.trim()) {
+      setFilteredLeads(leads);
+      return;
+    }
+    
+    const filtered = leads.filter(lead => 
+      lead.name.toLowerCase().includes(searchTerm) || 
+      (lead.company && lead.company.toLowerCase().includes(searchTerm)) ||
+      lead.email.toLowerCase().includes(searchTerm)
+    );
+    
+    setFilteredLeads(filtered);
+  };
+
+  const handleFilterByUser = (userId: string) => {
+    if (userId === "atribuido") {
+      setFilteredLeads(leads);
+      return;
+    }
+    
+    const filtered = leads.filter(lead => lead.assignedTo === userId);
+    setFilteredLeads(filtered);
+  };
 
   return (
     <div className="animate-fade-in space-y-6">
@@ -46,6 +126,7 @@ export default function Pipeline() {
             <Input
               placeholder="Buscar leads..."
               className="pl-9"
+              onChange={handleSearchLeads}
             />
           </div>
           
@@ -55,7 +136,10 @@ export default function Pipeline() {
         </div>
         
         <div className="flex gap-3">
-          <Select defaultValue="atribuido">
+          <Select 
+            defaultValue="atribuido" 
+            onValueChange={handleFilterByUser}
+          >
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Atribuído a" />
             </SelectTrigger>
@@ -87,6 +171,9 @@ export default function Pipeline() {
               key={stage.id} 
               stage={stage} 
               leads={leadsByStage[stage.id] || []} 
+              onDragOver={handleDragOver}
+              onDrop={(e) => handleDrop(e, stage.id)}
+              onDragStart={handleDragStart}
             />
           ))}
         </div>
@@ -98,11 +185,18 @@ export default function Pipeline() {
 interface PipelineColumnProps {
   stage: PipelineStage;
   leads: Lead[];
+  onDragOver: (e: React.DragEvent) => void;
+  onDrop: (e: React.DragEvent) => void;
+  onDragStart: (e: React.DragEvent, lead: Lead) => void;
 }
 
-function PipelineColumn({ stage, leads }: PipelineColumnProps) {
+function PipelineColumn({ stage, leads, onDragOver, onDrop, onDragStart }: PipelineColumnProps) {
   return (
-    <div className="flex-1 min-w-[300px] max-w-[320px]">
+    <div 
+      className="flex-1 min-w-[300px] max-w-[320px]"
+      onDragOver={onDragOver}
+      onDrop={onDrop}
+    >
       <div className="flex items-center justify-between mb-3 px-2">
         <h3 className="font-medium flex items-center gap-2">
           <div 
@@ -114,18 +208,22 @@ function PipelineColumn({ stage, leads }: PipelineColumnProps) {
         </h3>
       </div>
       
-      <div className="space-y-3">
+      <div className="space-y-3 min-h-[300px] p-2 rounded-md border-2 border-dashed border-gray-200 bg-gray-50">
         {leads.map((lead) => (
-          <LeadCard key={lead.id} lead={lead} />
+          <LeadCard 
+            key={lead.id} 
+            lead={lead}
+            onDragStart={onDragStart}
+          />
         ))}
         
         {leads.length === 0 && (
-          <div className="border border-dashed border-gray-200 rounded-md p-4 text-center text-gray-400 text-sm">
-            Nenhum lead neste estágio
+          <div className="border border-dashed border-gray-200 rounded-md p-4 text-center text-gray-400 text-sm h-24 flex items-center justify-center">
+            Arraste leads para esta coluna
           </div>
         )}
         
-        <button className="w-full border border-dashed border-gray-200 rounded-md p-3 text-gray-500 flex items-center justify-center hover:bg-gray-50 transition-colors">
+        <button className="w-full border border-dashed border-gray-200 rounded-md p-3 text-gray-500 flex items-center justify-center hover:bg-gray-50 transition-colors bg-white">
           <Plus className="h-4 w-4 mr-1" /> Adicionar Lead
         </button>
       </div>
@@ -135,18 +233,26 @@ function PipelineColumn({ stage, leads }: PipelineColumnProps) {
 
 interface LeadCardProps {
   lead: Lead;
+  onDragStart: (e: React.DragEvent, lead: Lead) => void;
 }
 
-function LeadCard({ lead }: LeadCardProps) {
+function LeadCard({ lead, onDragStart }: LeadCardProps) {
   function formatValue(value?: number): string {
     if (!value) return "Não informado";
     return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   }
 
   return (
-    <div className="bg-white border rounded-md shadow-sm p-3 cursor-pointer hover:shadow-md transition-shadow">
+    <div 
+      className="bg-white border rounded-md shadow-sm p-3 cursor-move hover:shadow-md transition-shadow"
+      draggable
+      onDragStart={(e) => onDragStart(e, lead)}
+    >
       <div className="flex justify-between items-start mb-1">
-        <h4 className="font-medium">{lead.name}</h4>
+        <h4 className="font-medium flex items-center gap-1">
+          <Move className="h-3 w-3 text-gray-400" />
+          {lead.name}
+        </h4>
         {lead.value && (
           <span className="text-sm text-doIt-primary font-medium">
             {formatValue(lead.value)}
