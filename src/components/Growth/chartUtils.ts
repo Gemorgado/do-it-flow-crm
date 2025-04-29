@@ -1,3 +1,4 @@
+
 import type { ChartData } from "chart.js";
 
 export type ChartDataFormat = { 
@@ -43,6 +44,23 @@ export function transformPieData(chartData: ChartDataFormat): ChartData<'pie'> {
       backgroundColor: dataset.backgroundColor
     }))
   };
+}
+
+/**
+ * Transforms ChartData<'pie'> to PieSlice[] format for components that expect array data
+ */
+export function transformToPieSliceArray(data: ChartData<'pie'>): { name: string; value: number; color: string }[] {
+  if (!data || !data.labels || !data.datasets || data.datasets.length === 0) {
+    return [];
+  }
+  
+  return data.labels.map((label, index) => ({
+    name: label as string,
+    value: data.datasets[0].data[index] as number,
+    color: Array.isArray(data.datasets[0].backgroundColor) 
+      ? data.datasets[0].backgroundColor[index] as string
+      : data.datasets[0].backgroundColor as string
+  }));
 }
 
 export function getChannelData(channelName: string, marketingROIData: any[]) {

@@ -5,27 +5,24 @@ import { ChartContainer } from "./chart-container";
 import { ChartTooltip, ChartTooltipContent } from "./chart-tooltip";
 import { ChartLegend, ChartLegendContent } from "./chart-legend";
 import type { ChartData, ChartOptions } from "chart.js";
+import { transformToPieSliceArray } from "@/components/Growth/chartUtils";
 
 const PieChart = React.forwardRef<
   HTMLDivElement,
   Omit<React.ComponentProps<typeof ChartContainer>, "children"> & {
-    data?: ChartData<"pie">;
+    data: ChartData<"pie"> | { name: string; value: number; color: string }[];
+    config?: ChartConfig;
     options?: ChartOptions<"pie">;
   }
->(({ data = { labels: [], datasets: [] }, config = {}, ...props }, ref) => {
-  // Transform Chart.js data format to Recharts format
+>(({ data, config = {}, ...props }, ref) => {
+  // Transform data if it's in Chart.js format
   const transformedData = React.useMemo(() => {
-    if (!data || !data.labels || !data.datasets || data.datasets.length === 0) {
-      return [];
+    if (Array.isArray(data)) {
+      return data; // Already in the right format
+    } else {
+      // Convert from ChartData to array format
+      return transformToPieSliceArray(data);
     }
-    
-    return data.labels.map((label, index) => ({
-      name: label,
-      value: data.datasets[0].data[index],
-      color: Array.isArray(data.datasets[0].backgroundColor) 
-        ? data.datasets[0].backgroundColor[index] 
-        : data.datasets[0].backgroundColor
-    }));
   }, [data]);
   
   return (

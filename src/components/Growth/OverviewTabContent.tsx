@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { LineChart, PieChart, BarChart } from "@/components/ui/chart";
 import { MarketingROICard } from "@/components/Growth/MarketingROICard";
 import type { ChartData, ChartOptions } from "chart.js";
-import { ChartDataFormat } from "@/components/Growth/chartUtils";
+import { ChartDataFormat, transformToPieSliceArray } from "@/components/Growth/chartUtils";
 
 interface OverviewTabContentProps {
   leadSourceData: ChartData<"pie">;

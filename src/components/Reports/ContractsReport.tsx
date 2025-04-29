@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { PieChart } from "@/components/ui/chart";
 import { Badge } from "@/components/ui/badge";
 import { FileChartPie } from "lucide-react";
+import type { ChartData } from "chart.js";
 
 interface ContractsReportProps {
   dateRange: DateRange;
@@ -22,20 +23,29 @@ export function ContractsReport({ dateRange }: ContractsReportProps) {
     { label: "Tempo Médio de Contrato", value: "14 meses", tooltipText: "Duração média dos contratos ativos" },
   ];
 
-  // Status distribution data
-  const contractStatusData = [
-    { name: "Ativos", value: 77, color: "#22c55e" },
-    { name: "A Vencer (30d)", value: 12, color: "#eab308" },
-    { name: "Cancelados (30d)", value: 4, color: "#ef4444" },
-  ];
+  // Status distribution data as ChartData format
+  const contractStatusData: ChartData<'pie'> = {
+    labels: ["Ativos", "A Vencer (30d)", "Cancelados (30d)"],
+    datasets: [
+      {
+        label: "Contratos",
+        data: [77, 12, 4],
+        backgroundColor: ["#22c55e", "#eab308", "#ef4444"]
+      }
+    ]
+  };
 
-  // Type distribution data 
-  const contractTypeData = [
-    { name: "Sala Privativa", value: 32, color: "#4f46e5" },
-    { name: "Estação Fixa", value: 25, color: "#06b6d4" },
-    { name: "Estação Flexível", value: 20, color: "#8b5cf6" },
-    { name: "Endereço Fiscal", value: 15, color: "#f97316" },
-  ];
+  // Type distribution data as ChartData format
+  const contractTypeData: ChartData<'pie'> = {
+    labels: ["Sala Privativa", "Estação Fixa", "Estação Flexível", "Endereço Fiscal"],
+    datasets: [
+      {
+        label: "Contratos",
+        data: [32, 25, 20, 15],
+        backgroundColor: ["#4f46e5", "#06b6d4", "#8b5cf6", "#f97316"]
+      }
+    ]
+  };
 
   // Sample contracts expiring soon
   const contractsExpiringSoon = [
@@ -78,8 +88,6 @@ export function ContractsReport({ dateRange }: ContractsReportProps) {
           <div className="p-6 h-80">
             <PieChart 
               data={contractStatusData}
-              dataKey="value"
-              nameKey="name"
               config={contractStatusConfig}
             />
           </div>
@@ -93,8 +101,6 @@ export function ContractsReport({ dateRange }: ContractsReportProps) {
           <div className="p-6 h-80">
             <PieChart 
               data={contractTypeData} 
-              dataKey="value"
-              nameKey="name"
               config={contractTypeConfig}
             />
           </div>

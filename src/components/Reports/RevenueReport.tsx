@@ -5,6 +5,7 @@ import { CRMMetricsCard } from "@/components/Dashboard/CRMMetricsCard";
 import { LineChart, PieChart } from "@/components/ui/chart";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { FileChartLine, FileChartPie } from "lucide-react";
+import type { ChartData } from "chart.js";
 
 interface RevenueReportProps {
   dateRange: DateRange;
@@ -21,14 +22,17 @@ export function RevenueReport({ dateRange }: RevenueReportProps) {
     { label: "Outros Serviços", value: "R$ 12.300", tooltipText: "Receita mensal de outros serviços", changeValue: "8%", changeDirection: "neutral" as const },
   ];
 
-  // Revenue by service type
-  const revenueByServiceData = [
-    { name: "Salas Privativas", value: 96000, color: "#4f46e5" },
-    { name: "Estações Fixas", value: 25000, color: "#06b6d4" },
-    { name: "Estações Flexíveis", value: 12500, color: "#8b5cf6" },
-    { name: "Endereço Fiscal", value: 7500, color: "#f97316" },
-    { name: "Salas de Reunião", value: 4800, color: "#ec4899" },
-  ];
+  // Revenue by service type as ChartData format
+  const revenueByServiceData: ChartData<'pie'> = {
+    labels: ["Salas Privativas", "Estações Fixas", "Estações Flexíveis", "Endereço Fiscal", "Salas de Reunião"],
+    datasets: [
+      {
+        label: "Receita",
+        data: [96000, 25000, 12500, 7500, 4800],
+        backgroundColor: ["#4f46e5", "#06b6d4", "#8b5cf6", "#f97316", "#ec4899"]
+      }
+    ]
+  };
 
   // Revenue over time
   const revenueOverTimeData = [
@@ -100,8 +104,6 @@ export function RevenueReport({ dateRange }: RevenueReportProps) {
         <div className="p-6 h-80">
           <PieChart 
             data={revenueByServiceData} 
-            dataKey="value"
-            nameKey="name"
             config={pieChartConfig}
           />
         </div>
