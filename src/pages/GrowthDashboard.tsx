@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -135,10 +134,8 @@ export default function GrowthDashboard() {
               <CardContent className="pt-2">
                 <PieChart 
                   className="h-80" 
-                  data={transformPieData(leadSourceData)} 
+                  data={transformPieData(leadSourceData)}
                   config={{}}
-                  dataKey="value"
-                  nameKey="name"
                 />
               </CardContent>
             </Card>
@@ -345,20 +342,14 @@ function transformPieData(chartData: any): any[] {
     return [];
   }
   
-  // Explicitly create and return an array of objects
-  const result: any[] = [];
-  
-  for (let i = 0; i < chartData.labels.length; i++) {
-    result.push({
-      name: chartData.labels[i],
-      value: chartData.datasets[0].data[i],
-      color: Array.isArray(chartData.datasets[0].backgroundColor) 
-        ? chartData.datasets[0].backgroundColor[i] 
-        : chartData.datasets[0].backgroundColor
-    });
-  }
-  
-  return result;
+  // Create and return an array of objects for the PieChart component
+  return chartData.labels.map((label: string, index: number) => ({
+    name: label,
+    value: chartData.datasets[0].data[index],
+    color: Array.isArray(chartData.datasets[0].backgroundColor) 
+      ? chartData.datasets[0].backgroundColor[index] 
+      : chartData.datasets[0].backgroundColor
+  }));
 }
 
 function getChannelData(channelName: string) {
