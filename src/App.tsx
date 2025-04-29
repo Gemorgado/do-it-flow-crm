@@ -20,6 +20,7 @@ import PlansAndServices from "./pages/PlansAndServices";
 import GrowthReports from "./pages/GrowthReports";
 import Automations from "./pages/Automations";
 import Integrations from "./pages/Integrations";
+import MeetingRooms from "./pages/MeetingRooms";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +46,7 @@ const App = () => (
             <Route path="/relatorios" element={<GrowthReports />} />
             <Route path="/automacoes" element={<Automations />} />
             <Route path="/integracoes" element={<Integrations />} />
+            <Route path="/salas-reuniao" element={<MeetingRooms />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </MainLayout>
