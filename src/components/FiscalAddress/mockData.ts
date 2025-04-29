@@ -1,3 +1,4 @@
+
 import { FiscalAddressContract } from "./types";
 import { addDays, format, subDays } from "date-fns";
 
@@ -8,6 +9,7 @@ const formatDate = (date: Date): string => format(date, 'yyyy-MM-dd');
 const today = new Date();
 const in30Days = addDays(today, 30);
 const in60Days = addDays(today, 60);
+const in90Days = addDays(today, 90);
 const in120Days = addDays(today, 120);
 const expired30Days = subDays(today, 30);
 const expired60Days = subDays(today, 60);
@@ -82,5 +84,3 @@ export const mockContracts: FiscalAddressContract[] = [
   }
 ];
 
-// Helper to calculate days to renewal that wasn't exported to keep the utils pure
-const in90Days = addDays(today, 90);

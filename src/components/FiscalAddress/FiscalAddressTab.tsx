@@ -82,6 +82,9 @@ export const FiscalAddressTab: React.FC = () => {
     }
   ];
 
+  // Empty chart config object (required by PieChart component)
+  const chartConfig = {};
+
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold">Endereços Fiscais</h2>
@@ -143,13 +146,13 @@ export const FiscalAddressTab: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ChartCard title="Distribuição por Periodicidade">
           <div className="p-6 flex justify-center">
-            <PieChart data={cyclePieData} />
+            <PieChart data={cyclePieData} config={chartConfig} />
           </div>
         </ChartCard>
 
         <ChartCard title="Adimplência">
           <div className="p-6 flex justify-center">
-            <PieChart data={delinquencyPieData} />
+            <PieChart data={delinquencyPieData} config={chartConfig} />
           </div>
         </ChartCard>
       </div>
@@ -250,3 +253,4 @@ export const FiscalAddressTab: React.FC = () => {
     </div>
   );
 };
+
