@@ -70,3 +70,45 @@ export function trackLeadEvent(eventName: string, leadData: Record<string, any> 
   // Return campaign data for storage
   return getUTMParameters();
 }
+
+// Track ad costs and ROAS
+export function trackAdCosts(adData: {
+  platform: string;
+  campaignId: string;
+  adsetId?: string;
+  adId?: string;
+  spend: number;
+  impressions: number;
+  clicks: number;
+  conversions?: number;
+}) {
+  // Track in GTM
+  trackGTMEvent("ad_cost_tracked", adData);
+  
+  console.log(`Ad costs tracked for ${adData.platform}`, adData);
+  return true;
+}
+
+// Calculate marketing metrics
+export function calculateMarketingMetrics(data: {
+  adCost: number;
+  leads: number;
+  customers: number;
+  revenue: number;
+}) {
+  const { adCost, leads, customers, revenue } = data;
+  
+  // Calculate metrics
+  const cpl = leads > 0 ? adCost / leads : 0;
+  const cac = customers > 0 ? adCost / customers : 0;
+  const roas = adCost > 0 ? (revenue / adCost) * 100 : 0;
+  const conversionRate = leads > 0 ? (customers / leads) * 100 : 0;
+  
+  return {
+    cpl,
+    cac,
+    roas,
+    conversionRate,
+    roi: roas - 100, // ROI as percentage
+  };
+}

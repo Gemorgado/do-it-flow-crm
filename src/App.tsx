@@ -14,6 +14,7 @@ import Messages from "./pages/Messages";
 import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
+import GrowthDashboard from "./pages/GrowthDashboard";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/mensagens" element={<Messages />} />
             <Route path="/configuracoes" element={<Settings />} />
             <Route path="/perfil" element={<Profile />} />
+            <Route path="/growth" element={<GrowthDashboard />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </MainLayout>

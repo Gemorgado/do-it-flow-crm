@@ -1,561 +1,518 @@
+export interface Lead {
+  id: string;
+  name: string;
+  company?: string;
+  email: string;
+  phone: string;
+  status: LeadStatus;
+  source: LeadSource;
+  createdAt: string;
+  updatedAt: string;
+  stage: PipelineStage;
+  assignedTo?: string;
+  notes?: string;
+  value?: number;
+  lastContact?: string;
+  nextFollowUp?: string;
+  meetingScheduled?: string;
+}
 
-import { 
-  Lead, 
-  Client, 
-  PipelineStage, 
-  Task, 
-  Interaction,
-  Proposal,
-  User,
-  DashboardStats,
-  ChartData
-} from "@/types";
-import { formatDistanceToNow, subDays, addDays } from "date-fns";
-import { ptBR } from "date-fns/locale";
+export type LeadStatus = 
+  | "novo" 
+  | "contatado" 
+  | "qualificado" 
+  | "proposta" 
+  | "negociação" 
+  | "fechado" 
+  | "perdido";
 
-// Pipeline Stages
-export const pipelineStages: PipelineStage[] = [
-  { id: "1", name: "Novo Lead", order: 1, color: "#e0e7ff" },
-  { id: "2", name: "Contato Inicial", order: 2, color: "#dbeafe" },
-  { id: "3", name: "Agendado", order: 3, color: "#bfdbfe" },
-  { id: "4", name: "Visita Realizada", order: 4, color: "#93c5fd" },
-  { id: "5", name: "Proposta", order: 5, color: "#60a5fa" },
-  { id: "6", name: "Negociação", order: 6, color: "#3b82f6" },
-  { id: "7", name: "Contrato", order: 7, color: "#2563eb" },
-  { id: "8", name: "Fechado", order: 8, color: "#1d4ed8" },
-];
+export type LeadSource = 
+  | "site_organico" 
+  | "google_ads" 
+  | "meta_ads" 
+  | "instagram" 
+  | "indicacao" 
+  | "visita_presencial" 
+  | "eventos" 
+  | "outros";
 
-// Users
-export const users: User[] = [
-  { 
-    id: "1", 
-    name: "Amanda Silva", 
-    email: "amanda@doitcoworking.com.br", 
-    role: "comercial", 
-    avatar: "https://i.pravatar.cc/150?img=1", 
-    createdAt: subDays(new Date(), 90).toISOString(),
-    active: true
-  },
-  { 
-    id: "2", 
-    name: "Ricardo Barros", 
-    email: "ricardo@doitcoworking.com.br", 
-    role: "gerente", 
-    avatar: "https://i.pravatar.cc/150?img=3", 
-    createdAt: subDays(new Date(), 120).toISOString(),
-    active: true
-  },
-  { 
-    id: "3", 
-    name: "Camila Costa", 
-    email: "camila@doitcoworking.com.br", 
-    role: "atendimento", 
-    avatar: "https://i.pravatar.cc/150?img=5", 
-    createdAt: subDays(new Date(), 60).toISOString(),
-    active: true
-  },
-  { 
-    id: "4", 
-    name: "Lucas Mendes", 
-    email: "lucas@doitcoworking.com.br", 
-    role: "diretor", 
-    avatar: "https://i.pravatar.cc/150?img=7", 
-    createdAt: subDays(new Date(), 200).toISOString(),
-    active: true
-  },
-  { 
-    id: "5", 
-    name: "Juliana Freitas", 
-    email: "juliana@doitcoworking.com.br", 
-    role: "admin", 
-    avatar: "https://i.pravatar.cc/150?img=9", 
-    createdAt: subDays(new Date(), 150).toISOString(),
-    active: true
-  },
-];
+export interface Client {
+  id: string;
+  name: string;
+  company: string;
+  email: string;
+  phone: string;
+  address?: string;
+  contractStart?: string;
+  contractEnd?: string;
+  contractValue: number;
+  plan: string;
+  status: "ativo" | "inativo" | "inadimplente" | "cancelado";
+  createdAt: string;
+  updatedAt: string;
+  notes?: string;
+  assignedTo?: string;
+}
 
-// Leads
-export const leads: Lead[] = [
+export interface Interaction {
+  id: string;
+  contactId: string;
+  type: "email" | "call" | "meeting" | "whatsapp" | "visit" | "other";
+  date: string;
+  notes: string;
+  createdBy: string;
+  followUpNeeded: boolean;
+  followUpDate?: string;
+}
+
+export interface Task {
+  id: string;
+  contactId?: string;
+  title: string;
+  description?: string;
+  dueDate: string;
+  priority: "baixa" | "média" | "alta";
+  status: "pendente" | "em_progresso" | "concluída" | "cancelada";
+  assignedTo: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PipelineStage {
+  id: string;
+  name: string;
+  order: number;
+  color: string;
+}
+
+export interface Proposal {
+  id: string;
+  leadId: string;
+  title: string;
+  value: number;
+  createdAt: string;
+  expiresAt: string;
+  status: "enviada" | "visualizada" | "aceita" | "rejeitada" | "expirada" | "em_negociacao";
+  notes?: string;
+  products: ProposalItem[];
+}
+
+export interface ProposalItem {
+  id: string;
+  name: string;
+  quantity: number;
+  unitPrice: number;
+  total: number;
+}
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: "admin" | "comercial" | "atendimento" | "gerente" | "diretor";
+  avatar?: string;
+  createdAt: string;
+  active: boolean;
+}
+
+export interface DashboardStats {
+  newLeads: number;
+  activeClients: number;
+  revenueMTD: number;
+  leadsConversion: number;
+  pendingTasks: number;
+  upcomingRenewals: number;
+  meetingsScheduled: number;
+}
+
+export interface ChartData {
+  labels: string[];
+  datasets: {
+    label: string;
+    data: number[];
+    backgroundColor?: string | string[];
+    borderColor?: string;
+    borderWidth?: number;
+  }[];
+}
+
+export const dashboardStats: DashboardStats = {
+  newLeads: 256,
+  activeClients: 187,
+  revenueMTD: 1420000,
+  leadsConversion: 23.5,
+  pendingTasks: 12,
+  upcomingRenewals: 8,
+  meetingsScheduled: 3
+};
+
+export const leadsChartData: ChartData = {
+  labels: ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho"],
+  datasets: [
+    {
+      label: "Leads",
+      data: [120, 150, 180, 200, 220, 256],
+      borderColor: "rgba(54, 162, 235, 1)",
+      backgroundColor: "rgba(54, 162, 235, 0.2)",
+      borderWidth: 2,
+    },
+  ],
+};
+
+export const conversionChartData: ChartData = {
+  labels: ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho"],
+  datasets: [
+    {
+      label: "Conversão",
+      data: [20, 25, 30, 35, 40, 60],
+      borderColor: "rgba(75, 192, 192, 1)",
+      backgroundColor: "rgba(75, 192, 192, 0.2)",
+      borderWidth: 2,
+    },
+  ],
+};
+
+export const revenueChartData: ChartData = {
+  labels: ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho"],
+  datasets: [
+    {
+      label: "Receita",
+      data: [5000, 6000, 7500, 8200, 9800, 14200],
+      borderColor: "rgba(255, 99, 132, 1)",
+      backgroundColor: "rgba(255, 99, 132, 0.2)",
+      borderWidth: 2,
+    },
+  ],
+};
+
+export const leadSourceChartData: ChartData = {
+  labels: ["Orgânico", "Google Ads", "Meta Ads", "Indicação"],
+  datasets: [
+    {
+      label: "Origem dos Leads",
+      data: [40, 30, 20, 10],
+      backgroundColor: [
+        "rgba(255, 99, 132, 0.7)",
+        "rgba(54, 162, 235, 0.7)",
+        "rgba(255, 206, 86, 0.7)",
+        "rgba(75, 192, 192, 0.7)",
+      ],
+      borderWidth: 1,
+    },
+  ],
+};
+
+export const tasks = [
   {
     id: "1",
-    name: "João Paulo Silva",
-    company: "TechSoft Solutions",
-    email: "joao@techsoft.com",
-    phone: "(91) 98765-4321",
+    title: "Ligar para o lead João",
+    dueDate: "2024-08-10",
+    priority: "alta",
+    status: "pendente",
+    assignedTo: "Maria",
+    createdAt: "2024-07-25",
+    updatedAt: "2024-07-25",
+  },
+  {
+    id: "2",
+    title: "Enviar proposta para a empresa XPTO",
+    dueDate: "2024-08-12",
+    priority: "média",
+    status: "em_progresso",
+    assignedTo: "Maria",
+    createdAt: "2024-07-25",
+    updatedAt: "2024-07-25",
+  },
+  {
+    id: "3",
+    title: "Agendar reunião com o cliente ABC",
+    dueDate: "2024-08-15",
+    priority: "baixa",
+    status: "concluída",
+    assignedTo: "Maria",
+    createdAt: "2024-07-25",
+    updatedAt: "2024-07-25",
+  },
+  {
+    id: "4",
+    title: "Aprovar campanha de marketing",
+    dueDate: "2024-08-18",
+    priority: "alta",
+    status: "cancelada",
+    assignedTo: "José",
+    createdAt: "2024-07-25",
+    updatedAt: "2024-07-25",
+  },
+  {
+    id: "5",
+    title: "Revisar contrato com o cliente XYZ",
+    dueDate: "2024-08-20",
+    priority: "média",
+    status: "pendente",
+    assignedTo: "José",
+    createdAt: "2024-07-25",
+    updatedAt: "2024-07-25",
+  },
+];
+
+export const leads = [
+  {
+    id: "1",
+    name: "João Silva",
+    company: "Empresa A",
+    email: "joao@empresaA.com",
+    phone: "11999999999",
     status: "novo",
-    source: "google_ads",
-    createdAt: subDays(new Date(), 2).toISOString(),
-    updatedAt: subDays(new Date(), 2).toISOString(),
-    stage: pipelineStages[0],
-    assignedTo: "1",
-    notes: "Interessado em sala privativa para equipe de 8 pessoas",
-    value: 5500,
-    lastContact: subDays(new Date(), 2).toISOString(),
-    nextFollowUp: addDays(new Date(), 1).toISOString(),
+    source: "site_organico",
+    createdAt: "2024-07-25",
+    updatedAt: "2024-07-25",
+    stage: {
+      id: "1",
+      name: "Novo",
+      order: 1,
+      color: "#f00",
+    },
   },
   {
     id: "2",
     name: "Maria Souza",
-    company: "Design Creative",
-    email: "maria@designcreative.com",
-    phone: "(91) 99876-5432",
+    company: "Empresa B",
+    email: "maria@empresaB.com",
+    phone: "11999999999",
     status: "contatado",
-    source: "meta_ads",
-    createdAt: subDays(new Date(), 5).toISOString(),
-    updatedAt: subDays(new Date(), 1).toISOString(),
-    stage: pipelineStages[1],
-    assignedTo: "3",
-    notes: "Precisa de espaço flexível para reuniões semanais",
-    value: 2000,
-    lastContact: subDays(new Date(), 1).toISOString(),
-    nextFollowUp: addDays(new Date(), 2).toISOString(),
-  },
-  {
-    id: "3",
-    name: "Pedro Almeida",
-    company: "Legal Associados",
-    email: "pedro@legalassociados.com",
-    phone: "(91) 97654-3210",
-    status: "qualificado",
-    source: "indicacao",
-    createdAt: subDays(new Date(), 10).toISOString(),
-    updatedAt: subDays(new Date(), 3).toISOString(),
-    stage: pipelineStages[2],
-    assignedTo: "1",
-    notes: "Procurando espaço para escritório de advocacia com 3 salas",
-    value: 8000,
-    lastContact: subDays(new Date(), 3).toISOString(),
-    nextFollowUp: new Date().toISOString(),
-    meetingScheduled: addDays(new Date(), 1).toISOString(),
-  },
-  {
-    id: "4",
-    name: "Ana Beatriz",
-    email: "ana@gmail.com",
-    phone: "(91) 96543-2109",
-    status: "proposta",
-    source: "site_organico",
-    createdAt: subDays(new Date(), 15).toISOString(),
-    updatedAt: subDays(new Date(), 2).toISOString(),
-    stage: pipelineStages[4],
-    assignedTo: "3",
-    notes: "Freelancer procurando estação de trabalho flexível",
-    value: 750,
-    lastContact: subDays(new Date(), 2).toISOString(),
-  },
-  {
-    id: "5",
-    name: "Carlos Eduardo",
-    company: "Startup Innovation",
-    email: "carlos@startupinnovation.com",
-    phone: "(91) 95432-1098",
-    status: "negociação",
-    source: "eventos",
-    createdAt: subDays(new Date(), 20).toISOString(),
-    updatedAt: subDays(new Date(), 1).toISOString(),
-    stage: pipelineStages[5],
-    assignedTo: "1",
-    notes: "Startup em fase de expansão, precisa de ambiente colaborativo",
-    value: 12000,
-    lastContact: subDays(new Date(), 1).toISOString(),
-    nextFollowUp: addDays(new Date(), 3).toISOString(),
-  },
-  {
-    id: "6",
-    name: "Fernanda Lima",
-    company: "Marketing Digital",
-    email: "fernanda@marketingdigital.com",
-    phone: "(91) 94321-0987",
-    status: "fechado",
-    source: "instagram",
-    createdAt: subDays(new Date(), 30).toISOString(),
-    updatedAt: new Date().toISOString(),
-    stage: pipelineStages[7],
-    assignedTo: "2",
-    notes: "Fechou contrato para sala privativa pequena",
-    value: 3500,
-    lastContact: new Date().toISOString(),
-  },
-  {
-    id: "7",
-    name: "Roberto Gomes",
-    company: "Consultoria Financeira",
-    email: "roberto@consultoria.com",
-    phone: "(91) 93210-9876",
-    status: "perdido",
     source: "google_ads",
-    createdAt: subDays(new Date(), 25).toISOString(),
-    updatedAt: subDays(new Date(), 5).toISOString(),
-    stage: pipelineStages[3],
-    assignedTo: "3",
-    notes: "Desistiu por valor. Achou caro comparado à concorrência",
-    value: 4500,
-    lastContact: subDays(new Date(), 5).toISOString(),
-  },
-];
-
-// Clients
-export const clients: Client[] = [
-  {
-    id: "1",
-    name: "Fernanda Lima",
-    company: "Marketing Digital Ltda",
-    email: "fernanda@marketingdigital.com",
-    phone: "(91) 94321-0987",
-    address: "Av. Presidente Vargas, 1000, Belém-PA",
-    contractStart: subDays(new Date(), 10).toISOString(),
-    contractEnd: addDays(new Date(), 355).toISOString(),
-    contractValue: 3500,
-    plan: "Sala Privativa Pequena",
-    status: "ativo",
-    createdAt: subDays(new Date(), 10).toISOString(),
-    updatedAt: subDays(new Date(), 10).toISOString(),
-    assignedTo: "2",
-  },
-  {
-    id: "2",
-    name: "Rafael Costa",
-    company: "Tech Solutions Belém",
-    email: "rafael@techsolutions.com",
-    phone: "(91) 98765-5678",
-    address: "Tv. WE 16, 500, Belém-PA",
-    contractStart: subDays(new Date(), 60).toISOString(),
-    contractEnd: addDays(new Date(), 305).toISOString(),
-    contractValue: 7500,
-    plan: "Sala Privativa Grande",
-    status: "ativo",
-    createdAt: subDays(new Date(), 60).toISOString(),
-    updatedAt: subDays(new Date(), 30).toISOString(),
-    notes: "Cliente VIP, sempre paga em dia",
-    assignedTo: "1",
+    createdAt: "2024-07-25",
+    updatedAt: "2024-07-25",
+    stage: {
+      id: "2",
+      name: "Qualificado",
+      order: 2,
+      color: "#0f0",
+    },
   },
   {
     id: "3",
-    name: "Mariana Santos",
-    company: "Design Studio Criativo",
-    email: "mariana@designstudio.com",
-    phone: "(91) 97654-4321",
-    address: "Av. Nazaré, 350, Belém-PA",
-    contractStart: subDays(new Date(), 120).toISOString(),
-    contractEnd: addDays(new Date(), 60).toISOString(),
-    contractValue: 2800,
-    plan: "Estações de Trabalho (4)",
-    status: "ativo",
-    createdAt: subDays(new Date(), 120).toISOString(),
-    updatedAt: subDays(new Date(), 45).toISOString(),
-    notes: "Renova a cada 6 meses",
-    assignedTo: "3",
+    name: "José Santos",
+    company: "Empresa C",
+    email: "jose@empresaC.com",
+    phone: "11999999999",
+    status: "qualificado",
+    source: "meta_ads",
+    createdAt: "2024-07-25",
+    updatedAt: "2024-07-25",
+    stage: {
+      id: "3",
+      name: "Proposta",
+      order: 3,
+      color: "#00f",
+    },
   },
   {
     id: "4",
-    name: "Gustavo Mendes",
-    company: "Arquitetura Moderna",
-    email: "gustavo@arquitetura.com",
-    phone: "(91) 96543-7890",
-    address: "Tv. Djalma Dutra, 200, Belém-PA",
-    contractStart: subDays(new Date(), 200).toISOString(),
-    contractEnd: subDays(new Date(), 20).toISOString(),
-    contractValue: 5000,
-    plan: "Sala Privativa Média",
-    status: "inativo",
-    createdAt: subDays(new Date(), 200).toISOString(),
-    updatedAt: subDays(new Date(), 20).toISOString(),
-    notes: "Não renovou contrato",
-    assignedTo: "2",
+    name: "Ana Oliveira",
+    company: "Empresa D",
+    email: "ana@empresaD.com",
+    phone: "11999999999",
+    status: "proposta",
+    source: "indicacao",
+    createdAt: "2024-07-25",
+    updatedAt: "2024-07-25",
+    stage: {
+      id: "4",
+      name: "Negociação",
+      order: 4,
+      color: "#ff0",
+    },
   },
   {
     id: "5",
-    name: "Patricia Vasconcelos",
-    company: "Contabilidade Empresarial",
-    email: "patricia@contabilidade.com",
-    phone: "(91) 95432-8765",
-    address: "Av. Almirante Barroso, 750, Belém-PA",
-    contractStart: subDays(new Date(), 45).toISOString(),
-    contractEnd: addDays(new Date(), 320).toISOString(),
-    contractValue: 4200,
-    plan: "Sala Privativa Pequena",
-    status: "ativo",
-    createdAt: subDays(new Date(), 45).toISOString(),
-    updatedAt: subDays(new Date(), 15).toISOString(),
-    assignedTo: "1",
+    name: "Carlos Pereira",
+    company: "Empresa E",
+    email: "carlos@empresaE.com",
+    phone: "11999999999",
+    status: "negociação",
+    source: "instagram",
+    createdAt: "2024-07-25",
+    updatedAt: "2024-07-25",
+    stage: {
+      id: "5",
+      name: "Fechado",
+      order: 5,
+      color: "#f0f",
+    },
   },
 ];
 
-// Tasks
-export const tasks: Task[] = [
-  {
-    id: "1",
-    contactId: "1",
-    title: "Ligar para João Paulo",
-    description: "Follow-up sobre interesse em sala privativa",
-    dueDate: addDays(new Date(), 1).toISOString(),
-    priority: "alta",
-    status: "pendente",
-    assignedTo: "1",
-    createdAt: subDays(new Date(), 2).toISOString(),
-    updatedAt: subDays(new Date(), 2).toISOString(),
-  },
-  {
-    id: "2",
-    contactId: "3",
-    title: "Agendar visita com Pedro",
-    description: "Mostrar as opções de salas para escritório de advocacia",
-    dueDate: new Date().toISOString(),
-    priority: "média",
-    status: "em_progresso",
-    assignedTo: "1",
-    createdAt: subDays(new Date(), 3).toISOString(),
-    updatedAt: subDays(new Date(), 1).toISOString(),
-  },
-  {
-    id: "3",
-    contactId: "4",
-    title: "Enviar proposta para Ana",
-    description: "Proposta para estação de trabalho flexível",
-    dueDate: addDays(new Date(), 2).toISOString(),
-    priority: "média",
-    status: "pendente",
-    assignedTo: "3",
-    createdAt: subDays(new Date(), 2).toISOString(),
-    updatedAt: subDays(new Date(), 2).toISOString(),
-  },
-  {
-    id: "4",
-    contactId: "5",
-    title: "Reunião de negociação com Carlos",
-    description: "Discutir condições contratuais e descontos",
-    dueDate: addDays(new Date(), 3).toISOString(),
-    priority: "alta",
-    status: "pendente",
-    assignedTo: "2",
-    createdAt: subDays(new Date(), 1).toISOString(),
-    updatedAt: subDays(new Date(), 1).toISOString(),
-  },
-  {
-    id: "5",
-    contactId: "3",
-    title: "Preparar contrato para Pedro",
-    description: "Elaborar contrato para as 3 salas solicitadas",
-    dueDate: addDays(new Date(), 5).toISOString(),
-    priority: "baixa",
-    status: "pendente",
-    assignedTo: "2",
-    createdAt: subDays(new Date(), 3).toISOString(),
-    updatedAt: subDays(new Date(), 3).toISOString(),
-  },
-  {
-    id: "6",
-    title: "Reunião de equipe semanal",
-    description: "Revisão de metas e resultados da semana",
-    dueDate: addDays(new Date(), 2).toISOString(),
-    priority: "média",
-    status: "pendente",
-    assignedTo: "4",
-    createdAt: subDays(new Date(), 5).toISOString(),
-    updatedAt: subDays(new Date(), 5).toISOString(),
-  },
-];
+// Marketing and Growth data
+export const leadSourceData = {
+  labels: ["Google Ads", "Meta Ads", "Orgânico", "Referência", "Indicação", "Outros"],
+  datasets: [
+    {
+      label: "Lead Sources",
+      data: [35, 25, 18, 12, 8, 2],
+      backgroundColor: [
+        "rgba(54, 162, 235, 0.7)",
+        "rgba(102, 102, 255, 0.7)",
+        "rgba(75, 192, 192, 0.7)",
+        "rgba(255, 206, 86, 0.7)",
+        "rgba(255, 159, 64, 0.7)",
+        "rgba(201, 203, 207, 0.7)"
+      ],
+      borderWidth: 1
+    }
+  ]
+};
 
-// Interactions
-export const interactions: Interaction[] = [
-  {
-    id: "1",
-    contactId: "1",
-    type: "call",
-    date: subDays(new Date(), 2).toISOString(),
-    notes: "Expliquei os planos disponíveis. Cliente mostrou interesse em sala para 8 pessoas.",
-    createdBy: "1",
-    followUpNeeded: true,
-    followUpDate: addDays(new Date(), 1).toISOString(),
-  },
-  {
-    id: "2",
-    contactId: "2",
-    type: "email",
-    date: subDays(new Date(), 1).toISOString(),
-    notes: "Enviei detalhes dos planos de estações flexíveis. Cliente solicitou mais informações sobre uso de sala de reunião.",
-    createdBy: "3",
-    followUpNeeded: true,
-    followUpDate: addDays(new Date(), 2).toISOString(),
-  },
-  {
-    id: "3",
-    contactId: "3",
-    type: "meeting",
-    date: subDays(new Date(), 3).toISOString(),
-    notes: "Reunião presencial. Cliente visitou o espaço e gostou das instalações. Mostrei as salas disponíveis.",
-    createdBy: "1",
-    followUpNeeded: true,
-    followUpDate: new Date().toISOString(),
-  },
-  {
-    id: "4",
-    contactId: "4",
-    type: "whatsapp",
-    date: subDays(new Date(), 2).toISOString(),
-    notes: "Cliente perguntou sobre preços para estação individual. Enviei tabela de valores.",
-    createdBy: "3",
-    followUpNeeded: false,
-  },
-  {
-    id: "5",
-    contactId: "5",
-    type: "visit",
-    date: subDays(new Date(), 1).toISOString(),
-    notes: "Cliente visitou o espaço com toda equipe de 12 pessoas. Muito interessados na sala grande do 2º andar.",
-    createdBy: "1",
-    followUpNeeded: true,
-    followUpDate: addDays(new Date(), 3).toISOString(),
-  },
-];
+export const campaignPerformanceData = {
+  labels: ["Campanha A", "Campanha B", "Campanha C", "Campanha D", "Campanha E"],
+  datasets: [
+    {
+      label: "CPL (R$)",
+      data: [45.20, 67.80, 32.50, 89.30, 51.70],
+      backgroundColor: "rgba(54, 162, 235, 0.7)",
+    },
+    {
+      label: "CAC (R$)",
+      data: [320.50, 475.40, 290.30, 610.80, 380.20],
+      backgroundColor: "rgba(255, 99, 132, 0.7)",
+    }
+  ]
+};
 
-// Proposals
-export const proposals: Proposal[] = [
+export const marketingROIData = [
   {
-    id: "1",
-    leadId: "4",
-    title: "Proposta - Estação de Trabalho Flexível",
-    value: 750,
-    createdAt: subDays(new Date(), 2).toISOString(),
-    expiresAt: addDays(new Date(), 5).toISOString(),
-    status: "enviada",
-    notes: "Plano mensal com 12 diárias para uso de estação individual",
-    products: [
-      {
-        id: "1-1",
-        name: "Plano Flex Mensal",
-        quantity: 1,
-        unitPrice: 750,
-        total: 750
-      }
-    ]
+    channel: "Google Ads",
+    spend: 12500,
+    revenue: 36000,
+    roi: 188.0,
+    leads: 275,
+    customers: 32,
+    cpl: 45.45,
+    cac: 390.63
   },
   {
-    id: "2",
-    leadId: "5",
-    title: "Proposta - Sala Privativa Grande para Startup",
-    value: 12000,
-    createdAt: subDays(new Date(), 1).toISOString(),
-    expiresAt: addDays(new Date(), 7).toISOString(),
-    status: "enviada",
-    notes: "Sala com capacidade para 15 pessoas + benefícios",
-    products: [
-      {
-        id: "2-1",
-        name: "Sala Privativa Grande (15 pessoas)",
-        quantity: 1,
-        unitPrice: 10000,
-        total: 10000
-      },
-      {
-        id: "2-2",
-        name: "Pacote 20h/mês Sala de Reunião",
-        quantity: 1,
-        unitPrice: 1500,
-        total: 1500
-      },
-      {
-        id: "2-3",
-        name: "Coffee Premium (diário)",
-        quantity: 1,
-        unitPrice: 500,
-        total: 500
-      }
-    ]
+    channel: "Meta Ads",
+    spend: 9800,
+    revenue: 28000,
+    roi: 185.7,
+    leads: 210,
+    customers: 25,
+    cpl: 46.67,
+    cac: 392.00
   },
   {
-    id: "3",
-    leadId: "3",
-    title: "Proposta - Salas para Escritório de Advocacia",
-    value: 8000,
-    createdAt: subDays(new Date(), 5).toISOString(),
-    expiresAt: addDays(new Date(), 2).toISOString(),
-    status: "visualizada",
-    notes: "3 salas conectadas no mesmo andar",
-    products: [
-      {
-        id: "3-1",
-        name: "Sala Privativa Pequena",
-        quantity: 3,
-        unitPrice: 2500,
-        total: 7500
-      },
-      {
-        id: "3-2",
-        name: "Pacote 5h/mês Auditório",
-        quantity: 1,
-        unitPrice: 500,
-        total: 500
-      }
-    ]
+    channel: "E-mail Marketing",
+    spend: 2800,
+    revenue: 14500,
+    roi: 417.9,
+    leads: 98,
+    customers: 18,
+    cpl: 28.57,
+    cac: 155.56
+  },
+  {
+    channel: "LinkedIn Ads",
+    spend: 6500,
+    revenue: 18500,
+    roi: 184.6,
+    leads: 85,
+    customers: 12,
+    cpl: 76.47,
+    cac: 541.67
   }
 ];
 
-// Dashboard Stats
-export const dashboardStats: DashboardStats = {
-  newLeads: 12,
-  activeClients: 21,
-  revenueMTD: 78500,
-  leadsConversion: 32,
-  pendingTasks: 15,
-  upcomingRenewals: 3,
-  meetingsScheduled: 8
-};
-
-// Chart Data
-export const leadsChartData: ChartData = {
-  labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+export const trafficSourceData = {
+  labels: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun"],
   datasets: [
     {
-      label: 'Leads',
-      data: [18, 25, 32, 30, 42, 35],
-      backgroundColor: 'rgba(99, 102, 241, 0.5)',
-      borderColor: 'rgb(99, 102, 241)',
-      borderWidth: 1,
+      label: "Visitas",
+      data: [2800, 3200, 3600, 4100, 4500, 5100],
+      borderColor: "rgba(75, 192, 192, 1)",
+      backgroundColor: "rgba(75, 192, 192, 0.2)",
+      borderWidth: 2,
+      fill: true,
+    },
+    {
+      label: "Leads",
+      data: [120, 145, 160, 190, 210, 245],
+      borderColor: "rgba(54, 162, 235, 1)",
+      backgroundColor: "rgba(54, 162, 235, 0.2)",
+      borderWidth: 2,
+      fill: true,
     }
   ]
 };
 
-export const conversionChartData: ChartData = {
-  labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+export const metaVsGoogleData = {
+  labels: ["Cliques", "Conv.", "CPL", "CPC", "CTR", "ROI"],
   datasets: [
     {
-      label: 'Taxa de Conversão (%)',
-      data: [22, 25, 28, 32, 30, 35],
-      backgroundColor: 'rgba(196, 181, 253, 0.5)',
-      borderColor: 'rgb(196, 181, 253)',
-      borderWidth: 1,
+      label: "Google Ads",
+      data: [8742, 325, 45.20, 2.34, 4.66, 188],
+      backgroundColor: "rgba(54, 162, 235, 0.7)",
+    },
+    {
+      label: "Meta Ads",
+      data: [10543, 278, 46.67, 1.87, 3.37, 185],
+      backgroundColor: "rgba(102, 102, 255, 0.7)",
     }
   ]
 };
 
-export const revenueChartData: ChartData = {
-  labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
-  datasets: [
-    {
-      label: 'Receita (R$)',
-      data: [52000, 58000, 65000, 72000, 78000, 85000],
-      backgroundColor: 'rgba(165, 180, 252, 0.5)',
-      borderColor: 'rgb(165, 180, 252)',
-      borderWidth: 1,
-    }
-  ]
-};
-
-export const leadSourceChartData: ChartData = {
-  labels: ['Google Ads', 'Meta Ads', 'Instagram', 'Site Orgânico', 'Indicação', 'Eventos'],
-  datasets: [
-    {
-      label: 'Origem dos Leads',
-      data: [35, 25, 15, 10, 10, 5],
-      backgroundColor: [
-        '#4338ca', // Indigo
-        '#6366f1', // Indigo/Purple
-        '#a5b4fc', // Light indigo
-        '#c4b5fd', // Lavender
-        '#e0e7ff', // Very light indigo
-        '#eef2ff', // Lightest indigo
-      ],
-    }
-  ]
-};
+export const growthMetrics = [
+  { 
+    label: "CPL Médio",
+    value: "R$ 48,32",
+    change: "12.4%",
+    changeDirection: "down",
+    badgeText: "Meta: R$ 50,00",
+    badgeVariant: "outline",
+    description: "Último período: R$ 55,12"
+  },
+  { 
+    label: "CAC Médio",
+    value: "R$ 392,15",
+    change: "8.7%",
+    changeDirection: "down",
+    badgeText: "Meta: R$ 400,00",
+    badgeVariant: "outline",
+    description: "Último período: R$ 429,45"
+  },
+  { 
+    label: "ROAS",
+    value: "248%",
+    change: "15.8%",
+    changeDirection: "up",
+    badgeText: "Meta: 200%",
+    badgeVariant: "outline",
+    description: "Retorno sobre investimento em ads"
+  },
+  { 
+    label: "Leads Gerados",
+    value: "754",
+    change: "23.5%",
+    changeDirection: "up",
+    badgeText: "Este mês",
+    badgeVariant: "secondary",
+    description: "Mês anterior: 611 leads"
+  },
+  { 
+    label: "Taxa de Conversão",
+    value: "3.8%",
+    change: "0.5%",
+    changeDirection: "up",
+    badgeText: "Meta: 3.5%",
+    badgeVariant: "outline",
+    description: "Leads que se tornaram clientes"
+  },
+  { 
+    label: "Valor Médio",
+    value: "R$ 1.850",
+    change: "5.2%",
+    changeDirection: "up",
+    badgeText: "Por cliente",
+    badgeVariant: "secondary",
+    description: "Valor médio da primeira venda"
+  }
+];
