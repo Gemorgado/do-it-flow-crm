@@ -4,18 +4,29 @@ import * as RechartsPrimitive from "recharts";
 import { ChartContainer } from "./chart-container";
 import { ChartTooltip, ChartTooltipContent } from "./chart-tooltip";
 import { ChartLegend, ChartLegendContent } from "./chart-legend";
-import { PieSlice } from "@/components/Growth/chartUtils";
+import type { ChartData, ChartOptions } from "chart.js";
 
 const PieChart = React.forwardRef<
   HTMLDivElement,
   Omit<React.ComponentProps<typeof ChartContainer>, "children"> & {
-    data?: PieSlice[];
-    dataKey?: string;
-    nameKey?: string;
+    data?: ChartData<"pie">;
+    options?: ChartOptions<"pie">;
   }
->(({ data = [], dataKey = "value", nameKey = "name", config = {}, ...props }, ref) => {
-  // Ensure data is an array before trying to map it
-  const safeData = Array.isArray(data) ? data : [];
+>(({ data = { labels: [], datasets: [] }, config = {}, ...props }, ref) => {
+  // Transform Chart.js data format to Recharts format
+  const transformedData = React.useMemo(() => {
+    if (!data || !data.labels || !data.datasets || data.datasets.length === 0) {
+      return [];
+    }
+    
+    return data.labels.map((label, index) => ({
+      name: label,
+      value: data.datasets[0].data[index],
+      color: Array.isArray(data.datasets[0].backgroundColor) 
+        ? data.datasets[0].backgroundColor[index] 
+        : data.datasets[0].backgroundColor
+    }));
+  }, [data]);
   
   return (
     <ChartContainer ref={ref} config={config} {...props}>
@@ -23,19 +34,19 @@ const PieChart = React.forwardRef<
         <ChartTooltip content={<ChartTooltipContent />} />
         <ChartLegend content={<ChartLegendContent />} />
         <RechartsPrimitive.Pie
-          data={safeData}
+          data={transformedData}
           cx="50%"
           cy="50%"
           labelLine={false}
           outerRadius={80}
           fill="#8884d8"
-          dataKey={dataKey}
-          nameKey={nameKey}
+          dataKey="value"
+          nameKey="name"
         >
-          {safeData.map((entry, index) => (
+          {transformedData.map((entry, index) => (
             <RechartsPrimitive.Cell 
               key={`cell-${index}`} 
-              fill={entry.color || `var(--color-${entry[nameKey]}, #8884d8)`} 
+              fill={entry.color || `var(--color-${entry.name}, #8884d8)`} 
             />
           ))}
         </RechartsPrimitive.Pie>

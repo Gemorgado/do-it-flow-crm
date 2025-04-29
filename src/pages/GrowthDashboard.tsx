@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DateRange } from "react-day-picker";
 import { trackGTMEvent } from "@/utils/trackingUtils";
 import { subDays } from "date-fns";
+import type { ChartData } from "chart.js";
 
 // Import our newly created components
 import { GrowthHeader } from "@/components/Growth/GrowthHeader";
@@ -14,9 +15,8 @@ import { ChannelsTabContent } from "@/components/Growth/ChannelsTabContent";
 import { 
   transformChartData, 
   transformPieData, 
-  getChannelData, 
-  ChartDataFormat, 
-  PieSlice 
+  getChannelData,
+  ChartDataFormat
 } from "@/components/Growth/chartUtils";
 
 // Import mock data
@@ -63,8 +63,8 @@ export default function GrowthDashboard() {
   const typedTrafficSourceData = trafficSourceData as ChartDataFormat;
 
   // Transform the data to match the expected format for PieChart component
-  const formattedLeadSourceData: PieSlice[] = transformPieData(typedLeadSourceData);
-  const formattedTrafficData: PieSlice[] = transformPieData(typedTrafficSourceData);
+  const formattedLeadSourceData: ChartData<'pie'> = transformPieData(typedLeadSourceData);
+  const formattedTrafficData: ChartData<'pie'> = transformPieData(typedTrafficSourceData);
 
   return (
     <div className="animate-fade-in space-y-6">

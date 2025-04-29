@@ -1,12 +1,4 @@
-
-/**
- * Define proper types for our chart data
- */
-export type PieSlice = { 
-  name: string; 
-  value: number; 
-  color: string;
-};
+import type { ChartData } from "chart.js";
 
 export type ChartDataFormat = { 
   labels: string[]; 
@@ -34,22 +26,23 @@ export function transformChartData(chartData: any) {
 }
 
 /**
- * Transforma dados de gráfico de pizza no formato { labels, datasets } para um array de objetos
- * com { name, value, color } que é compatível com o componente PieChart
+ * Transforms chart data from { labels, datasets } format to Chart.js's native
+ * ChartData<'pie'> format which is compatible with the PieChart component
  */
-export function transformPieData(chartData: ChartDataFormat): PieSlice[] {
+export function transformPieData(chartData: ChartDataFormat): ChartData<'pie'> {
   if (!chartData || !chartData.labels || !chartData.datasets || !chartData.datasets[0]) {
-    return [];
+    return { labels: [], datasets: [] };
   }
   
-  // Return an array of objects with name, value, and color properties
-  return chartData.labels.map((label: string, index: number) => ({
-    name: label,
-    value: chartData.datasets[0].data[index],
-    color: Array.isArray(chartData.datasets[0].backgroundColor) 
-      ? chartData.datasets[0].backgroundColor[index] 
-      : chartData.datasets[0].backgroundColor
-  }));
+  // Return data in Chart.js format
+  return {
+    labels: chartData.labels,
+    datasets: chartData.datasets.map(dataset => ({
+      label: dataset.label,
+      data: dataset.data,
+      backgroundColor: dataset.backgroundColor
+    }))
+  };
 }
 
 export function getChannelData(channelName: string, marketingROIData: any[]) {
