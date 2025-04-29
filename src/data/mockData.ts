@@ -1,58 +1,14 @@
-export interface Lead {
-  id: string;
-  name: string;
-  company?: string;
-  email: string;
-  phone: string;
-  status: LeadStatus;
-  source: LeadSource;
-  createdAt: string;
-  updatedAt: string;
-  stage: PipelineStage;
-  assignedTo?: string;
-  notes?: string;
-  value?: number;
-  lastContact?: string;
-  nextFollowUp?: string;
-  meetingScheduled?: string;
-}
-
-export type LeadStatus = 
-  | "novo" 
-  | "contatado" 
-  | "qualificado" 
-  | "proposta" 
-  | "negociação" 
-  | "fechado" 
-  | "perdido";
-
-export type LeadSource = 
-  | "site_organico" 
-  | "google_ads" 
-  | "meta_ads" 
-  | "instagram" 
-  | "indicacao" 
-  | "visita_presencial" 
-  | "eventos" 
-  | "outros";
-
-export interface Client {
-  id: string;
-  name: string;
-  company: string;
-  email: string;
-  phone: string;
-  address?: string;
-  contractStart?: string;
-  contractEnd?: string;
-  contractValue: number;
-  plan: string;
-  status: "ativo" | "inativo" | "inadimplente" | "cancelado";
-  createdAt: string;
-  updatedAt: string;
-  notes?: string;
-  assignedTo?: string;
-}
+import { 
+  Lead, 
+  LeadStatus, 
+  LeadSource, 
+  Client, 
+  ServiceType, 
+  ServiceStatus, 
+  Location, 
+  ClientService,
+  PipelineStage 
+} from "@/types";
 
 export interface Interaction {
   id: string;
@@ -76,13 +32,6 @@ export interface Task {
   assignedTo: string;
   createdAt: string;
   updatedAt: string;
-}
-
-export interface PipelineStage {
-  id: string;
-  name: string;
-  order: number;
-  color: string;
 }
 
 export interface Proposal {
