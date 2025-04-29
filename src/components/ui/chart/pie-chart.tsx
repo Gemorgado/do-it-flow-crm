@@ -10,19 +10,14 @@ import { transformToPieSliceArray } from "@/components/Growth/chartUtils";
 const PieChart = React.forwardRef<
   HTMLDivElement,
   Omit<React.ComponentProps<typeof ChartContainer>, "children"> & {
-    data: ChartData<"pie"> | { name: string; value: number; color: string }[];
+    data: ChartData<"pie">;
     config?: any;
     options?: ChartOptions<"pie">;
   }
 >(({ data, config = {}, ...props }, ref) => {
-  // Transform data if it's in Chart.js format
+  // Transform data from ChartData to array format for Recharts
   const transformedData = React.useMemo(() => {
-    if (Array.isArray(data)) {
-      return data; // Already in the right format
-    } else {
-      // Convert from ChartData to array format
-      return transformToPieSliceArray(data);
-    }
+    return transformToPieSliceArray(data);
   }, [data]);
   
   return (
