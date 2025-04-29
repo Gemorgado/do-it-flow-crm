@@ -2,7 +2,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Location, ClientService, Client } from "@/types";
 import { format } from "date-fns";
-import { mockClients } from "@/data/mockData";
+import { clients } from "@/data/mockData";
 
 interface SpaceDetailsDialogProps {
   space: Location;
@@ -21,7 +21,7 @@ export function SpaceDetailsDialog({ space, clientServices, isOpen, onClose }: S
 
   // Find client information
   const getClientInfo = (clientId: string): Client | undefined => {
-    return mockClients.find(client => client.id === clientId);
+    return clients.find(client => client.id === clientId);
   };
 
   const currentService = clientServices.length > 0 ? clientServices[0] : null;

@@ -5,7 +5,7 @@ import { BuildingMap } from "@/components/SpaceManagement/BuildingMap";
 import { OccupancyStats } from "@/components/SpaceManagement/OccupancyStats";
 import { SpaceDetailsDialog } from "@/components/SpaceManagement/SpaceDetailsDialog"; 
 import { SpaceLegend } from "@/components/SpaceManagement/SpaceLegend";
-import { mockLocations, mockClientServices } from "@/data/mockData";
+import { locations, clientServices } from "@/data/mockData";
 import { Location } from "@/types";
 
 export default function SpaceManagement() {
@@ -14,12 +14,12 @@ export default function SpaceManagement() {
   
   // Calculate occupancy statistics
   const stats = useMemo(() => {
-    const totalSpaces = mockLocations.length;
-    const occupiedSpaces = mockLocations.filter(space => !space.available).length;
+    const totalSpaces = locations.length;
+    const occupiedSpaces = locations.filter(space => !space.available).length;
     const occupancyRate = Math.round((occupiedSpaces / totalSpaces) * 100);
     const availableSpaces = totalSpaces - occupiedSpaces;
     
-    const availableByType = mockLocations.reduce((acc, space) => {
+    const availableByType = locations.reduce((acc, space) => {
       if (space.available) {
         acc[space.type] = (acc[space.type] || 0) + 1;
       }
@@ -60,7 +60,7 @@ export default function SpaceManagement() {
             <SpaceLegend />
           </div>
           <BuildingMap 
-            spaces={mockLocations} 
+            spaces={locations} 
             onSpaceClick={handleSpaceClick} 
           />
         </Card>
@@ -72,7 +72,7 @@ export default function SpaceManagement() {
           space={selectedSpace}
           isOpen={isDetailsOpen}
           onClose={() => setIsDetailsOpen(false)}
-          clientServices={mockClientServices.filter(
+          clientServices={clientServices.filter(
             service => service.locationId === selectedSpace.id
           )}
         />
