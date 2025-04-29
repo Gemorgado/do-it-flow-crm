@@ -1,8 +1,8 @@
 
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, AlertTriangle } from "lucide-react";
 import { Lead } from "@/types";
-import { Alert, AlertDescription, AlertTitle, AlertTriangle } from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useState } from "react";
 import { NewContactDrawer } from "@/components/Contacts/NewContactDrawer";
 import { trackLeadEvent } from "@/utils/trackingUtils";
