@@ -10,6 +10,8 @@ interface CampaignComparisonCardProps {
   title: string;
   description?: string;
   data: any[];
+  googleData?: any;
+  metaData?: any;
   className?: string;
 }
 
@@ -17,6 +19,8 @@ export function CampaignComparisonCard({
   title, 
   description, 
   data, 
+  googleData,
+  metaData,
   className 
 }: CampaignComparisonCardProps) {
   const [view, setView] = useState<"chart" | "table">("chart");

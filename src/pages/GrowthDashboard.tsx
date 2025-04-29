@@ -7,7 +7,7 @@ import { subDays } from "date-fns";
 
 // Import our newly created components
 import { GrowthHeader } from "@/components/Growth/GrowthHeader";
-import { MetricsSummary } from "@/components/Growth/MetricsSummary";
+import { MetricsSummary, MetricProps } from "@/components/Growth/MetricsSummary";
 import { OverviewTabContent } from "@/components/Growth/OverviewTabContent";
 import { CampaignsTabContent } from "@/components/Growth/CampaignsTabContent";
 import { ChannelsTabContent } from "@/components/Growth/ChannelsTabContent";
@@ -45,12 +45,18 @@ export default function GrowthDashboard() {
     });
   };
 
+  // Cast growthMetrics to match MetricProps type
+  const typedMetrics: MetricProps[] = growthMetrics.map(metric => ({
+    ...metric,
+    badgeVariant: metric.badgeVariant as "outline" | "secondary" | "default" | "destructive"
+  }));
+
   return (
     <div className="animate-fade-in space-y-6">
       <GrowthHeader dateRange={dateRange} onDateRangeChange={handleDateRangeChange} />
 
       {/* Métricas principais em cards */}
-      <MetricsSummary metrics={growthMetrics} />
+      <MetricsSummary metrics={typedMetrics} />
 
       <Tabs defaultValue="overview" onValueChange={handleTabChange}>
         <TabsList className="mb-4">
