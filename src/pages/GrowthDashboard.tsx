@@ -91,7 +91,7 @@ export default function GrowthDashboard() {
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm font-medium">{metric.label}</CardTitle>
-                <Badge variant="outline" className="font-normal">
+                <Badge variant={metric.badgeVariant as "outline" | "secondary" | "default" | "destructive"}>
                   {metric.badgeText}
                 </Badge>
               </div>
@@ -339,6 +339,7 @@ function transformPieData(chartData: any) {
     return [];
   }
   
+  // Return an array of objects directly instead of the ChartData format
   return chartData.labels.map((label: string, index: number) => ({
     name: label,
     value: chartData.datasets[0].data[index],
