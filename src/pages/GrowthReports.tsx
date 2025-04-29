@@ -27,7 +27,7 @@ export default function GrowthReports() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Relatórios</h1>
-          <p className="text-gray-500">Análise detalhada de ocupação, contratos e receitas</p>
+          <p className="text-gray-500">Análise detalhada de ocupação, contratos e receitas com dados reais</p>
         </div>
         <DateRangePicker
           value={dateRange}
