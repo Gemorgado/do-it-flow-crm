@@ -35,6 +35,7 @@ export function Sidebar() {
     { title: "Mensagens", url: "/mensagens", icon: MessageSquare },
     { title: "Growth", url: "/growth", icon: BarChart },
     { title: "Espaços", url: "/espacos", icon: Building },
+    { title: "Planos e Serviços", url: "/planos", icon: Building },
   ];
 
   const configMenuItems = [
