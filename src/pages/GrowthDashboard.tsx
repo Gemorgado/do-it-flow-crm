@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -132,7 +133,13 @@ export default function GrowthDashboard() {
                 <CardDescription>Distribuição das origens de leads no período</CardDescription>
               </CardHeader>
               <CardContent className="pt-2">
-                <PieChart className="h-80" data={transformPieData(leadSourceData)} config={{}} />
+                <PieChart 
+                  className="h-80" 
+                  data={transformPieData(leadSourceData)} 
+                  config={{}}
+                  dataKey="value"
+                  nameKey="name"
+                />
               </CardContent>
             </Card>
             
