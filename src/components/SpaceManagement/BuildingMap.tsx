@@ -1,7 +1,8 @@
 import React, { useMemo } from "react";
 import { Location } from "@/types";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { FloorContainer } from "./FloorContainer";
+import { FloorSection } from "./FloorSection";
 
 interface BuildingMapProps {
   spaces: Location[];
@@ -91,94 +92,40 @@ export function BuildingMap({ spaces, onSpaceClick }: BuildingMapProps) {
       <TooltipProvider>
         {/* Display rooms organized by floors */}
         {floors.map(floor => (
-          <div key={floor} className="mb-8">
-            <h3 className="text-md font-semibold mb-2">{floor}º Andar</h3>
-            
-            {/* Private rooms on this floor */}
-            {groupedSpaces[floor].sala_privativa.length > 0 && (
-              <div className="mb-4">
-                <h4 className="text-sm font-medium mb-2 text-gray-500">Salas Privativas</h4>
-                <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-2">
-                  {groupedSpaces[floor].sala_privativa.map(room => (
-                    <SpaceUnit 
-                      key={room.id} 
-                      space={room} 
-                      onClick={() => onSpaceClick(room)} 
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {/* Meeting rooms on this floor */}
-            {groupedSpaces[floor].sala_reuniao.length > 0 && (
-              <div className="mb-4">
-                <h4 className="text-sm font-medium mb-2 text-gray-500">Salas de Reunião</h4>
-                <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
-                  {groupedSpaces[floor].sala_reuniao.map(room => (
-                    <SpaceUnit 
-                      key={room.id} 
-                      space={room} 
-                      onClick={() => onSpaceClick(room)} 
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {/* Workstations on this floor */}
-            {workstationsByFloor[floor] && workstationsByFloor[floor].length > 0 && (
-              <div className="mb-4">
-                <h4 className="text-sm font-medium mb-2 text-gray-500">Estações de Trabalho</h4>
-                <div className="grid grid-cols-6 sm:grid-cols-10 md:grid-cols-12 gap-2">
-                  {workstationsByFloor[floor].map(station => (
-                    <SpaceUnit 
-                      key={station.id} 
-                      space={station} 
-                      onClick={() => onSpaceClick(station)} 
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
+          <FloorContainer
+            key={floor}
+            floorNumber={floor}
+            privateRooms={groupedSpaces[floor].sala_privativa}
+            meetingRooms={groupedSpaces[floor].sala_reuniao}
+            workstations={workstationsByFloor[floor] || []}
+            onSpaceClick={onSpaceClick}
+          />
         ))}
         
         {/* Display workstation floors that don't have rooms */}
         {workstationFloors
           .filter(floor => !floors.includes(floor) && floor !== "other")
           .map(floor => (
-            <div key={floor} className="mb-8">
-              <h3 className="text-md font-semibold mb-2">{floor}º Andar</h3>
-              
-              <div className="mb-4">
-                <h4 className="text-sm font-medium mb-2 text-gray-500">Estações de Trabalho</h4>
-                <div className="grid grid-cols-6 sm:grid-cols-10 md:grid-cols-12 gap-2">
-                  {workstationsByFloor[floor].map(station => (
-                    <SpaceUnit 
-                      key={station.id} 
-                      space={station} 
-                      onClick={() => onSpaceClick(station)} 
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
+            <FloorContainer
+              key={floor}
+              floorNumber={floor}
+              privateRooms={[]}
+              meetingRooms={[]}
+              workstations={workstationsByFloor[floor]}
+              onSpaceClick={onSpaceClick}
+            />
           ))}
         
         {/* Other workstations section (not organized by floor) */}
         {workstationsByFloor.other && workstationsByFloor.other.length > 0 && (
           <div className="mb-8">
             <h3 className="text-sm font-medium mb-2 text-gray-500">Outras Estações</h3>
-            <div className="grid grid-cols-6 sm:grid-cols-10 md:grid-cols-12 gap-2">
-              {workstationsByFloor.other.map(station => (
-                <SpaceUnit 
-                  key={station.id} 
-                  space={station} 
-                  onClick={() => onSpaceClick(station)} 
-                />
-              ))}
-            </div>
+            <FloorSection 
+              title=""
+              spaceType="estacao"
+              spaces={workstationsByFloor.other}
+              onSpaceClick={onSpaceClick}
+            />
           </div>
         )}
         
@@ -186,62 +133,16 @@ export function BuildingMap({ spaces, onSpaceClick }: BuildingMapProps) {
         {otherSpaces.length > 0 && (
           <div className="mb-4">
             <h3 className="text-sm font-medium mb-2 text-gray-500">Outros Espaços</h3>
-            <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
-              {otherSpaces.map(space => (
-                <SpaceUnit 
-                  key={space.id} 
-                  space={space} 
-                  onClick={() => onSpaceClick(space)} 
-                />
-              ))}
-            </div>
+            <FloorSection 
+              title=""
+              spaceType="outro"
+              spaces={otherSpaces}
+              onSpaceClick={onSpaceClick}
+              gridCols="grid-cols-4 sm:grid-cols-6 gap-2"
+            />
           </div>
         )}
       </TooltipProvider>
     </div>
-  );
-}
-
-interface SpaceUnitProps {
-  space: Location;
-  onClick: () => void;
-}
-
-function SpaceUnit({ space, onClick }: SpaceUnitProps) {
-  const spaceTypeLabel = {
-    sala_privativa: "Sala Privativa",
-    estacao: "Estação",
-    sala_reuniao: "Sala de Reunião",
-    endereco_fiscal: "Endereço Fiscal"
-  };
-
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <button
-          onClick={onClick}
-          className={cn(
-            "w-full h-12 rounded-md flex items-center justify-center transition-all cursor-pointer",
-            "border border-gray-200 hover:scale-105 hover:shadow-md",
-            space.available ? 
-              "bg-green-100 text-green-800 hover:bg-green-200" : 
-              "bg-red-100 text-red-800 hover:bg-red-200"
-          )}
-        >
-          {space.identifier}
-        </button>
-      </TooltipTrigger>
-      <TooltipContent>
-        <p>
-          {spaceTypeLabel[space.type as keyof typeof spaceTypeLabel]} {space.identifier}
-          <br />
-          <span className={space.available ? "text-green-600" : "text-red-600"}>
-            {space.available ? "Disponível" : "Ocupado"}
-          </span>
-          {space.area && <span> • {space.area}m²</span>}
-          {space.capacity && <span> • Cap: {space.capacity}</span>}
-        </p>
-      </TooltipContent>
-    </Tooltip>
   );
 }
