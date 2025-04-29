@@ -21,7 +21,6 @@ export function OccupancyStats({ stats }: OccupancyStatsProps) {
   const spaceTypeLabel = {
     sala_privativa: "Salas Privativas",
     estacao: "Estações",
-    sala_reuniao: "Salas de Reunião",
     endereco_fiscal: "Endereços Fiscais"
   };
 
@@ -67,12 +66,14 @@ export function OccupancyStats({ stats }: OccupancyStatsProps) {
       <div>
         <h3 className="text-lg font-semibold mb-3">Disponibilidade por Tipo</h3>
         <div className="space-y-3">
-          {Object.entries(stats.availableByType).map(([type, count]) => (
-            <div key={type} className="flex justify-between">
-              <span className="text-sm">{spaceTypeLabel[type as keyof typeof spaceTypeLabel]}</span>
-              <span className="font-semibold text-green-600">{count} disponível{count > 1 ? "is" : ""}</span>
-            </div>
-          ))}
+          {Object.entries(stats.availableByType)
+            .filter(([type]) => type !== "sala_reuniao") // Filtrar para remover salas de reunião
+            .map(([type, count]) => (
+              <div key={type} className="flex justify-between">
+                <span className="text-sm">{spaceTypeLabel[type as keyof typeof spaceTypeLabel]}</span>
+                <span className="font-semibold text-green-600">{count} disponível{count > 1 ? "is" : ""}</span>
+              </div>
+            ))}
         </div>
       </div>
 
