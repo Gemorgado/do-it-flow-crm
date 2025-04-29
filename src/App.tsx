@@ -15,6 +15,7 @@ import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import GrowthDashboard from "./pages/GrowthDashboard";
+import SpaceManagement from "./pages/SpaceManagement";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/configuracoes" element={<Settings />} />
             <Route path="/perfil" element={<Profile />} />
             <Route path="/growth" element={<GrowthDashboard />} />
+            <Route path="/espacos" element={<SpaceManagement />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </MainLayout>
