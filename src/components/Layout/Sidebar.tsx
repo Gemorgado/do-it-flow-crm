@@ -17,7 +17,9 @@ import {
   ArrowRight, 
   CalendarCheck, 
   MessageSquare, 
-  Settings 
+  Settings,
+  Building,
+  BarChart
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -31,6 +33,8 @@ export function Sidebar() {
     { title: "Propostas", url: "/propostas", icon: FileText },
     { title: "Agendamentos", url: "/agendamentos", icon: CalendarCheck },
     { title: "Mensagens", url: "/mensagens", icon: MessageSquare },
+    { title: "Growth", url: "/growth", icon: BarChart },
+    { title: "Espaços", url: "/espacos", icon: Building },
   ];
 
   const configMenuItems = [
