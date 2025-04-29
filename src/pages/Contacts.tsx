@@ -6,9 +6,15 @@ import { ContactsHeader } from "@/components/Contacts/ContactsHeader";
 import { ContactsSearch } from "@/components/Contacts/ContactsSearch";
 import { LeadsTable } from "@/components/Contacts/LeadsTable";
 import { ClientsTable } from "@/components/Contacts/ClientsTable";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import { NewContactDrawer } from "@/components/Contacts/NewContactDrawer";
 
 export default function Contacts() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [showNewContact, setShowNewContact] = useState(false);
+  const [contactType, setContactType] = useState<"lead" | "client">("lead");
+  const [activeTab, setActiveTab] = useState("leads");
   
   // Simple filtering by name, email, or company
   const filteredLeads = leads.filter(lead => 
@@ -24,8 +30,13 @@ export default function Contacts() {
   );
 
   const handleNewContact = () => {
-    // Handle new contact creation
-    console.log("Creating new contact");
+    setContactType("lead");
+    setShowNewContact(true);
+  };
+
+  const handleNewClient = () => {
+    setContactType("client");
+    setShowNewContact(true);
   };
 
   return (
@@ -36,11 +47,27 @@ export default function Contacts() {
         onSearchChange={setSearchTerm} 
       />
 
-      <Tabs defaultValue="leads" className="w-full">
-        <TabsList className="mb-4">
-          <TabsTrigger value="leads">Leads ({filteredLeads.length})</TabsTrigger>
-          <TabsTrigger value="clients">Clientes ({filteredClients.length})</TabsTrigger>
-        </TabsList>
+      <Tabs 
+        defaultValue="leads" 
+        className="w-full"
+        onValueChange={(value) => setActiveTab(value)}
+      >
+        <div className="flex justify-between items-center mb-2">
+          <TabsList className="mb-2">
+            <TabsTrigger value="leads">Leads ({filteredLeads.length})</TabsTrigger>
+            <TabsTrigger value="clients">Clientes ({filteredClients.length})</TabsTrigger>
+          </TabsList>
+
+          {activeTab === "clients" && (
+            <Button 
+              size="sm" 
+              className="bg-doIt-primary hover:bg-doIt-dark"
+              onClick={handleNewClient}
+            >
+              <Plus className="mr-2 h-4 w-4" /> Novo Cliente
+            </Button>
+          )}
+        </div>
         
         <TabsContent value="leads" className="mt-0">
           <LeadsTable leads={filteredLeads} />
@@ -50,6 +77,12 @@ export default function Contacts() {
           <ClientsTable clients={filteredClients} />
         </TabsContent>
       </Tabs>
+
+      <NewContactDrawer 
+        isOpen={showNewContact}
+        onClose={() => setShowNewContact(false)}
+        type={contactType}
+      />
     </div>
   );
 }
