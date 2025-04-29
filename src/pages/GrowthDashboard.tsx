@@ -71,6 +71,9 @@ export default function GrowthDashboard() {
   const leadSourcePieSlices: PieSlice[] = toPieSliceArray(typedLeadSourceData);
   const trafficSourcePieSlices: PieSlice[] = toPieSliceArray(typedTrafficSourceData);
 
+  // Transform metaVsGoogleData to the format expected by CampaignsTabContent
+  const transformedMetaVsGoogleData = transformChartData(metaVsGoogleData);
+
   return (
     <div className="animate-fade-in space-y-6">
       <GrowthHeader dateRange={dateRange} onDateRangeChange={handleDateRangeChange} />
@@ -98,7 +101,7 @@ export default function GrowthDashboard() {
         
         <TabsContent value="campaigns" className="space-y-6">
           <CampaignsTabContent 
-            metaVsGoogleData={metaVsGoogleData}
+            metaVsGoogleData={transformedMetaVsGoogleData}
             googleData={getChannelData("Google Ads", marketingROIData)}
             metaData={getChannelData("Meta Ads", marketingROIData)}
           />

@@ -60,7 +60,7 @@ export function toPieSliceArray(raw: ChartDataFormat | ChartData): PieSlice[] {
   
   return labels.map((lbl, i) => ({
     name: lbl,
-    value: raw.datasets[0].data[i],
+    value: Number(raw.datasets[0].data[i]), // Ensure we're always returning a number
     color: Array.isArray(raw.datasets[0].backgroundColor)
       ? raw.datasets[0].backgroundColor[i]
       : raw.datasets[0].backgroundColor
