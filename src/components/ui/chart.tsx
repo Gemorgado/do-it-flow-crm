@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import * as RechartsPrimitive from "recharts"
 
@@ -353,6 +354,103 @@ function getPayloadConfigFromPayload(
     : config[key as keyof typeof config]
 }
 
+// Add the specific chart components that are being imported in Dashboard.tsx
+const LineChart = React.forwardRef<
+  HTMLDivElement,
+  Omit<React.ComponentProps<typeof ChartContainer>, "children"> & {
+    data?: Array<Record<string, any>>
+  }
+>(({ data = [], config = {}, ...props }, ref) => {
+  return (
+    <ChartContainer ref={ref} config={config} {...props}>
+      <RechartsPrimitive.LineChart data={data}>
+        <RechartsPrimitive.CartesianGrid strokeDasharray="3 3" />
+        <RechartsPrimitive.XAxis dataKey="name" />
+        <RechartsPrimitive.YAxis />
+        <ChartTooltip content={<ChartTooltipContent />} />
+        <ChartLegend content={<ChartLegendContent />} />
+        {Object.entries(data[0] || {})
+          .filter(([key]) => key !== "name")
+          .map(([key]) => (
+            <RechartsPrimitive.Line
+              key={key}
+              type="monotone"
+              dataKey={key}
+              stroke={`var(--color-${key}, #8884d8)`}
+              activeDot={{ r: 8 }}
+            />
+          ))}
+      </RechartsPrimitive.LineChart>
+    </ChartContainer>
+  )
+})
+LineChart.displayName = "LineChart"
+
+const BarChart = React.forwardRef<
+  HTMLDivElement,
+  Omit<React.ComponentProps<typeof ChartContainer>, "children"> & {
+    data?: Array<Record<string, any>>
+  }
+>(({ data = [], config = {}, ...props }, ref) => {
+  return (
+    <ChartContainer ref={ref} config={config} {...props}>
+      <RechartsPrimitive.BarChart data={data}>
+        <RechartsPrimitive.CartesianGrid strokeDasharray="3 3" />
+        <RechartsPrimitive.XAxis dataKey="name" />
+        <RechartsPrimitive.YAxis />
+        <ChartTooltip content={<ChartTooltipContent />} />
+        <ChartLegend content={<ChartLegendContent />} />
+        {Object.entries(data[0] || {})
+          .filter(([key]) => key !== "name")
+          .map(([key]) => (
+            <RechartsPrimitive.Bar
+              key={key}
+              dataKey={key}
+              fill={`var(--color-${key}, #8884d8)`}
+            />
+          ))}
+      </RechartsPrimitive.BarChart>
+    </ChartContainer>
+  )
+})
+BarChart.displayName = "BarChart"
+
+const PieChart = React.forwardRef<
+  HTMLDivElement,
+  Omit<React.ComponentProps<typeof ChartContainer>, "children"> & {
+    data?: Array<Record<string, any>>
+    dataKey?: string
+    nameKey?: string
+  }
+>(({ data = [], dataKey = "value", nameKey = "name", config = {}, ...props }, ref) => {
+  return (
+    <ChartContainer ref={ref} config={config} {...props}>
+      <RechartsPrimitive.PieChart>
+        <ChartTooltip content={<ChartTooltipContent />} />
+        <ChartLegend content={<ChartLegendContent />} />
+        <RechartsPrimitive.Pie
+          data={data}
+          cx="50%"
+          cy="50%"
+          labelLine={false}
+          outerRadius={80}
+          fill="#8884d8"
+          dataKey={dataKey}
+          nameKey={nameKey}
+        >
+          {data.map((entry, index) => (
+            <RechartsPrimitive.Cell 
+              key={`cell-${index}`} 
+              fill={entry.color || `var(--color-${entry[nameKey]}, #8884d8)`} 
+            />
+          ))}
+        </RechartsPrimitive.Pie>
+      </RechartsPrimitive.PieChart>
+    </ChartContainer>
+  )
+})
+PieChart.displayName = "PieChart"
+
 export {
   ChartContainer,
   ChartTooltip,
@@ -360,4 +458,8 @@ export {
   ChartLegend,
   ChartLegendContent,
   ChartStyle,
+  LineChart,
+  BarChart,
+  PieChart
 }
+
