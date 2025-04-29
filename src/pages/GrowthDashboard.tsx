@@ -48,7 +48,8 @@ export default function GrowthDashboard() {
   // Cast growthMetrics to match MetricProps type
   const typedMetrics: MetricProps[] = growthMetrics.map(metric => ({
     ...metric,
-    badgeVariant: metric.badgeVariant as "outline" | "secondary" | "default" | "destructive"
+    badgeVariant: metric.badgeVariant as "outline" | "secondary" | "default" | "destructive",
+    changeDirection: metric.changeDirection as "up" | "down" | "neutral"
   }));
 
   return (
