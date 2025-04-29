@@ -29,12 +29,7 @@ export function FloorContainer({
         onSpaceClick={onSpaceClick}
       />
       
-      <FloorSection 
-        title="Salas de Reunião"
-        spaceType="sala_reuniao"
-        spaces={meetingRooms}
-        onSpaceClick={onSpaceClick}
-      />
+      {/* Removida a seção de salas de reunião */}
       
       <FloorSection 
         title="Estações de Trabalho"

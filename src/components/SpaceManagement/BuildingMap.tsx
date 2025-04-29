@@ -16,7 +16,7 @@ export function BuildingMap({ spaces, onSpaceClick }: BuildingMapProps) {
     
     // Create groups for different floors
     spaces.forEach(space => {
-      if (space.type === "sala_privativa" || space.type === "sala_reuniao") {
+      if (space.type === "sala_privativa") {
         const floor = space.identifier.substring(0, 1);
         
         if (!grouped[floor]) {
@@ -96,7 +96,7 @@ export function BuildingMap({ spaces, onSpaceClick }: BuildingMapProps) {
             key={floor}
             floorNumber={floor}
             privateRooms={groupedSpaces[floor].sala_privativa}
-            meetingRooms={groupedSpaces[floor].sala_reuniao}
+            meetingRooms={[]} {/* Passamos um array vazio para as salas de reunião */}
             workstations={workstationsByFloor[floor] || []}
             onSpaceClick={onSpaceClick}
           />
@@ -110,7 +110,7 @@ export function BuildingMap({ spaces, onSpaceClick }: BuildingMapProps) {
               key={floor}
               floorNumber={floor}
               privateRooms={[]}
-              meetingRooms={[]}
+              meetingRooms={[]} {/* Passamos um array vazio para as salas de reunião */}
               workstations={workstationsByFloor[floor]}
               onSpaceClick={onSpaceClick}
             />
