@@ -7,15 +7,12 @@ import {
   Plus, 
   Filter, 
   Search, 
-  UserPlus, 
-  Calendar,
-  MessageSquare,
-  FileText,
-  Move
+  UserPlus 
 } from "lucide-react";
 import { leads, pipelineStages } from "@/data/mockData";
 import { Lead, PipelineStage } from "@/types";
 import { toast } from "@/hooks/use-toast";
+import { PipelineColumn } from "@/components/Pipeline/PipelineColumn";
 
 export default function Pipeline() {
   const [filteredLeads, setFilteredLeads] = useState<Lead[]>(leads);
@@ -57,13 +54,17 @@ export default function Pipeline() {
     // Ensure we have a lead being dragged and it's not already in the target stage
     if (!draggedLead || draggedLead.stage.id === targetStageId) return;
 
+    updateLeadStage(draggedLead.id, targetStageId);
+  };
+
+  const updateLeadStage = (leadId: string, targetStageId: string) => {
     // Find the target stage
     const targetStage = pipelineStages.find(stage => stage.id === targetStageId);
     if (!targetStage) return;
 
     // Update the lead's stage
     const updatedLeads = filteredLeads.map(lead => 
-      lead.id === draggedLead.id 
+      lead.id === leadId 
         ? { ...lead, stage: targetStage }
         : lead
     );
@@ -73,9 +74,11 @@ export default function Pipeline() {
     setDraggedLead(null);
     
     // Show a success toast
+    const leadName = filteredLeads.find(lead => lead.id === leadId)?.name;
+    
     toast({
       title: "Lead movido com sucesso",
-      description: `${draggedLead.name} foi movido para ${targetStage.name}`,
+      description: `${leadName} foi movido para ${targetStage.name}`,
       duration: 3000,
     });
   };
@@ -174,109 +177,10 @@ export default function Pipeline() {
               onDragOver={handleDragOver}
               onDrop={(e) => handleDrop(e, stage.id)}
               onDragStart={handleDragStart}
+              onStageUpdate={updateLeadStage}
             />
           ))}
         </div>
-      </div>
-    </div>
-  );
-}
-
-interface PipelineColumnProps {
-  stage: PipelineStage;
-  leads: Lead[];
-  onDragOver: (e: React.DragEvent) => void;
-  onDrop: (e: React.DragEvent) => void;
-  onDragStart: (e: React.DragEvent, lead: Lead) => void;
-}
-
-function PipelineColumn({ stage, leads, onDragOver, onDrop, onDragStart }: PipelineColumnProps) {
-  return (
-    <div 
-      className="flex-1 min-w-[300px] max-w-[320px]"
-      onDragOver={onDragOver}
-      onDrop={onDrop}
-    >
-      <div className="flex items-center justify-between mb-3 px-2">
-        <h3 className="font-medium flex items-center gap-2">
-          <div 
-            className="w-3 h-3 rounded-full" 
-            style={{ backgroundColor: stage.color }} 
-          />
-          {stage.name}
-          <span className="ml-1 text-sm text-gray-500">({leads.length})</span>
-        </h3>
-      </div>
-      
-      <div className="space-y-3 min-h-[300px] p-2 rounded-md border-2 border-dashed border-gray-200 bg-gray-50">
-        {leads.map((lead) => (
-          <LeadCard 
-            key={lead.id} 
-            lead={lead}
-            onDragStart={onDragStart}
-          />
-        ))}
-        
-        {leads.length === 0 && (
-          <div className="border border-dashed border-gray-200 rounded-md p-4 text-center text-gray-400 text-sm h-24 flex items-center justify-center">
-            Arraste leads para esta coluna
-          </div>
-        )}
-        
-        <button className="w-full border border-dashed border-gray-200 rounded-md p-3 text-gray-500 flex items-center justify-center hover:bg-gray-50 transition-colors bg-white">
-          <Plus className="h-4 w-4 mr-1" /> Adicionar Lead
-        </button>
-      </div>
-    </div>
-  );
-}
-
-interface LeadCardProps {
-  lead: Lead;
-  onDragStart: (e: React.DragEvent, lead: Lead) => void;
-}
-
-function LeadCard({ lead, onDragStart }: LeadCardProps) {
-  function formatValue(value?: number): string {
-    if (!value) return "Não informado";
-    return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-  }
-
-  return (
-    <div 
-      className="bg-white border rounded-md shadow-sm p-3 cursor-move hover:shadow-md transition-shadow"
-      draggable
-      onDragStart={(e) => onDragStart(e, lead)}
-    >
-      <div className="flex justify-between items-start mb-1">
-        <h4 className="font-medium flex items-center gap-1">
-          <Move className="h-3 w-3 text-gray-400" />
-          {lead.name}
-        </h4>
-        {lead.value && (
-          <span className="text-sm text-doIt-primary font-medium">
-            {formatValue(lead.value)}
-          </span>
-        )}
-      </div>
-      
-      {lead.company && (
-        <p className="text-sm text-gray-600 mb-2">{lead.company}</p>
-      )}
-      
-      <div className="flex flex-wrap gap-2 mt-3">
-        <Button variant="ghost" size="icon" className="h-8 w-8">
-          <UserPlus className="h-4 w-4" />
-        </Button>
-        <Button variant="ghost" size="icon" className="h-8 w-8">
-          <Calendar className="h-4 w-4" />
-        </Button>
-        <Button variant="ghost" size="icon" className="h-8 w-8">
-          <MessageSquare className="h-4 w-4" />
-        </Button>
-        <Button variant="ghost" size="icon" className="h-8 w-8">
-          <FileText className="h-4 w-4" />
-        </Button>
       </div>
     </div>
   );
