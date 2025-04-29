@@ -1,3 +1,4 @@
+
 import { BarChart, LineChart, PieChart } from "@/components/ui/chart";
 import { StatCard } from "@/components/Dashboard/StatCard";
 import { ChartCard } from "@/components/Dashboard/ChartCard";
@@ -28,6 +29,7 @@ import {
 } from "@/data/mockData";
 import { Badge } from "@/components/ui/badge";
 import { getUTMParameters } from "@/utils/trackingUtils";
+import { Task, Lead } from "@/types";
 
 // Helper function to transform ChartData to format expected by chart components
 const transformChartData = (chartData) => {

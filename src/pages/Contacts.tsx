@@ -16,7 +16,7 @@ import {
   Phone
 } from "lucide-react";
 import { leads, clients } from "@/data/mockData";
-import { Lead, Client } from "@/types";
+import { Lead, Client, LeadStatus, LeadSource } from "@/types";
 
 export default function Contacts() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -141,7 +141,7 @@ interface LeadRowProps {
 }
 
 function LeadRow({ lead }: LeadRowProps) {
-  function getStatusColor(status: Lead["status"]): string {
+  function getStatusColor(status: LeadStatus): string {
     switch (status) {
       case "novo": return "bg-blue-100 text-blue-800";
       case "contatado": return "bg-sky-100 text-sky-800";
@@ -154,7 +154,7 @@ function LeadRow({ lead }: LeadRowProps) {
     }
   }
 
-  function getSourceLabel(source: Lead["source"]): string {
+  function getSourceLabel(source: LeadSource): string {
     switch (source) {
       case "site_organico": return "Site Orgânico";
       case "google_ads": return "Google Ads";

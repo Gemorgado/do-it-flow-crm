@@ -202,6 +202,45 @@ export const leadSourceChartData: ChartData = {
   ],
 };
 
+export const users = [
+  {
+    id: "1",
+    name: "Amanda Silva",
+    email: "amanda@doit.com",
+    role: "comercial" as const,
+    avatar: "/avatars/amanda.png",
+    createdAt: "2023-01-10",
+    active: true
+  },
+  {
+    id: "2",
+    name: "Ricardo Barros",
+    email: "ricardo@doit.com",
+    role: "comercial" as const,
+    avatar: "/avatars/ricardo.png",
+    createdAt: "2023-02-15",
+    active: true
+  },
+  {
+    id: "3",
+    name: "Camila Costa",
+    email: "camila@doit.com",
+    role: "gerente" as const,
+    avatar: "/avatars/camila.png",
+    createdAt: "2022-11-05",
+    active: true
+  },
+  {
+    id: "4",
+    name: "João Oliveira",
+    email: "joao@doit.com",
+    role: "diretor" as const,
+    avatar: "/avatars/joao.png",
+    createdAt: "2022-08-20",
+    active: true
+  }
+];
+
 export const tasks = [
   {
     id: "1",
@@ -262,8 +301,8 @@ export const leads = [
     company: "Empresa A",
     email: "joao@empresaA.com",
     phone: "11999999999",
-    status: "novo",
-    source: "site_organico",
+    status: "novo" as LeadStatus,
+    source: "site_organico" as LeadSource,
     createdAt: "2024-07-25",
     updatedAt: "2024-07-25",
     stage: {
@@ -272,6 +311,7 @@ export const leads = [
       order: 1,
       color: "#f00",
     },
+    assignedTo: "1"
   },
   {
     id: "2",
@@ -279,8 +319,8 @@ export const leads = [
     company: "Empresa B",
     email: "maria@empresaB.com",
     phone: "11999999999",
-    status: "contatado",
-    source: "google_ads",
+    status: "contatado" as LeadStatus,
+    source: "google_ads" as LeadSource,
     createdAt: "2024-07-25",
     updatedAt: "2024-07-25",
     stage: {
@@ -289,6 +329,7 @@ export const leads = [
       order: 2,
       color: "#0f0",
     },
+    assignedTo: "2"
   },
   {
     id: "3",
@@ -296,8 +337,8 @@ export const leads = [
     company: "Empresa C",
     email: "jose@empresaC.com",
     phone: "11999999999",
-    status: "qualificado",
-    source: "meta_ads",
+    status: "qualificado" as LeadStatus,
+    source: "meta_ads" as LeadSource,
     createdAt: "2024-07-25",
     updatedAt: "2024-07-25",
     stage: {
@@ -306,6 +347,7 @@ export const leads = [
       order: 3,
       color: "#00f",
     },
+    assignedTo: "1"
   },
   {
     id: "4",
@@ -313,8 +355,8 @@ export const leads = [
     company: "Empresa D",
     email: "ana@empresaD.com",
     phone: "11999999999",
-    status: "proposta",
-    source: "indicacao",
+    status: "proposta" as LeadStatus,
+    source: "indicacao" as LeadSource,
     createdAt: "2024-07-25",
     updatedAt: "2024-07-25",
     stage: {
@@ -323,6 +365,7 @@ export const leads = [
       order: 4,
       color: "#ff0",
     },
+    assignedTo: "3"
   },
   {
     id: "5",
@@ -330,8 +373,8 @@ export const leads = [
     company: "Empresa E",
     email: "carlos@empresaE.com",
     phone: "11999999999",
-    status: "negociação",
-    source: "instagram",
+    status: "negociação" as LeadStatus,
+    source: "instagram" as LeadSource,
     createdAt: "2024-07-25",
     updatedAt: "2024-07-25",
     stage: {
@@ -340,10 +383,127 @@ export const leads = [
       order: 5,
       color: "#f0f",
     },
+    assignedTo: "2"
   },
 ];
 
-// Marketing and Growth data
+export const pipelineStages: PipelineStage[] = [
+  {
+    id: "1",
+    name: "Novo",
+    order: 1,
+    color: "#3b82f6" // blue-500
+  },
+  {
+    id: "2",
+    name: "Qualificado",
+    order: 2,
+    color: "#8b5cf6" // violet-500
+  },
+  {
+    id: "3",
+    name: "Proposta",
+    order: 3,
+    color: "#10b981" // emerald-500
+  },
+  {
+    id: "4",
+    name: "Negociação",
+    order: 4,
+    color: "#f59e0b" // amber-500
+  },
+  {
+    id: "5",
+    name: "Fechado",
+    order: 5,
+    color: "#22c55e" // green-500
+  }
+];
+
+export const clients: Client[] = [
+  {
+    id: "1",
+    name: "Empresa XYZ",
+    company: "Tecnologia XYZ Ltda",
+    email: "contato@xyz.com",
+    phone: "11987654321",
+    address: "Av. Paulista, 1000",
+    contractStart: "2024-01-15",
+    contractEnd: "2025-01-15",
+    contractValue: 5000,
+    plan: "Premium",
+    status: "ativo" as const,
+    createdAt: "2023-12-20",
+    updatedAt: "2024-01-15",
+    notes: "Cliente desde 2023",
+    assignedTo: "1"
+  },
+  {
+    id: "2",
+    name: "Comércio ABC",
+    company: "ABC Comércio e Serviços",
+    email: "contato@abc.com",
+    phone: "11976543210",
+    contractStart: "2024-03-10",
+    contractEnd: "2025-03-10",
+    contractValue: 3500,
+    plan: "Standard",
+    status: "ativo" as const,
+    createdAt: "2024-02-28",
+    updatedAt: "2024-03-10",
+    assignedTo: "2"
+  },
+  {
+    id: "3",
+    name: "Consultoria 123",
+    company: "123 Consultoria Empresarial",
+    email: "atendimento@123consultoria.com",
+    phone: "11965432109",
+    address: "Rua Augusta, 500",
+    contractStart: "2023-11-05",
+    contractEnd: "2024-11-05",
+    contractValue: 7500,
+    plan: "Enterprise",
+    status: "inadimplente" as const,
+    createdAt: "2023-10-25",
+    updatedAt: "2024-04-10",
+    notes: "Pagamento em atraso",
+    assignedTo: "3"
+  },
+  {
+    id: "4",
+    name: "Indústria QWE",
+    company: "QWE Indústria Alimentícia",
+    email: "comercial@qwe.com.br",
+    phone: "11954321098",
+    contractStart: "2023-08-15",
+    contractEnd: "2024-08-15",
+    contractValue: 6000,
+    plan: "Premium",
+    status: "ativo" as const,
+    createdAt: "2023-08-10",
+    updatedAt: "2024-02-15",
+    assignedTo: "1"
+  },
+  {
+    id: "5",
+    name: "Serviços RTY",
+    company: "RTY Serviços Digitais",
+    email: "atendimento@rty.com",
+    phone: "11943210987",
+    address: "Rua Vergueiro, 1500",
+    contractStart: "2024-02-01",
+    contractEnd: "2025-02-01",
+    contractValue: 4500,
+    plan: "Standard",
+    status: "cancelado" as const,
+    createdAt: "2024-01-25",
+    updatedAt: "2024-05-10",
+    notes: "Cancelou após 3 meses",
+    assignedTo: "2"
+  }
+];
+
 export const leadSourceData = {
   labels: ["Google Ads", "Meta Ads", "Orgânico", "Referência", "Indicação", "Outros"],
   datasets: [
