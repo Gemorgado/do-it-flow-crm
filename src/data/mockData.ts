@@ -7,7 +7,7 @@ import { dashboardStats, leadsChartData, conversionChartData, revenueChartData, 
 import { marketingROIData } from "./marketingData";
 import { users, tasks } from "./usersData";
 import { leads, pipelineStages } from "./leadsData";
-import { locations } from "./locationsData";
+import { locations } from "./locations";
 import { clients, clientServices } from "./clientsData";
 
 // Re-export everything
