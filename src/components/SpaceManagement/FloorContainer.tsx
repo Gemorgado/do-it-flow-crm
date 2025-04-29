@@ -2,6 +2,7 @@
 import React from "react";
 import { Location } from "@/types";
 import { FloorSection } from "./FloorSection";
+import { FloorWorkstations } from "./FloorWorkstations";
 
 interface FloorContainerProps {
   floorNumber: string;
@@ -31,10 +32,9 @@ export function FloorContainer({
       
       {/* Removida a seção de salas de reunião */}
       
-      <FloorSection 
-        title="Estações de Trabalho"
-        spaceType="estacao"
-        spaces={workstations}
+      <FloorWorkstations
+        floor={floorNumber}
+        workstations={workstations}
         onSpaceClick={onSpaceClick}
       />
     </div>
