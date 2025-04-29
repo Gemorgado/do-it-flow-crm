@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar } from "@/components/ui/calendar";
 import { 
-  MeetingRoom, 
+  DoorClosed, 
   Clipboard,
   Users
 } from "lucide-react";
@@ -12,16 +12,16 @@ import { meetingRooms } from "@/data/locations";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { calculateDailyOccupancy } from "@/components/Growth/meetingRoomOccupancy";
+import { calculateDailyOccupancy, Reservation } from "@/components/Growth/meetingRoomOccupancy";
 
 // Mock reservation data - in a real app, this would come from an API or database
-const mockReservations = [
-  { roomId: 'MIT1', date: '2025-04-29', type: 'daily' },
-  { roomId: 'MIT2', date: '2025-04-29', type: 'hourly', start: '14:00', end: '17:00' },
-  { roomId: 'MIT3', date: '2025-04-29', type: 'hourly', start: '09:00', end: '12:00' },
-  { roomId: 'MIT4', date: '2025-04-30', type: 'hourly', start: '13:00', end: '15:30' },
-  { roomId: 'MIT1', date: '2025-04-30', type: 'hourly', start: '09:00', end: '11:00' },
-  { roomId: 'MIT2', date: '2025-05-01', type: 'daily' },
+const mockReservations: Reservation[] = [
+  { roomId: "MIT1", date: '2025-04-29', type: 'daily' },
+  { roomId: "MIT2", date: '2025-04-29', type: 'hourly', start: '14:00', end: '17:00' },
+  { roomId: "MIT3", date: '2025-04-29', type: 'hourly', start: '09:00', end: '12:00' },
+  { roomId: "MIT4", date: '2025-04-30', type: 'hourly', start: '13:00', end: '15:30' },
+  { roomId: "MIT1", date: '2025-04-30', type: 'hourly', start: '09:00', end: '11:00' },
+  { roomId: "MIT2", date: '2025-05-01', type: 'daily' },
 ];
 
 export default function MeetingRooms() {
@@ -69,7 +69,7 @@ export default function MeetingRooms() {
                           {getRoomIconByCapacity(room.capacity) === "auditorium" ? (
                             <Users className="h-5 w-5 text-doIt-primary" />
                           ) : (
-                            <MeetingRoom className="h-5 w-5 text-doIt-primary" />
+                            <DoorClosed className="h-5 w-5 text-doIt-primary" />
                           )}
                           {room.name}
                         </CardTitle>

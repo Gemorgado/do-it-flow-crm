@@ -23,7 +23,7 @@ import {
   FileBarChart,
   Zap,
   Plug,
-  MeetingRoom
+  DoorClosed
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -36,7 +36,7 @@ export function Sidebar() {
     { title: "Leads e Clientes", url: "/contatos", icon: Users },
     { title: "Propostas", url: "/propostas", icon: FileText },
     { title: "Agendamentos", url: "/agendamentos", icon: CalendarCheck },
-    { title: "Salas de Reunião", url: "/salas-reuniao", icon: MeetingRoom },
+    { title: "Salas de Reunião", url: "/salas-reuniao", icon: DoorClosed },
     { title: "Mensagens", url: "/mensagens", icon: MessageSquare },
     { title: "Growth", url: "/growth", icon: BarChart },
     { title: "Relatórios", url: "/relatorios", icon: FileBarChart },

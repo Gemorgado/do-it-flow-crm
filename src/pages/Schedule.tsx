@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { Calendar, MeetingRoom } from "lucide-react";
+import { Calendar, DoorClosed } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function Schedule() {
@@ -24,7 +24,7 @@ export default function Schedule() {
         
         <div className="p-6 bg-white rounded-lg border shadow-sm">
           <div className="flex items-center gap-2 mb-4">
-            <MeetingRoom className="h-5 w-5 text-doIt-primary" />
+            <DoorClosed className="h-5 w-5 text-doIt-primary" />
             <h2 className="text-lg font-semibold">Salas de Reunião e Auditório</h2>
           </div>
           <p className="text-gray-500 mb-4">
