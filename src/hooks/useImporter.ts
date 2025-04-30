@@ -20,6 +20,11 @@ export function useImporter() {
   const [errors, setErrors] = useState<ImportError[]>([]);
   const [snapshot, setSnapshot] = useState<ConexaSnapshot | null>(null);
 
+  // Handle navigation between steps
+  const handleNavigateToStep = (newStep: ImportStep) => {
+    setStep(newStep);
+  };
+
   // Handle file upload
   const handleFileSelect = async (selectedFile: File) => {
     setFile(selectedFile);
@@ -167,7 +172,8 @@ export function useImporter() {
     handleImport,
     handleDownloadErrors,
     handleReset,
-    handleViewData
+    handleViewData,
+    handleNavigateToStep
   };
 }
 

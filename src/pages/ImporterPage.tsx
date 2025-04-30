@@ -22,7 +22,8 @@ export default function ImporterPage() {
     handleImport,
     handleDownloadErrors,
     handleReset,
-    handleViewData
+    handleViewData,
+    handleNavigateToStep
   } = useImporter();
 
   return (
@@ -46,7 +47,7 @@ export default function ImporterPage() {
             previewRows={rows.slice(0, 5)}
             initialMapping={mapping}
             onMappingChange={handleMappingChange}
-            onContinue={() => step = 'preview'}
+            onContinue={() => handleNavigateToStep('preview')}
             onBack={handleReset}
           />
         )}
@@ -55,7 +56,7 @@ export default function ImporterPage() {
           <PreviewStep
             mapping={mapping}
             previewRows={rows.slice(0, 5)}
-            onBack={() => step = 'mapping'}
+            onBack={() => handleNavigateToStep('mapping')}
             onImport={handleImport}
             isLoading={isLoading}
           />
