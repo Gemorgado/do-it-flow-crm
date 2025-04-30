@@ -23,7 +23,8 @@ export const DebugTools = () => {
               title: 'Base zerada 🗑️',
               description: 'Todos os dados fictícios foram removidos'
             });
-            window.location.reload();
+            // Force a hard reload to ensure all components rerender with fresh data
+            window.location.href = window.location.origin;
           }
         }}
       >

@@ -1,7 +1,6 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { leads } from "@/data/mockData";
 import { ContactsHeader } from "@/components/Contacts/ContactsHeader";
 import { ContactsSearch } from "@/components/Contacts/ContactsSearch";
 import { LeadsTable } from "@/components/Contacts/LeadsTable";
@@ -14,6 +13,7 @@ import { Client } from "@/types/client";
 import { ClientModal } from "@/components/Contacts/ClientModal";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { queryClient } from "@/lib/queryClient";
 
 export default function Contacts() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -21,12 +21,31 @@ export default function Contacts() {
   const [clientModalOpen, setClientModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [showOnlyActive, setShowOnlyActive] = useState(true);
+  const [leads, setLeads] = useState([]);
   
   const leadModal = useLeadModal();
   const contactModal = useContactModal();
   
   // Get imported customers from Conexa snapshot
   const conexaCustomers = useCustomers();
+  
+  // Load leads from localStorage or fallback to empty array
+  useEffect(() => {
+    // Try to get leads from localStorage
+    const storedLeads = localStorage.getItem('leads');
+    
+    if (storedLeads) {
+      try {
+        setLeads(JSON.parse(storedLeads));
+      } catch (e) {
+        console.error("Failed to parse leads from localStorage:", e);
+        setLeads([]);
+      }
+    } else {
+      // If leads are not in localStorage, set empty array
+      setLeads([]);
+    }
+  }, []);
   
   // Convert Conexa customers to Client type for display
   const clients: Client[] = conexaCustomers.map(customer => ({
@@ -45,8 +64,8 @@ export default function Contacts() {
   
   // Simple filtering by name, email, or company
   const filteredLeads = leads.filter(lead => 
-    lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    lead.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    lead.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (lead.company && lead.company.toLowerCase().includes(searchTerm.toLowerCase()))
   );
   
@@ -76,6 +95,37 @@ export default function Contacts() {
     setClientModalOpen(false);
     setSelectedClient(null);
   };
+
+  // Function to force a refresh of data
+  const refreshData = () => {
+    queryClient.invalidateQueries(['leads']);
+    queryClient.invalidateQueries(['clients']);
+    
+    // Re-fetch leads from localStorage
+    const storedLeads = localStorage.getItem('leads');
+    if (storedLeads) {
+      try {
+        setLeads(JSON.parse(storedLeads));
+      } catch (e) {
+        console.error("Failed to parse leads from localStorage:", e);
+        setLeads([]);
+      }
+    } else {
+      setLeads([]);
+    }
+  };
+
+  // Add effect to listen for storage events (in case data is cleared in another tab)
+  useEffect(() => {
+    const handleStorageChange = () => {
+      refreshData();
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
 
   return (
     <div className="animate-fade-in space-y-6">
