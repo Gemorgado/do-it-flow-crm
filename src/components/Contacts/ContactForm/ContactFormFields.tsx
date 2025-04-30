@@ -10,6 +10,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { LeadStatusSelector } from "./fields/LeadStatusSelector";
 import { LeadSourceSelector } from "./fields/LeadSourceSelector";
+import { cn } from "@/lib/utils";
+import { AlertCircle } from "lucide-react";
 
 interface ContactFormFieldsProps {
   type: "lead" | "client";
@@ -18,17 +20,39 @@ interface ContactFormFieldsProps {
 
 export function ContactFormFields({ type, form }: ContactFormFieldsProps) {
   const isLead = type === "lead";
+  const { formatPhoneNumber } = form.getValues();
+  
+  // Function to format phone as user types
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatPhoneNumber ? formatPhoneNumber(e.target.value) : e.target.value;
+    form.setValue('phone', formatted, { shouldValidate: true });
+  };
   
   return (
     <>
       <FormField
         control={form.control}
         name="name"
-        render={({ field }) => (
+        render={({ field, fieldState }) => (
           <FormItem>
-            <FormLabel>Nome*</FormLabel>
+            <div className="flex items-center justify-between">
+              <FormLabel>Nome*</FormLabel>
+              {fieldState.error && (
+                <span className="text-xs text-destructive flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" />
+                  {fieldState.error.message}
+                </span>
+              )}
+            </div>
             <FormControl>
-              <Input placeholder="Nome completo" {...field} />
+              <Input 
+                placeholder="Nome completo" 
+                {...field} 
+                className={cn(
+                  fieldState.error && "border-destructive focus-visible:ring-destructive"
+                )}
+                aria-invalid={!!fieldState.error}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -38,7 +62,7 @@ export function ContactFormFields({ type, form }: ContactFormFieldsProps) {
       <FormField
         control={form.control}
         name="company"
-        render={({ field }) => (
+        render={({ field, fieldState }) => (
           <FormItem>
             <FormLabel>Empresa</FormLabel>
             <FormControl>
@@ -53,11 +77,27 @@ export function ContactFormFields({ type, form }: ContactFormFieldsProps) {
         <FormField
           control={form.control}
           name="email"
-          render={({ field }) => (
+          render={({ field, fieldState }) => (
             <FormItem>
-              <FormLabel>Email*</FormLabel>
+              <div className="flex items-center justify-between">
+                <FormLabel>Email*</FormLabel>
+                {fieldState.error && (
+                  <span className="text-xs text-destructive flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    {fieldState.error.message}
+                  </span>
+                )}
+              </div>
               <FormControl>
-                <Input placeholder="email@exemplo.com" {...field} />
+                <Input 
+                  placeholder="email@exemplo.com" 
+                  type="email"
+                  {...field} 
+                  className={cn(
+                    fieldState.error && "border-destructive focus-visible:ring-destructive"
+                  )}
+                  aria-invalid={!!fieldState.error}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -67,11 +107,27 @@ export function ContactFormFields({ type, form }: ContactFormFieldsProps) {
         <FormField
           control={form.control}
           name="phone"
-          render={({ field }) => (
+          render={({ field, fieldState }) => (
             <FormItem>
-              <FormLabel>Telefone*</FormLabel>
+              <div className="flex items-center justify-between">
+                <FormLabel>Telefone*</FormLabel>
+                {fieldState.error && (
+                  <span className="text-xs text-destructive flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    {fieldState.error.message}
+                  </span>
+                )}
+              </div>
               <FormControl>
-                <Input placeholder="(00) 00000-0000" {...field} />
+                <Input 
+                  placeholder="(00) 00000-0000" 
+                  {...field}
+                  onChange={handlePhoneChange}
+                  className={cn(
+                    fieldState.error && "border-destructive focus-visible:ring-destructive"
+                  )}
+                  aria-invalid={!!fieldState.error}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

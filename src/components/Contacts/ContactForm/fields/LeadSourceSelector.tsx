@@ -14,6 +14,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
+import { AlertCircle } from "lucide-react";
 
 interface LeadSourceSelectorProps {
   control: Control<any>;
@@ -24,15 +26,25 @@ export function LeadSourceSelector({ control }: LeadSourceSelectorProps) {
     <FormField
       control={control}
       name="source"
-      render={({ field }) => (
+      render={({ field, fieldState }) => (
         <FormItem>
-          <FormLabel>Origem</FormLabel>
+          <div className="flex items-center justify-between">
+            <FormLabel>Origem</FormLabel>
+            {fieldState.error && (
+              <span className="text-xs text-destructive flex items-center gap-1">
+                <AlertCircle className="h-3 w-3" />
+                {fieldState.error.message}
+              </span>
+            )}
+          </div>
           <Select
             onValueChange={field.onChange}
             defaultValue={field.value}
           >
             <FormControl>
-              <SelectTrigger>
+              <SelectTrigger className={cn(
+                fieldState.error && "border-destructive focus-visible:ring-destructive"
+              )}>
                 <SelectValue placeholder="Selecione uma origem" />
               </SelectTrigger>
             </FormControl>

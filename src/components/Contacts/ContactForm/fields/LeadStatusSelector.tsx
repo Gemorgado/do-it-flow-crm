@@ -14,6 +14,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
+import { AlertCircle } from "lucide-react";
 
 interface LeadStatusSelectorProps {
   control: Control<any>;
@@ -24,25 +26,35 @@ export function LeadStatusSelector({ control }: LeadStatusSelectorProps) {
     <FormField
       control={control}
       name="status"
-      render={({ field }) => (
+      render={({ field, fieldState }) => (
         <FormItem>
-          <FormLabel>Status</FormLabel>
+          <div className="flex items-center justify-between">
+            <FormLabel>Status</FormLabel>
+            {fieldState.error && (
+              <span className="text-xs text-destructive flex items-center gap-1">
+                <AlertCircle className="h-3 w-3" />
+                {fieldState.error.message}
+              </span>
+            )}
+          </div>
           <Select
             onValueChange={field.onChange}
             defaultValue={field.value}
           >
             <FormControl>
-              <SelectTrigger>
+              <SelectTrigger className={cn(
+                fieldState.error && "border-destructive focus-visible:ring-destructive"
+              )}>
                 <SelectValue placeholder="Selecione um status" />
               </SelectTrigger>
             </FormControl>
             <SelectContent>
               <SelectItem value="novo">Novo</SelectItem>
-              <SelectItem value="contatado">Contatado</SelectItem>
+              <SelectItem value="em_contato">Em Contato</SelectItem>
               <SelectItem value="qualificado">Qualificado</SelectItem>
               <SelectItem value="proposta">Proposta</SelectItem>
-              <SelectItem value="negociação">Negociação</SelectItem>
-              <SelectItem value="fechado">Fechado</SelectItem>
+              <SelectItem value="negociacao">Em Negociação</SelectItem>
+              <SelectItem value="ganho">Ganho</SelectItem>
               <SelectItem value="perdido">Perdido</SelectItem>
             </SelectContent>
           </Select>

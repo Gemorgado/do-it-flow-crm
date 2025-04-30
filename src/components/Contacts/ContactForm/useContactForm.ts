@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "@/hooks/use-toast";
 
-// Schema definition
+// Schema definition with improved validation messages
 const contactFormSchema = z.object({
   name: z.string().min(2, {
     message: "O nome precisa ter pelo menos 2 caracteres.",
@@ -13,11 +13,19 @@ const contactFormSchema = z.object({
   email: z.string().email({
     message: "Por favor insira um e-mail válido.",
   }),
-  phone: z.string().min(8, {
-    message: "Insira um número de telefone válido.",
+  phone: z.string()
+    .min(8, {
+      message: "Insira um número de telefone válido.",
+    })
+    .refine((val) => /^(\d|\(|\)|\s|-|\.)+$/.test(val), {
+      message: "O telefone deve conter apenas números e caracteres especiais válidos.",
+    }),
+  status: z.string().min(1, {
+    message: "Por favor selecione um status.",
   }),
-  status: z.string(),
-  source: z.string(),
+  source: z.string().min(1, {
+    message: "Por favor selecione uma origem.",
+  }),
 });
 
 type ContactFormValues = z.infer<typeof contactFormSchema>;
@@ -35,9 +43,33 @@ export const useContactForm = (type: "lead" | "client", onSuccess?: () => void) 
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactFormSchema),
     defaultValues,
+    mode: "onBlur", // Validate fields when they lose focus for better UX
   });
   
   const isLead = type === "lead";
+  
+  // Format phone number as user types
+  const formatPhoneNumber = (value: string) => {
+    // Remove non-numeric characters
+    const numericValue = value.replace(/\D/g, '');
+    
+    // Format as (XX) XXXXX-XXXX
+    if (numericValue.length <= 11) {
+      let formattedValue = numericValue;
+      
+      if (numericValue.length > 2) {
+        formattedValue = `(${numericValue.slice(0, 2)}) ${numericValue.slice(2)}`;
+      }
+      
+      if (numericValue.length > 7) {
+        formattedValue = `(${numericValue.slice(0, 2)}) ${numericValue.slice(2, 7)}-${numericValue.slice(7)}`;
+      }
+      
+      return formattedValue;
+    }
+    
+    return value;
+  };
   
   const handleSubmit = (data: ContactFormValues) => {
     try {
@@ -62,5 +94,5 @@ export const useContactForm = (type: "lead" | "client", onSuccess?: () => void) 
     }
   };
   
-  return { form, handleSubmit, isLead };
+  return { form, handleSubmit, isLead, formatPhoneNumber };
 };
