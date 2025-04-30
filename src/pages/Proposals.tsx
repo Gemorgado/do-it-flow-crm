@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +24,9 @@ import { Proposal, Lead } from "@/types";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useProposalModal } from "@/components/CRM/hooks/useProposalModal";
+import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { ProposalViewDialog } from "@/components/CRM/ProposalViewDialog";
+import { ProposalEditDialog } from "@/components/CRM/ProposalEditDialog";
 
 // Mock data para propostas
 const mockProposals: Proposal[] = [
@@ -109,6 +113,14 @@ export default function Proposals() {
   const [proposals, setProposals] = useState<Proposal[]>(mockProposals);
   const [statusFilter, setStatusFilter] = useState<string>("todas");
   const { open: openProposalModal } = useProposalModal();
+  
+  // Estado para controlar os modais de visualização e edição
+  const [viewId, setViewId] = useState<string | null>(null);
+  const [editId, setEditId] = useState<string | null>(null);
+
+  // Funções para abrir modais
+  const handleView = (id: string) => setViewId(id);
+  const handleEdit = (id: string) => setEditId(id);
 
   // Função para filtrar propostas com base no termo de busca e filtro de status
   const filteredProposals = proposals.filter(proposal => {
@@ -267,12 +279,37 @@ export default function Proposals() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end">
-                        <Button variant="ghost" size="sm" className="h-8 w-8">
-                          <FileText className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm" className="h-8 w-8">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="h-8 w-8"
+                                onClick={() => handleView(proposal.id)}
+                              >
+                                <FileText className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Visualizar</TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                        
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="h-8 w-8"
+                                onClick={() => handleEdit(proposal.id)}
+                              >
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Editar</TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -288,6 +325,19 @@ export default function Proposals() {
           </Table>
         </div>
       </div>
+
+      {/* Modais de visualização e edição */}
+      <ProposalViewDialog 
+        open={!!viewId} 
+        id={viewId} 
+        onClose={() => setViewId(null)} 
+      />
+      
+      <ProposalEditDialog 
+        open={!!editId} 
+        id={editId} 
+        onClose={() => setEditId(null)} 
+      />
     </div>
   );
 }
