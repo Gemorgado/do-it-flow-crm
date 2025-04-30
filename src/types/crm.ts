@@ -1,6 +1,6 @@
 
 // Export the types from the schema file
-export { 
+export type { 
   ContactFormValues,
   LeadFormValues,
   ClientFormValues,
