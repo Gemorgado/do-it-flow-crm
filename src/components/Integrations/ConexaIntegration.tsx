@@ -10,6 +10,7 @@ import { triggerManualSync } from '@/jobs/conexaSyncJob';
 import { useConexaSnapshot, useApplySnapshot } from '@/hooks/useConexaSnapshot';
 import { Button } from '@/components/ui/button';
 import { Loader } from 'lucide-react';
+import { mapContracts } from '@/integrations/conexa/mapper';
 
 // This would come from your API in a real implementation
 const mockIntegrationStatus = {
@@ -80,6 +81,16 @@ export function ConexaIntegration() {
   const handleApplySnapshot = () => {
     // Create a sample snapshot for demonstration
     // In a real implementation, this would come from the sync result
+    const rawContracts = Array(status.syncCount.contracts).fill({}).map((_, i) => ({
+      id: `contract-${i+1}`,
+      customerId: `cust-${Math.floor(Math.random() * status.syncCount.customers) + 1}`,
+      serviceId: `serv-${Math.floor(Math.random() * status.syncCount.services) + 1}`,
+      status: Math.random() > 0.2 ? 'active' : 'closed', // Using the normalized values directly here
+      amount: Math.floor(Math.random() * 10000) + 1000,
+      startDate: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    }));
+
     const sampleSnapshot = {
       customers: Array(status.syncCount.customers).fill({}).map((_, i) => ({
         id: `cust-${i+1}`,
@@ -87,15 +98,7 @@ export function ConexaIntegration() {
         docNumber: `${10000000000 + i}`,
         updatedAt: new Date().toISOString()
       })),
-      contracts: Array(status.syncCount.contracts).fill({}).map((_, i) => ({
-        id: `contract-${i+1}`,
-        customerId: `cust-${Math.floor(Math.random() * status.syncCount.customers) + 1}`,
-        serviceId: `serv-${Math.floor(Math.random() * status.syncCount.services) + 1}`,
-        status: Math.random() > 0.2 ? 'active' : 'closed',
-        amount: Math.floor(Math.random() * 10000) + 1000,
-        startDate: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      })),
+      contracts: mapContracts(rawContracts), // Use mapper to ensure type safety
       services: Array(status.syncCount.services).fill({}).map((_, i) => ({
         id: `serv-${i+1}`,
         label: `Serviço ${i+1}`,
