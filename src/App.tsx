@@ -32,6 +32,7 @@ import Index from "@/pages/Index";
 import CustomersPage from "@/pages/CustomersPage";
 import ContractsPage from "@/pages/ContractsPage";
 import OccupancyMapPage from "@/pages/OccupancyMapPage";
+import ImporterPage from "@/pages/ImporterPage";
 
 import { MainLayout } from "@/components/Layout/MainLayout";
 import { CRMModalsProvider } from "@/components/CRM/CRMModalsProvider";
@@ -91,6 +92,7 @@ function App() {
                 } />
                 <Route path="integrations" element={<Integrations />} />
                 <Route path="import/conexa" element={<ConexaImportPage />} />
+                <Route path="importador" element={<ImporterPage />} />
                 <Route path="plans" element={<PlansAndServicesPage />} />
                 <Route path="automations" element={<Automations />} />
                 <Route path="messages" element={<Messages />} />
