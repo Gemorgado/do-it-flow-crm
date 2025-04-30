@@ -11,6 +11,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "./AuthProvider";
 import { Loader } from "lucide-react";
 
+interface LoginCredentials {
+  email: string;
+  password: string;
+  rememberMe?: boolean;
+}
+
 const loginSchema = z.object({
   email: z.string().email("Email inválido").min(1, "Email é obrigatório"),
   password: z.string().min(6, "Senha precisa ter pelo menos 6 caracteres"),
@@ -35,7 +41,7 @@ export default function LoginPage() {
   
   const onSubmit = async (data: LoginFormData) => {
     try {
-      await login(data);
+      await login(data as LoginCredentials);
     } catch (error) {
       console.error("Login error:", error);
     }
