@@ -1,5 +1,5 @@
 
-import { useForm, FormProvider } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { format } from "date-fns";
@@ -8,21 +8,25 @@ import { validateDocument } from "@/utils/documentUtils";
 import { PipelineStage } from "@/types";
 import { pipelineStages } from "@/data/leadsData";
 
-// Schema de validação usando Zod
+// Schema de validação usando Zod with improved error messages
 export const leadFormSchema = z.object({
   companyOrPerson: z.string().min(3, {
     message: "Nome da empresa ou pessoa deve ter pelo menos 3 caracteres",
   }),
   idNumber: z.string().refine(validateDocument, {
-    message: "CNPJ ou CPF inválido",
+    message: "CNPJ ou CPF inválido. Verifique se o formato está correto.",
   }),
-  entryDate: z.string(),
+  entryDate: z.string().min(1, {
+    message: "Data de entrada é obrigatória",
+  }),
   interestService: z.string().min(1, {
     message: "Serviço de interesse é obrigatório",
   }),
   employees: z.number().optional(),
   annualRevenue: z.number().optional(),
-  sourceCategory: z.enum(["indicacao", "rede_social", "outro"]),
+  sourceCategory: z.enum(["indicacao", "rede_social", "outro"], {
+    errorMap: () => ({ message: "Selecione uma categoria de origem válida" }),
+  }),
   sourceDetail: z.string().optional(),
   stageId: z.string().optional(),
 });
@@ -44,6 +48,7 @@ export function useLeadFormLogic({ onSubmit, presetStageId }: UseLeadFormLogicPr
       sourceDetail: "",
       stageId: presetStageId || pipelineStages[0].id,
     },
+    mode: "onBlur", // Validate on blur for better UX
   });
 
   const handleSubmit = (data: LeadFormValues & { stageId?: string }) => {
@@ -55,6 +60,9 @@ export function useLeadFormLogic({ onSubmit, presetStageId }: UseLeadFormLogicPr
 
   return {
     form,
-    handleSubmit
+    handleSubmit,
+    errors: form.formState.errors,
+    isSubmitting: form.formState.isSubmitting,
+    isDirty: form.formState.isDirty,
   };
 }

@@ -32,15 +32,13 @@ export const useCreateLead = () => {
       queryClient.invalidateQueries({ queryKey: ['pipeline', 'leads'] });
       queryClient.invalidateQueries({ queryKey: ['leads'] });
       
-      toast.success({
-        title: "Lead criado com sucesso",
-        description: "O lead foi adicionado ao sistema",
+      toast.success("Lead criado com sucesso", {
+        description: "O lead foi adicionado ao sistema"
       });
     },
     onError: (error: Error) => {
-      toast.error({
-        title: "Erro ao criar lead",
-        description: error.message,
+      toast.error("Erro ao criar lead", {
+        description: error.message
       });
     },
   });
@@ -69,15 +67,13 @@ export const useCreateContact = () => {
       return response.json();
     },
     onSuccess: () => {
-      toast.success({
-        title: "Contato criado com sucesso",
-        description: "O contato foi adicionado ao sistema",
+      toast.success("Contato criado com sucesso", {
+        description: "O contato foi adicionado ao sistema"
       });
     },
     onError: (error: Error) => {
-      toast.error({
-        title: "Erro ao criar contato",
-        description: error.message,
+      toast.error("Erro ao criar contato", {
+        description: error.message
       });
     },
   });

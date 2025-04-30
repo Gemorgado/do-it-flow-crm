@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Lead, PipelineStage } from "@/types";
 import { toast } from "sonner";
@@ -98,9 +99,8 @@ export function usePipelineData(initialLeads: Lead[], pipelineStages: PipelineSt
     queryClient.invalidateQueries({ queryKey: ['pipeline', 'leads'] });
     
     // Show a success toast
-    toast.success({
-      title: "Lead movido com sucesso",
-      description: `${lead.name} foi movido para ${targetStage.name}`,
+    toast.success("Lead movido com sucesso", {
+      description: `${lead.name} foi movido para ${targetStage.name}`
     });
   };
 
