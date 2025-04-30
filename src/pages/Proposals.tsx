@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +22,7 @@ import {
 import { Proposal, Lead } from "@/types";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { useProposalModal } from "@/components/CRM/hooks/useProposalModal";
 
 // Mock data para propostas
 const mockProposals: Proposal[] = [
@@ -108,6 +108,7 @@ export default function Proposals() {
   const [searchTerm, setSearchTerm] = useState("");
   const [proposals, setProposals] = useState<Proposal[]>(mockProposals);
   const [statusFilter, setStatusFilter] = useState<string>("todas");
+  const { open: openProposalModal } = useProposalModal();
 
   // Função para filtrar propostas com base no termo de busca e filtro de status
   const filteredProposals = proposals.filter(proposal => {
@@ -185,7 +186,7 @@ export default function Proposals() {
           <h1 className="text-3xl font-bold tracking-tight">Gestão de Propostas</h1>
           <p className="text-gray-500">Crie, gerencie e acompanhe propostas comerciais</p>
         </div>
-        <Button className="bg-doIt-primary hover:bg-doIt-dark">
+        <Button className="bg-doIt-primary hover:bg-doIt-dark" onClick={openProposalModal}>
           <Plus className="mr-2 h-4 w-4" /> Nova Proposta
         </Button>
       </div>

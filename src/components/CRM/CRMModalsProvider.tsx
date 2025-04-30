@@ -1,6 +1,7 @@
 
 import React from "react";
 import { ModalProvider } from "./hooks/useModalContext";
+import { ProposalModalProvider } from "./hooks/useProposalModal";
 import { LeadModal } from "./LeadModal";
 import { ContactModal } from "./ContactModal";
 
@@ -11,9 +12,11 @@ import { ContactModal } from "./ContactModal";
 export function CRMModalsProvider({ children }: { children: React.ReactNode }) {
   return (
     <ModalProvider>
-      {children}
-      <LeadModal />
-      <ContactModal />
+      <ProposalModalProvider>
+        {children}
+        <LeadModal />
+        <ContactModal />
+      </ProposalModalProvider>
     </ModalProvider>
   );
 }
