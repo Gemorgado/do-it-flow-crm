@@ -56,7 +56,7 @@ const leadFormSchema = z.object({
   }),
   employees: z.number().optional(),
   annualRevenue: z.number().optional(),
-  sourceCategory: z.enum(["indicação", "rede social", "outro"]),
+  sourceCategory: z.enum(["indicacao", "rede_social", "outro"]),
   sourceDetail: z.string().optional(),
 });
 
