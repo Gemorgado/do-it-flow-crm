@@ -9,6 +9,7 @@ import {
 } from "@/utils/pipelineAutomation";
 import { trackLeadEvent } from "@/utils/trackingUtils";
 import { useQueryClient } from "@tanstack/react-query";
+import { PipelineColumn } from "@/components/Pipeline/PipelineColumn";
 
 export function usePipelineData(initialLeads: Lead[], pipelineStages: PipelineStage[]) {
   const [filteredLeads, setFilteredLeads] = useState<Lead[]>(initialLeads);

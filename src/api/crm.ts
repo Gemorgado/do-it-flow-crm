@@ -40,11 +40,13 @@ export const useCreateLead = () => {
       toast.success("Lead criado com sucesso", {
         description: "O lead foi adicionado ao sistema"
       });
+      return null;
     },
     onError: (error: Error) => {
       toast.error("Erro ao criar lead", {
         description: error.message || "Não foi possível criar o lead. Tente novamente."
       });
+      return null;
     },
   });
 };
@@ -85,11 +87,13 @@ export const useCreateContact = () => {
       toast.success("Contato criado com sucesso", {
         description: "O contato foi adicionado ao sistema"
       });
+      return null;
     },
     onError: (error: Error) => {
       toast.error("Erro ao criar contato", {
         description: error.message || "Não foi possível criar o contato. Tente novamente."
       });
+      return null;
     },
   });
 };
