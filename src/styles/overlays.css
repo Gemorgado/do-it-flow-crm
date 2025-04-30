@@ -1,0 +1,16 @@
+
+/* === Backdrop padrão para Radix shadcn/ui Dialog/Sheet === */
+.radix-dialog-overlay,
+.radix-sheet-overlay,
+.radix-alert-overlay,
+.radix-drawer-overlay {
+  @apply fixed inset-0 bg-black/60 backdrop-blur-sm z-[100];
+}
+
+/* === Conteúdo (janela) === */
+.radix-dialog-content,
+.radix-sheet-content,
+.radix-alert-content,
+.radix-drawer-content {
+  @apply bg-white dark:bg-zinc-900 rounded-xl shadow-2xl z-[110] !opacity-100;
+}
