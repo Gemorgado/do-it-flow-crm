@@ -12,5 +12,6 @@
 .radix-sheet-content,
 .radix-alert-content,
 .radix-drawer-content {
-  @apply bg-white dark:bg-zinc-900 rounded-xl shadow-2xl z-[110] !opacity-100;
+  @apply bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 !opacity-100 
+         rounded-xl shadow-2xl z-[110];
 }
