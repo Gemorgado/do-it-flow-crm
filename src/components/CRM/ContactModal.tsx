@@ -1,8 +1,6 @@
-
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 
@@ -37,31 +35,10 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
-import { ContactFormValues } from "@/types/crm";
+import { ContactModalValues, contactModalSchema } from "@/schemas/contactFormSchemas";
 import { useCreateContact } from "@/api/crm";
-import { formatDocument, validateDocument } from "@/utils/documentUtils";
+import { formatDocument } from "@/utils/documentUtils";
 import { useContactModal } from "./hooks/useModalContext";
-
-// Schema de validação usando Zod
-const contactFormSchema = z.object({
-  contactName: z.string().min(3, {
-    message: "Nome do contato deve ter pelo menos 3 caracteres",
-  }),
-  email: z.string().email({
-    message: "Email inválido",
-  }),
-  phone: z.string().min(10, {
-    message: "Telefone deve ter pelo menos 10 dígitos",
-  }),
-  companyOrPerson: z.string().min(2, {
-    message: "Nome da empresa ou pessoa deve ter pelo menos 2 caracteres",
-  }),
-  idNumber: z.string().optional(),
-  entryDate: z.string(),
-  interestService: z.string().optional(),
-  sourceCategory: z.enum(["indicação", "rede social", "outro"]),
-  sourceDetail: z.string().optional(),
-});
 
 /**
  * Modal para criação de novos contatos
@@ -70,8 +47,8 @@ export function ContactModal() {
   const { isOpen, close } = useContactModal();
   const { mutate, isPending } = useCreateContact();
 
-  const form = useForm<ContactFormValues>({
-    resolver: zodResolver(contactFormSchema),
+  const form = useForm<ContactModalValues>({
+    resolver: zodResolver(contactModalSchema),
     defaultValues: {
       contactName: "",
       email: "",
@@ -85,7 +62,7 @@ export function ContactModal() {
     },
   });
 
-  const onSubmit = (data: ContactFormValues) => {
+  const onSubmit = (data: ContactModalValues) => {
     mutate(data, {
       onSuccess: () => {
         close();

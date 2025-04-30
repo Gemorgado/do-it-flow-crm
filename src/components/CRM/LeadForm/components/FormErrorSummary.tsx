@@ -2,7 +2,7 @@
 import React from "react";
 import { useFormContext } from "react-hook-form";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { LeadFormValues } from "@/types/crm";
+import { LeadFormValues } from "@/schemas/contactFormSchemas";
 import { AlertCircle } from "lucide-react";
 
 export const FormErrorSummary = () => {

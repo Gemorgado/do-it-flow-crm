@@ -1,43 +1,10 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { format } from "date-fns";
-import { LeadFormValues } from "@/types/crm";
+import { LeadFormValues, leadFormSchema } from "@/schemas/contactFormSchemas";
 import { validateDocument } from "@/utils/documentUtils";
-import { PipelineStage } from "@/types";
 import { pipelineStages } from "@/data/leadsData";
-
-// Schema de validação usando Zod with improved error messages
-export const leadFormSchema = z.object({
-  companyOrPerson: z.string().min(3, {
-    message: "Nome da empresa ou pessoa deve ter pelo menos 3 caracteres",
-  }),
-  idNumber: z.string().refine(validateDocument, {
-    message: "CNPJ ou CPF inválido. Verifique se o formato está correto.",
-  }),
-  entryDate: z.string().min(1, {
-    message: "Data de entrada é obrigatória",
-  }),
-  interestService: z.string().min(1, {
-    message: "Serviço de interesse é obrigatório",
-  }),
-  employees: z.number().optional()
-    .refine(val => !val || val >= 0, {
-      message: "O número de funcionários não pode ser negativo",
-    }),
-  annualRevenue: z.number().optional()
-    .refine(val => !val || val >= 0, {
-      message: "O faturamento anual não pode ser negativo",
-    }),
-  sourceCategory: z.enum(["indicacao", "rede_social", "outro"], {
-    errorMap: () => ({ message: "Selecione uma categoria de origem válida" }),
-  }),
-  sourceDetail: z.string().optional(),
-  stageId: z.string().min(1, {
-    message: "É necessário selecionar um estágio"
-  }).optional(),
-});
 
 interface UseLeadFormLogicProps {
   onSubmit: (data: LeadFormValues & { stageId?: string }) => void;

@@ -1,34 +1,8 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import { ContactFormValues, contactFormSchema } from "@/schemas/contactFormSchemas";
 import { toast } from "@/hooks/use-toast";
-
-// Schema definition with improved validation messages
-const contactFormSchema = z.object({
-  name: z.string().min(2, {
-    message: "O nome precisa ter pelo menos 2 caracteres.",
-  }),
-  company: z.string().optional(),
-  email: z.string().email({
-    message: "Por favor insira um e-mail válido.",
-  }),
-  phone: z.string()
-    .min(8, {
-      message: "Insira um número de telefone válido.",
-    })
-    .refine((val) => /^(\d|\(|\)|\s|-|\.)+$/.test(val), {
-      message: "O telefone deve conter apenas números e caracteres especiais válidos.",
-    }),
-  status: z.string().min(1, {
-    message: "Por favor selecione um status.",
-  }),
-  source: z.string().min(1, {
-    message: "Por favor selecione uma origem.",
-  }),
-});
-
-type ContactFormValues = z.infer<typeof contactFormSchema>;
 
 const defaultValues: Partial<ContactFormValues> = {
   name: "",

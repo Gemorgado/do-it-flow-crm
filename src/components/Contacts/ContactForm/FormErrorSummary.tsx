@@ -3,9 +3,10 @@ import React from "react";
 import { useFormContext } from "react-hook-form";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import { ContactFormValues } from "@/schemas/contactFormSchemas";
 
 export const FormErrorSummary = () => {
-  const { formState } = useFormContext();
+  const { formState } = useFormContext<ContactFormValues>();
   const { errors } = formState;
   
   if (!Object.keys(errors).length) return null;
