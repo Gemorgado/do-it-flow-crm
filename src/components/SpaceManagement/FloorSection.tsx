@@ -2,6 +2,7 @@
 import React from "react";
 import { Location } from "@/types";
 import { SpaceUnit } from "./SpaceUnit";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface FloorSectionProps {
   title: string;
@@ -20,13 +21,16 @@ export function FloorSection({
 }: FloorSectionProps) {
   if (spaces.length === 0) return null;
   
-  let gridClassName = gridCols;
+  const isMobile = useIsMobile();
+  let gridClassName = isMobile ? "grid-cols-3 xs:grid-cols-4" : gridCols;
   
   // Adjust grid columns based on space type
-  if (spaceType === "sala_privativa") {
-    gridClassName = "grid-cols-5 sm:grid-cols-8 md:grid-cols-10";
-  } else if (spaceType === "sala_reuniao") {
-    gridClassName = "grid-cols-4 sm:grid-cols-6 md:grid-cols-8";
+  if (!isMobile) {
+    if (spaceType === "sala_privativa") {
+      gridClassName = "grid-cols-5 sm:grid-cols-8 md:grid-cols-10";
+    } else if (spaceType === "sala_reuniao") {
+      gridClassName = "grid-cols-4 sm:grid-cols-6 md:grid-cols-8";
+    }
   }
 
   return (

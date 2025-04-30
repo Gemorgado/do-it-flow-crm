@@ -44,4 +44,12 @@
   .campaign-email {
     @apply bg-green-100 text-green-800;
   }
+
+  /* Add xs breakpoint for very small mobile screens */
+  @media (min-width: 400px) {
+    .xs\:grid-cols-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
 }
+

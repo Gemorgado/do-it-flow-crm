@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Location } from "@/types";
 import { BuildingMap } from "./BuildingMap";
 import { FloorFilterControls } from "./FloorFilterControls";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface BuildingMapSectionProps {
   spaces: Location[];
@@ -20,8 +21,10 @@ export function BuildingMapSection({
   onFloorChange,
   onSpaceClick
 }: BuildingMapSectionProps) {
+  const isMobile = useIsMobile();
+
   return (
-    <Card className="lg:col-span-3 p-4">
+    <Card className={isMobile ? "col-span-1 p-3" : "lg:col-span-3 p-4"}>
       <div className="mb-4">
         <FloorFilterControls 
           floorFilter={floorFilter}

@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { useSpaceBindings } from "@/hooks/useSpaceBindings";
 import { useClients } from "@/hooks/useClients";
 import { isAfter, parseISO } from "date-fns";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface SpaceUnitProps {
   space: Location;
@@ -15,6 +16,7 @@ interface SpaceUnitProps {
 export function SpaceUnit({ space, onClick }: SpaceUnitProps) {
   const { data: bindings = [] } = useSpaceBindings();
   const { data: clients = [] } = useClients();
+  const isMobile = useIsMobile();
   
   const spaceTypeLabel = {
     sala_privativa: "Sala Privativa",
@@ -55,6 +57,23 @@ export function SpaceUnit({ space, onClick }: SpaceUnitProps) {
       currency: 'BRL' 
     }).format(value);
   };
+
+  // For mobile, we'll just make the space clickable without the tooltip
+  if (isMobile) {
+    return (
+      <button
+        onClick={onClick}
+        className={cn(
+          "w-full h-10 rounded-md flex items-center justify-center transition-all cursor-pointer",
+          "border hover:opacity-80 active:opacity-70 text-xs",
+          getSpaceStatusClass()
+        )}
+        aria-label={`${spaceTypeLabel[space.type as keyof typeof spaceTypeLabel]} ${space.identifier}`}
+      >
+        {space.identifier}
+      </button>
+    );
+  }
 
   return (
     <Tooltip>
