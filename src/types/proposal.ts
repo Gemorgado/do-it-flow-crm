@@ -1,10 +1,11 @@
 
 export type ServiceType =
-  | 'endereços_fiscais'
-  | 'salas_privadas'
-  | 'coworking_flex'
-  | 'consultoria'
-  | 'outro';
+  | 'endereco_fiscal'
+  | 'estacao_flex'
+  | 'estacao_fixa'
+  | 'sala_privativa'
+  | 'sala_reuniao'
+  | 'auditorio';
 
 export interface Proposal {
   id: string;
@@ -39,4 +40,6 @@ export interface CreateProposalInput {
 export interface Company {
   id: string;
   name: string;
+  docNumber?: string;
+  contact?: string;
 }

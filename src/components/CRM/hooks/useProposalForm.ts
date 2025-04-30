@@ -9,7 +9,7 @@ import { useAuth } from '@/modules/auth/AuthProvider';
 
 const formSchema = z.object({
   companyId: z.string().min(1, 'Selecione uma empresa'),
-  serviceType: z.enum(['endereços_fiscais', 'salas_privadas', 'coworking_flex', 'consultoria', 'outro'] as const),
+  serviceType: z.enum(['endereco_fiscal', 'estacao_flex', 'estacao_fixa', 'sala_privativa', 'sala_reuniao', 'auditorio'] as const),
   amount: z.number().min(0, 'O valor deve ser maior ou igual a zero'),
   proposalDate: z.string().min(1, 'Selecione uma data'),
   followUpAt: z.string().optional(),
@@ -27,7 +27,7 @@ export const useProposalForm = (onClose: () => void) => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       companyId: '',
-      serviceType: 'salas_privadas',
+      serviceType: 'sala_privativa',
       amount: 0,
       proposalDate: new Date().toISOString().split('T')[0],
       followUpAt: '',

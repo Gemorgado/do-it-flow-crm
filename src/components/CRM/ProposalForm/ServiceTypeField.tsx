@@ -6,11 +6,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ServiceType } from '@/types/proposal';
 
 const serviceTypeOptions: { value: ServiceType; label: string }[] = [
-  { value: 'endereços_fiscais', label: 'Endereços Fiscais' },
-  { value: 'salas_privadas', label: 'Salas Privadas' },
-  { value: 'coworking_flex', label: 'Coworking Flex' },
-  { value: 'consultoria', label: 'Consultoria' },
-  { value: 'outro', label: 'Outro' },
+  { value: 'endereco_fiscal', label: 'Endereço Fiscal' },
+  { value: 'estacao_flex', label: 'Estação Flex' },
+  { value: 'estacao_fixa', label: 'Estação Fixa' },
+  { value: 'sala_privativa', label: 'Sala Privativa' },
+  { value: 'sala_reuniao', label: 'Sala de Reunião' },
+  { value: 'auditorio', label: 'Auditório' },
 ];
 
 interface ServiceTypeFieldProps {

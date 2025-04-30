@@ -1,21 +1,19 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Control } from 'react-hook-form';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-
-// Mock company options (in real app, this would come from an API)
-const companyOptions = [
-  { id: 'comp-1', name: 'Empresa ABC Ltda' },
-  { id: 'comp-2', name: 'Tech Solutions S.A.' },
-  { id: 'comp-3', name: 'Consultoria XYZ' },
-];
+import { useCompanies } from '@/api/companies';
+import { Combobox } from '@/components/ui/combobox';
+import { Company } from '@/types/proposal';
 
 interface CompanyFieldProps {
   control: Control<any>;
 }
 
 export function CompanyField({ control }: CompanyFieldProps) {
+  const [query, setQuery] = useState('');
+  const { data: companies = [] } = useCompanies(query);
+
   return (
     <FormField
       control={control}
@@ -23,23 +21,18 @@ export function CompanyField({ control }: CompanyFieldProps) {
       render={({ field }) => (
         <FormItem>
           <FormLabel>Empresa / Cliente</FormLabel>
-          <Select 
-            onValueChange={field.onChange} 
-            defaultValue={field.value}
-          >
-            <FormControl>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione uma empresa" />
-              </SelectTrigger>
-            </FormControl>
-            <SelectContent>
-              {companyOptions.map((company) => (
-                <SelectItem key={company.id} value={company.id}>
-                  {company.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <FormControl>
+            <Combobox
+              placeholder="Selecione uma empresa"
+              searchPlaceholder="Buscar empresa..."
+              options={companies}
+              selected={companies.find(c => c.id === field.value) || null}
+              onSelect={(company: Company) => field.onChange(company.id)}
+              onSearch={setQuery}
+              getOptionLabel={(company: Company) => company.name}
+              emptyMessage="Nenhuma empresa encontrada."
+            />
+          </FormControl>
           <FormMessage />
         </FormItem>
       )}
