@@ -11,7 +11,7 @@ export function useImporter(): UseImporterReturn {
   const [file, setFile] = useState<File | null>(null);
   const [headers, setHeaders] = useState<string[]>([]);
   const [rows, setRows] = useState<Record<string, any>[]>([]);
-  const [mapping, setMapping] = useState<Record<string, InternalField | ''>>({}); // Updated type
+  const [mapping, setMapping] = useState<Record<string, InternalField | ''>>({});
   const [errors, setErrors] = useState<ImportError[]>([]);
   const [snapshot, setSnapshot] = useState<ConexaSnapshot | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -42,7 +42,7 @@ export function useImporter(): UseImporterReturn {
   const fileImporter = useImportFile(state, setState);
   const importProcessor = useImportProcess(state, setState);
   
-  // Updated to handle individual field mapping
+  // Handle individual field mapping
   const handleMappingChange = useCallback((header: string, field: InternalField | '') => {
     setMapping(prev => {
       const newMapping = { ...prev };

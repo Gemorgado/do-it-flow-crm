@@ -13,8 +13,8 @@ export interface ImporterState {
   isProcessing: boolean;
 }
 
-export interface UseImporterReturn extends Omit<ImporterState, 'mapping'> {
-  mapping: Record<string, InternalField | ''>;
+export interface UseImporterReturn extends Omit<ImporterState, 'file'> {
+  file: File | null;
   isLoading: boolean;
   handleFileSelect: (file: File) => Promise<void>;
   handleMappingChange: (header: string, field: InternalField | '') => void;

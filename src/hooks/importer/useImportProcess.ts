@@ -20,8 +20,13 @@ export function useImportProcess(
     setState({ step: 'processing', isProcessing: true });
     
     try {
-      // Transform rows using the mapping
-      const result = transformRows(state.rows, state.mapping as Record<string, InternalField>);
+      // Filter out empty mappings before passing to transformRows
+      const validMapping = Object.fromEntries(
+        Object.entries(state.mapping).filter(([_, field]) => field !== '')
+      ) as Record<string, InternalField>;
+      
+      // Transform rows using the valid mapping
+      const result = transformRows(state.rows, validMapping);
       
       if (result.errors.length > 0) {
         setState({ 

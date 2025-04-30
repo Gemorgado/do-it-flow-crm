@@ -62,7 +62,10 @@ export function ImporterStepper({
       
       {step === 'preview' && (
         <PreviewStep
-          mapping={mapping}
+          // Use type assertion to handle the empty string values in mapping
+          mapping={Object.fromEntries(
+            Object.entries(mapping).filter(([_, field]) => field !== '')
+          ) as Record<string, InternalField>}
           previewRows={rows.slice(0, 5)}
           onBack={() => handleNavigateToStep('mapping')}
           onImport={handleImport}
