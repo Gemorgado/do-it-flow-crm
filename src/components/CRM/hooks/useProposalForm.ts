@@ -4,12 +4,16 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useCreateProposal } from '@/api/proposals';
-import { CreateProposalInput, ServiceType } from '@/types/proposal';
+import { CreateProposalInput } from '@/types/proposal';
 import { useAuth } from '@/modules/auth/AuthProvider';
+import { ServiceType } from '@/constants/serviceOptions';
 
+// Updated schema with required fields for company and service type
 const formSchema = z.object({
   companyId: z.string().min(1, 'Selecione uma empresa'),
-  serviceType: z.enum(['endereco_fiscal', 'estacao_flex', 'estacao_fixa', 'sala_privativa', 'sala_reuniao', 'auditorio'] as const),
+  serviceType: z.enum(['endereco_fiscal', 'estacao_flex', 'estacao_fixa', 'sala_privativa', 'sala_reuniao', 'auditorio'] as const, {
+    required_error: 'Escolha o serviço',
+  }),
   amount: z.number().min(0, 'O valor deve ser maior ou igual a zero'),
   proposalDate: z.string().min(1, 'Selecione uma data'),
   followUpAt: z.string().optional(),
@@ -27,7 +31,7 @@ export const useProposalForm = (onClose: () => void) => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       companyId: '',
-      serviceType: 'sala_privativa',
+      serviceType: 'sala_privativa' as ServiceType,
       amount: 0,
       proposalDate: new Date().toISOString().split('T')[0],
       followUpAt: '',

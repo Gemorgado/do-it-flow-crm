@@ -60,7 +60,10 @@ export function ProposalModal({ isOpen, onClose }: ProposalModalProps) {
               >
                 Cancelar
               </Button>
-              <Button type="submit" disabled={isPending}>
+              <Button 
+                type="submit" 
+                disabled={isPending}
+              >
                 {isPending ? (
                   <>
                     <Loader className="mr-2 h-4 w-4 animate-spin" />

@@ -1,11 +1,7 @@
 
-export type ServiceType =
-  | 'endereco_fiscal'
-  | 'estacao_flex'
-  | 'estacao_fixa'
-  | 'sala_privativa'
-  | 'sala_reuniao'
-  | 'auditorio';
+import { ServiceType as ServiceOptionType } from '@/constants/serviceOptions';
+
+export type ServiceType = ServiceOptionType;
 
 export interface Proposal {
   id: string;

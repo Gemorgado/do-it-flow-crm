@@ -36,3 +36,19 @@ export const useCompanies = (query: string = "") => {
     initialData: [],
   });
 };
+
+// New company search hook as specified
+export const useCompanySearch = (q: string) => {
+  return useQuery({
+    queryKey: ['company-search', q],
+    queryFn: async () => {
+      // In a real app, this would call an API
+      // For now, we'll reuse our existing mock search function
+      return searchCompanies(q);
+    },
+    enabled: q.length > 1,
+    // Default to empty array when no results
+    select: (data) => data || [],
+    initialData: [],
+  });
+};

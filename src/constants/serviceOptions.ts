@@ -1,0 +1,11 @@
+
+export const SERVICE_OPTIONS = [
+  { value: 'endereco_fiscal', label: 'Endereço Fiscal' },
+  { value: 'estacao_flex',    label: 'Estação Flex'   },
+  { value: 'estacao_fixa',    label: 'Estação Fixa'   },
+  { value: 'sala_privativa',  label: 'Sala Privativa' },
+  { value: 'sala_reuniao',    label: 'Sala de Reunião'},
+  { value: 'auditorio',       label: 'Auditório'      },
+] as const;
+
+export type ServiceType = typeof SERVICE_OPTIONS[number]['value'];

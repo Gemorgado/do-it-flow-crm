@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
-import { Control } from 'react-hook-form';
+import { Control, Controller } from 'react-hook-form';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
-import { useCompanies } from '@/api/companies';
+import { useCompanySearch } from '@/api/companies';
 import { Combobox } from '@/components/ui/combobox';
 import { Company } from '@/types/proposal';
 
@@ -12,7 +12,7 @@ interface CompanyFieldProps {
 
 export function CompanyField({ control }: CompanyFieldProps) {
   const [query, setQuery] = useState('');
-  const { data: companies = [] } = useCompanies(query);
+  const { data: companies = [] } = useCompanySearch(query);
 
   return (
     <FormField

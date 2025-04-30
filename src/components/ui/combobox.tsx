@@ -32,6 +32,9 @@ interface ComboboxProps {
   className?: string
   disabled?: boolean
   emptyMessage?: string
+  // Additional props for the requested interface
+  query?: string
+  onQueryChange?: (value: string) => void
 }
 
 export function Combobox({
@@ -44,7 +47,9 @@ export function Combobox({
   searchPlaceholder = "Search...",
   className,
   disabled = false,
-  emptyMessage = "No results found."
+  emptyMessage = "No results found.",
+  query,
+  onQueryChange
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
   
@@ -53,9 +58,15 @@ export function Combobox({
   
   const handleSearch = React.useCallback(
     (value: string) => {
-      onSearch?.(value);
+      // Support both patterns
+      if (onQueryChange) {
+        onQueryChange(value);
+      }
+      if (onSearch) {
+        onSearch(value);
+      }
     },
-    [onSearch]
+    [onSearch, onQueryChange]
   );
 
   return (
@@ -76,6 +87,7 @@ export function Combobox({
         <Command>
           <CommandInput 
             placeholder={searchPlaceholder}
+            value={query}
             onValueChange={handleSearch}
             className="h-9"
           />
