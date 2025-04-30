@@ -4,22 +4,38 @@ import { useSnapshot } from '@/contexts/SnapshotProvider';
 
 export function useCustomers() {
   const snap = useSnapshot();
-  return snap?.customers ?? [];
+  if (!snap) {
+    console.log("snapshot ainda null - useCustomers");
+    return [];
+  }
+  return snap.customers ?? [];
 }
 
 export function useContracts() {
   const snap = useSnapshot();
-  return snap?.contracts ?? [];
+  if (!snap) {
+    console.log("snapshot ainda null - useContracts");
+    return [];
+  }
+  return snap.contracts ?? [];
 }
 
 export function useServices() {
   const snap = useSnapshot();
-  return snap?.services ?? [];
+  if (!snap) {
+    console.log("snapshot ainda null - useServices");
+    return [];
+  }
+  return snap.services ?? [];
 }
 
 export function useRoomOccupations() {
   const snap = useSnapshot();
-  return snap?.roomOccupations ?? [];
+  if (!snap) {
+    console.log("snapshot ainda null - useRoomOccupations");
+    return [];
+  }
+  return snap.roomOccupations ?? [];
 }
 
 /** Ocupação diária por sala (exibida no Mapa) */

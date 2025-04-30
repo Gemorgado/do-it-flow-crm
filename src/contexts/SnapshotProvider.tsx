@@ -12,6 +12,9 @@ export const SnapshotProvider = ({ children }: { children: React.ReactNode }) =>
     queryFn: () => persistence.getLastSnapshot(),
     staleTime: Infinity,
   });
+  
+  console.log('Snapshot →', snap);
+  
   return <SnapshotCtx.Provider value={snap || null}>{children}</SnapshotCtx.Provider>;
 };
 
