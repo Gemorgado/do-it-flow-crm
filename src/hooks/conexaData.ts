@@ -27,3 +27,31 @@ export function useContracts() {
     }
   }).data || [];
 }
+
+/**
+ * Hook to get all customers from Conexa data
+ * @returns Array of customers
+ */
+export function useCustomers() {
+  return useQuery({
+    queryKey: ["customers"],
+    queryFn: async () => {
+      const snap = await persistence.getLastSnapshot();
+      return snap?.customers || [];
+    }
+  }).data || [];
+}
+
+/**
+ * Hook to get all services from Conexa data
+ * @returns Array of services
+ */
+export function useServices() {
+  return useQuery({
+    queryKey: ["services"],
+    queryFn: async () => {
+      const snap = await persistence.getLastSnapshot();
+      return snap?.services || [];
+    }
+  }).data || [];
+}
