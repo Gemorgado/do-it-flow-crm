@@ -1,6 +1,6 @@
-
-import { User } from "@/modules/settings/users/types";
+import { User, Team, TabKey } from "@/modules/settings/users/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toTabKeyArray } from "./utils";
 
 interface LoginCredentials {
   email: string;
@@ -33,18 +33,30 @@ const mockUsers = [
   },
 ];
 
+// Utility function to map API user data to User type
+function mapApiUser(userData: any): User {
+  return {
+    id: userData.id,
+    name: userData.name,
+    email: userData.email,
+    team: userData.team as Team,
+    allowedTabs: toTabKeyArray(userData.allowedTabs),
+    createdAt: userData.createdAt,
+  };
+}
+
 // In a real app, these would be API calls
 export const loginApi = async (credentials: LoginCredentials): Promise<LoginResponse> => {
   // Simulate network request
   await new Promise((resolve) => setTimeout(resolve, 800));
 
-  const user = mockUsers.find((u) => u.email === credentials.email);
+  const userData = mockUsers.find((u) => u.email === credentials.email);
   
-  if (!user || credentials.password !== "123456") {
+  if (!userData || credentials.password !== "123456") {
     throw new Error("Credenciais inválidas");
   }
 
-  const token = `mock-jwt-token-${user.id}-${Date.now()}`;
+  const token = `mock-jwt-token-${userData.id}-${Date.now()}`;
   
   // Store token based on rememberMe preference
   if (credentials.rememberMe) {
@@ -52,6 +64,9 @@ export const loginApi = async (credentials: LoginCredentials): Promise<LoginResp
   } else {
     sessionStorage.setItem("auth-token", token);
   }
+
+  // Map API user data to User type
+  const user = mapApiUser(userData);
 
   return { token, user };
 };
@@ -70,13 +85,14 @@ export const getUserApi = async (): Promise<User> => {
   // In a real app, you would validate the token with the backend
   // and fetch the user data
   const userId = token.split("-")[2];
-  const user = mockUsers.find((u) => u.id === userId);
+  const userData = mockUsers.find((u) => u.id === userId);
   
-  if (!user) {
+  if (!userData) {
     throw new Error("Usuário não encontrado");
   }
   
-  return user;
+  // Map API user data to User type
+  return mapApiUser(userData);
 };
 
 export const logoutApi = (): void => {
