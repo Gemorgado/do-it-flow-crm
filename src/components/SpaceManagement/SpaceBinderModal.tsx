@@ -1,15 +1,15 @@
 
 import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { useClients, useClientContracts } from "@/hooks/useClients";
+import { useClients, useClientActiveContract } from "@/hooks/useClients";
 import { useSpaceBindings, useBindSpace, useUnbindSpace } from "@/hooks/useSpaceBindings";
 import { Location, SpaceBinding } from "@/types";
 import { SpaceBinderClient } from "./SpaceBinderClient";
-import { SpaceBinderContract } from "./SpaceBinderContract";
 import { SpaceBinderContractDetails } from "./SpaceBinderContractDetails";
 import { SpaceBinderActions } from "./SpaceBinderActions";
 import { SpaceInfo } from "./SpaceInfo";
 import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 interface SpaceBinderModalProps {
   isOpen: boolean;
@@ -19,17 +19,17 @@ interface SpaceBinderModalProps {
 
 export function SpaceBinderModal({ isOpen, onClose, space }: SpaceBinderModalProps) {
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
-  const [selectedContractId, setSelectedContractId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   
   // Contract details state
   const [unitPrice, setUnitPrice] = useState<number | null>(null);
   const [startDate, setStartDate] = useState<string | null>(null);
   const [endDate, setEndDate] = useState<string | null>(null);
+  const [contractId, setContractId] = useState<string | null>(null);
   
   const { data: bindings = [] } = useSpaceBindings();
   const { data: clientsList = [] } = useClients();
-  const { data: contracts = [], isLoading: isLoadingContracts } = useClientContracts(selectedClientId);
+  const { data: activeContract = null, isLoading: isLoadingContract } = useClientActiveContract(selectedClientId);
   
   const bindSpace = useBindSpace();
   const unbindSpace = useUnbindSpace();
@@ -41,7 +41,7 @@ export function SpaceBinderModal({ isOpen, onClose, space }: SpaceBinderModalPro
   useEffect(() => {
     if (existingBinding) {
       setSelectedClientId(existingBinding.clientId);
-      setSelectedContractId(existingBinding.contractId);
+      setContractId(existingBinding.contractId);
       setUnitPrice(existingBinding.unitPrice || null);
       setStartDate(existingBinding.startDate || null);
       setEndDate(existingBinding.endDate || null);
@@ -51,7 +51,7 @@ export function SpaceBinderModal({ isOpen, onClose, space }: SpaceBinderModalPro
       if (isOpen) {
         console.log("Resetting form - no existing binding");
         setSelectedClientId(null);
-        setSelectedContractId(null);
+        setContractId(null);
         setUnitPrice(null);
         setStartDate(null);
         setEndDate(null);
@@ -65,32 +65,28 @@ export function SpaceBinderModal({ isOpen, onClose, space }: SpaceBinderModalPro
     (client.company && client.company.toLowerCase().includes(searchQuery.toLowerCase()))
   );
   
-  // Update contract details when contract is selected
+  // Update contract details when active contract changes
   useEffect(() => {
-    if (!selectedContractId) {
+    if (!activeContract) {
+      setContractId(null);
       setUnitPrice(null);
       setStartDate(null);
       setEndDate(null);
       return;
     }
     
-    const selectedContract = contracts.find(c => c.id === selectedContractId);
-    if (selectedContract) {
-      console.log("Selected contract:", selectedContract);
-      setUnitPrice(selectedContract.value);
-      setStartDate(selectedContract.contractStart);
-      setEndDate(selectedContract.contractEnd);
-    } else {
-      console.warn("Contract ID selected but not found in contracts list:", selectedContractId);
-    }
-  }, [selectedContractId, contracts]);
+    console.log("Setting contract details from active contract:", activeContract);
+    setContractId(activeContract.id);
+    setUnitPrice(activeContract.value);
+    setStartDate(activeContract.contractStart);
+    setEndDate(activeContract.contractEnd);
+  }, [activeContract]);
   
   // Log important state changes for debugging purposes
   useEffect(() => {
     console.log("Client ID:", selectedClientId);
-    console.log("Available contracts:", contracts);
-    console.log("Selected contract ID:", selectedContractId);
-  }, [selectedClientId, contracts, selectedContractId]);
+    console.log("Active contract:", activeContract);
+  }, [selectedClientId, activeContract]);
   
   // Handle binding the space
   const handleSave = () => {
@@ -108,9 +104,9 @@ export function SpaceBinderModal({ isOpen, onClose, space }: SpaceBinderModalPro
       return;
     }
     
-    if (!selectedContractId) {
+    if (!contractId) {
       toast.error("Dados incompletos", {
-        description: "Selecione um contrato para vincular o espaço"
+        description: "Cliente não possui contrato ativo"
       });
       return;
     }
@@ -118,7 +114,7 @@ export function SpaceBinderModal({ isOpen, onClose, space }: SpaceBinderModalPro
     const binding: SpaceBinding = {
       spaceId: space.id,
       clientId: selectedClientId,
-      contractId: selectedContractId,
+      contractId: contractId,
       boundAt: new Date().toISOString(),
       unitPrice,
       startDate,
@@ -136,21 +132,6 @@ export function SpaceBinderModal({ isOpen, onClose, space }: SpaceBinderModalPro
     unbindSpace.mutate(space.id);
     onClose();
   };
-  
-  // Reset selected contract when client changes
-  useEffect(() => {
-    if (selectedClientId && selectedContractId) {
-      // Only reset if we're not loading existing binding data
-      const isFromExistingBinding = existingBinding && 
-                                   existingBinding.clientId === selectedClientId && 
-                                   existingBinding.contractId === selectedContractId;
-      
-      if (!isFromExistingBinding) {
-        console.log("Client changed - resetting selected contract");
-        setSelectedContractId(null);
-      }
-    }
-  }, [selectedClientId, existingBinding, selectedContractId]);
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -174,23 +155,30 @@ export function SpaceBinderModal({ isOpen, onClose, space }: SpaceBinderModalPro
               filteredClients={filteredClients}
               selectedClientId={selectedClientId}
               setSelectedClientId={setSelectedClientId}
-              setSelectedContractId={setSelectedContractId}
             />
             
-            <SpaceBinderContract
-              selectedClientId={selectedClientId}
-              selectedContractId={selectedContractId}
-              setSelectedContractId={setSelectedContractId}
-              contracts={contracts}
-              isLoading={isLoadingContracts}
-            />
+            {isLoadingContract && selectedClientId && (
+              <div className="flex items-center justify-center p-4">
+                <Loader2 className="h-6 w-6 mr-2 animate-spin" />
+                <span>Carregando contrato...</span>
+              </div>
+            )}
             
-            <SpaceBinderContractDetails
-              selectedContractId={selectedContractId}
-              unitPrice={unitPrice}
-              startDate={startDate}
-              endDate={endDate}
-            />
+            {selectedClientId && !isLoadingContract && !activeContract && (
+              <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-md text-yellow-800">
+                <p className="text-sm font-medium">Cliente não possui contrato ativo</p>
+                <p className="text-xs">Cadastre um contrato ativo para este cliente primeiro</p>
+              </div>
+            )}
+            
+            {activeContract && (
+              <SpaceBinderContractDetails
+                selectedContractId={contractId}
+                unitPrice={unitPrice}
+                startDate={startDate}
+                endDate={endDate}
+              />
+            )}
           </div>
         )}
         
@@ -201,7 +189,7 @@ export function SpaceBinderModal({ isOpen, onClose, space }: SpaceBinderModalPro
           handleUnbind={handleUnbind}
           bindSpace={bindSpace}
           unbindSpace={unbindSpace}
-          canSave={!!selectedClientId && !!selectedContractId}
+          canSave={!!selectedClientId && !!contractId && !isLoadingContract}
         />
       </DialogContent>
     </Dialog>

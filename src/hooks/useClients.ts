@@ -50,3 +50,41 @@ export function useClientContracts(clientId: string | null) {
     refetchOnMount: true
   });
 }
+
+/**
+ * Hook to get the active contract for a specific client
+ * @param clientId - Client ID to get active contract for
+ * @returns Query with client's active contract
+ */
+export function useClientActiveContract(clientId: string | null) {
+  return useQuery({
+    queryKey: ["active-contract", clientId],
+    queryFn: async () => {
+      if (!clientId) return null;
+      
+      console.log(`Fetching active contract for client ${clientId}`);
+      
+      // Simulate API call to get active contract
+      // In a real app, this would call an endpoint like /clients/:id/contract-active
+      const activeContracts = clientServices.filter(
+        contract => contract.clientId === clientId && contract.status === "ativo"
+      );
+      
+      // Return the most recent contract (in a real app, this logic would be on the backend)
+      const sortedContracts = activeContracts.sort((a, b) => {
+        return new Date(b.contractStart).getTime() - new Date(a.contractStart).getTime();
+      });
+      
+      const activeContract = sortedContracts[0] || null;
+      console.log("Active contract selected:", activeContract);
+      
+      // Add delay to simulate API call
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      return activeContract;
+    },
+    enabled: !!clientId,
+    staleTime: 0, // Always refetch when clientId changes
+    refetchOnMount: true
+  });
+}
