@@ -1,7 +1,7 @@
 
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
-import { transformRows, generateErrorCSV } from '@/integrations/importer/transformData';
+import { transformRows, generateErrorCSV } from '@/integrations/importer/dataTransformation/transformData';
 import { processConexaSnapshot } from '@/integrations/conexa/processConexaSnapshot';
 import type { ImporterState } from './types';
 import { InternalField } from '@/integrations/importer/types';
