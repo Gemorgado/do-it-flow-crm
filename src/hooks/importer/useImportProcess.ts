@@ -3,42 +3,33 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { transformRows, generateErrorCSV } from '@/integrations/importer/dataTransformation/transformData';
 import { processConexaSnapshot } from '@/integrations/conexa/processConexaSnapshot';
+import { useState } from 'react';
 import type { ImporterState } from './types';
-import { InternalField } from '@/integrations/importer/types';
+import { InternalField, ImportStep } from '@/integrations/importer/types';
 
 export function useImportProcess(
   state: ImporterState,
-  setState: React.Dispatch<React.SetStateAction<ImporterState>>
+  setState: (newState: Partial<ImporterState>) => void
 ) {
   const { toast } = useToast();
   const navigate = useNavigate();
-  
-  const handleMappingChange = (header: string, field: InternalField | '') => {
-    const newMapping = { ...state.mapping };
-    
-    if (field === '') {
-      delete newMapping[header];
-    } else {
-      newMapping[header] = field;
-    }
-    
-    setState(prev => ({ ...prev, mapping: newMapping }));
-  };
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleImport = async () => {
-    setState(prev => ({ ...prev, step: 'processing', isProcessing: true }));
+    setIsLoading(true);
+    setState({ step: 'processing', isProcessing: true });
     
     try {
       // Transform rows using the mapping
-      const result = transformRows(state.rows, state.mapping);
+      const result = transformRows(state.rows, state.mapping as Record<string, InternalField>);
       
       if (result.errors.length > 0) {
-        setState(prev => ({ 
-          ...prev, 
+        setState({ 
           errors: result.errors, 
           step: 'error',
           isProcessing: false
-        }));
+        });
+        setIsLoading(false);
         return;
       }
       
@@ -48,12 +39,11 @@ export function useImportProcess(
       
       // Process the snapshot
       await processConexaSnapshot(result.snapshot);
-      setState(prev => ({ 
-        ...prev, 
+      setState({ 
         snapshot: result.snapshot, 
         step: 'complete',
         isProcessing: false
-      }));
+      });
       
       toast({
         title: 'Importação bem-sucedida',
@@ -66,7 +56,9 @@ export function useImportProcess(
         description: error instanceof Error ? error.message : 'Erro desconhecido',
         variant: 'destructive',
       });
-      setState(prev => ({ ...prev, step: 'error', isProcessing: false }));
+      setState({ step: 'error', isProcessing: false });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -105,16 +97,25 @@ export function useImportProcess(
   };
   
   // Handle navigation between steps
-  const handleNavigateToStep = (newStep: ImporterState['step']) => {
-    setState(prev => ({ ...prev, step: newStep }));
+  const handleNavigateToStep = (newStep: ImportStep) => {
+    setState({ step: newStep });
   };
 
   return {
-    handleMappingChange,
+    handleMappingChange: (header: string, field: InternalField | '') => {
+      const newMapping = { ...state.mapping };
+      if (field === '') {
+        delete newMapping[header];
+      } else {
+        newMapping[header] = field;
+      }
+      setState({ mapping: newMapping });
+    },
     handleImport,
     handleDownloadErrors,
     handleReset,
     handleViewData,
-    handleNavigateToStep
+    handleNavigateToStep,
+    isLoading
   };
 }

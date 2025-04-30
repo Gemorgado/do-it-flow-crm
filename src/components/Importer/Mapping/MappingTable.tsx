@@ -20,7 +20,7 @@ import { InternalField } from '@/integrations/importer/types';
 interface MappingTableProps {
   headers: string[];
   previewRows: Record<string, any>[];
-  mapping: Record<string, InternalField>;
+  mapping: Record<string, InternalField | ''>;
   onMappingChange: (header: string, field: InternalField | '') => void;
   fieldLabels: Record<InternalField, string>;
   requiredFields: InternalField[];
@@ -54,13 +54,15 @@ export function MappingTable({
                 <TableCell>
                   <Select
                     value={mapping[header] || ''}
-                    onValueChange={(value) => onMappingChange(header, value as InternalField | '')}
+                    onValueChange={(value) => {
+                      onMappingChange(header, value as InternalField | '');
+                    }}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione um campo" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="not_mapped">Não mapear esta coluna</SelectItem>
+                      <SelectItem value="">Não mapear esta coluna</SelectItem>
                       {Object.entries(fieldLabels).map(([field, label]) => (
                         <SelectItem key={field} value={field}>
                           {requiredFields.includes(field as InternalField) ? `${label} *` : label}

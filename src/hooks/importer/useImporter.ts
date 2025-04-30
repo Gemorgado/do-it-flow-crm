@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from 'react';
 import { ImportStep, InternalField, ImportError } from '@/integrations/importer/types';
 import { useImportFile } from './useImportFile';
@@ -10,98 +11,50 @@ export function useImporter(): UseImporterReturn {
   const [file, setFile] = useState<File | null>(null);
   const [headers, setHeaders] = useState<string[]>([]);
   const [rows, setRows] = useState<Record<string, any>[]>([]);
-  const [mapping, setMapping] = useState<Record<string, InternalField>>({});
+  const [mapping, setMapping] = useState<Record<string, InternalField | ''>>({}); // Updated type
   const [errors, setErrors] = useState<ImportError[]>([]);
   const [snapshot, setSnapshot] = useState<ConexaSnapshot | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const { importFile, isImporting } = useImportFile();
-  const { processImport, isProcessing: isImportProcessing } = useImportProcess();
+  const state = {
+    step,
+    file,
+    headers,
+    rows,
+    mapping,
+    errors,
+    snapshot,
+    isProcessing
+  };
 
-  // Only update the mapping change handler to match new signature
-  const handleMappingChange = useCallback((mapping: Record<string, InternalField | ''>) => {
-    setMapping(prev => ({
-      ...prev,
-      ...mapping
-    }));
+  const setState = useCallback((newState: any) => {
+    if ('step' in newState) setStep(newState.step);
+    if ('file' in newState) setFile(newState.file);
+    if ('headers' in newState) setHeaders(newState.headers);
+    if ('rows' in newState) setRows(newState.rows);
+    if ('mapping' in newState) setMapping(newState.mapping);
+    if ('errors' in newState) setErrors(newState.errors);
+    if ('snapshot' in newState) setSnapshot(newState.snapshot);
+    if ('isProcessing' in newState) setIsProcessing(newState.isProcessing);
   }, []);
 
-  const handleFileSelect = useCallback(async (file: File) => {
-    setFile(file);
-    setIsProcessing(true);
-    
-    try {
-      const { headers, rows } = await importFile(file);
-      setHeaders(headers);
-      setRows(rows);
-      setStep('mapping');
-    } catch (error) {
-      console.error('Error importing file:', error);
-      setErrors([{
-        line: 0,
-        issues: [{
-          code: 'import_error',
-          message: 'Failed to import file. Please check the format and try again.',
-          path: []
-        }]
-      }]);
-      setStep('error');
-    } finally {
-      setIsProcessing(false);
-    }
-  }, [importFile]);
-
-  const handleImport = useCallback(async () => {
-    setIsProcessing(true);
-    
-    try {
-      const result = await processImport(rows, mapping);
+  // Pass state and setState to hooks
+  const fileImporter = useImportFile(state, setState);
+  const importProcessor = useImportProcess(state, setState);
+  
+  // Updated to handle individual field mapping
+  const handleMappingChange = useCallback((header: string, field: InternalField | '') => {
+    setMapping(prev => {
+      const newMapping = { ...prev };
       
-      if (result.errors.length > 0) {
-        setErrors(result.errors);
-        setStep('error');
+      if (field === '') {
+        delete newMapping[header];
       } else {
-        setSnapshot(result.snapshot);
-        setStep('complete');
+        newMapping[header] = field;
       }
-    } catch (error) {
-      console.error('Error processing import:', error);
-      setErrors([{
-        line: 0,
-        issues: [{
-          code: 'process_error',
-          message: 'Failed to process data. Please try again.',
-          path: []
-        }]
-      }]);
-      setStep('error');
-    } finally {
-      setIsProcessing(false);
-    }
-  }, [rows, mapping, processImport]);
-
-  const handleDownloadErrors = useCallback(() => {
-    // Implementation for downloading errors as CSV
-    // This would typically use the generateErrorCSV function
-  }, [errors]);
-
-  const handleReset = useCallback(() => {
-    setStep('upload');
-    setFile(null);
-    setHeaders([]);
-    setRows([]);
-    setMapping({});
-    setErrors([]);
-    setSnapshot(null);
-  }, []);
-
-  const handleViewData = useCallback(() => {
-    // Navigate to data view page or open modal
-    // Implementation depends on app navigation
-  }, [snapshot]);
-
-  const handleNavigateToStep = useCallback((newStep: ImportStep) => {
-    setStep(newStep);
+      
+      return newMapping;
+    });
   }, []);
 
   return {
@@ -113,13 +66,13 @@ export function useImporter(): UseImporterReturn {
     errors,
     snapshot,
     isProcessing,
-    isLoading: isImporting || isImportProcessing || isProcessing,
-    handleFileSelect,
+    isLoading: isProcessing || fileImporter.isLoading || importProcessor.isLoading,
+    handleFileSelect: fileImporter.handleFileSelect,
     handleMappingChange,
-    handleImport,
-    handleDownloadErrors,
-    handleReset,
-    handleViewData,
-    handleNavigateToStep
+    handleImport: importProcessor.handleImport,
+    handleDownloadErrors: importProcessor.handleDownloadErrors,
+    handleReset: importProcessor.handleReset,
+    handleViewData: importProcessor.handleViewData,
+    handleNavigateToStep: importProcessor.handleNavigateToStep
   };
 }

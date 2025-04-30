@@ -7,16 +7,17 @@ export interface ImporterState {
   file: File | null;
   headers: string[];
   rows: Record<string, any>[];
-  mapping: Record<string, InternalField>;
+  mapping: Record<string, InternalField | ''>;
   errors: ImportError[];
   snapshot: ConexaSnapshot | null;
   isProcessing: boolean;
 }
 
-export interface UseImporterReturn extends ImporterState {
+export interface UseImporterReturn extends Omit<ImporterState, 'mapping'> {
+  mapping: Record<string, InternalField | ''>;
   isLoading: boolean;
   handleFileSelect: (file: File) => Promise<void>;
-  handleMappingChange: (mapping: Record<string, InternalField | ''>) => void;
+  handleMappingChange: (header: string, field: InternalField | '') => void;
   handleImport: () => Promise<void>;
   handleDownloadErrors: () => void;
   handleReset: () => void;

@@ -11,12 +11,12 @@ interface ImporterStepperProps {
   step: ImportStep;
   headers: string[];
   rows: Record<string, any>[];
-  mapping: Record<string, InternalField>;
+  mapping: Record<string, InternalField | ''>;
   errors: any[];
   snapshot: any;
   isLoading: boolean;
   handleFileSelect: (file: File) => void;
-  handleMappingChange: (mapping: Record<string, InternalField | ''>) => void;
+  handleMappingChange: (header: string, field: InternalField | '') => void;
   handleImport: () => void;
   handleDownloadErrors: () => void;
   handleReset: () => void;

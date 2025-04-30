@@ -11,8 +11,8 @@ import { useMappingStep, fieldLabels, requiredFields } from '@/hooks/useMappingS
 interface MappingStepProps {
   headers: string[];
   previewRows?: Record<string, any>[];
-  initialMapping?: Record<string, InternalField>;
-  onMappingChange: (mapping: Record<string, InternalField | ''>) => void;
+  initialMapping?: Record<string, InternalField | ''>;
+  onMappingChange: (header: string, field: InternalField | '') => void;
   onContinue: () => void;
   onBack: () => void;
 }
@@ -34,11 +34,7 @@ export function MappingStep({
     handleMappingChange,
     handleSaveTemplate,
     handleLoadTemplate,
-  } = useMappingStep(headers, initialMapping, (header, field) => {
-    // Create a new mapping object with the updated field
-    const updatedMapping = { ...mapping, [header]: field };
-    onMappingChange(updatedMapping);
-  });
+  } = useMappingStep(headers, initialMapping, onMappingChange);
 
   return (
     <div className="space-y-4">

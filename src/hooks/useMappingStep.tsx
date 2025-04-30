@@ -20,10 +20,10 @@ export const requiredFields: InternalField[] = ['name', 'docNumber', 'serviceTyp
 
 export function useMappingStep(
   headers: string[],
-  initialMapping: Record<string, InternalField> = {},
+  initialMapping: Record<string, InternalField | ''> = {},
   onMappingChange: (header: string, field: InternalField | '') => void
 ) {
-  const [mapping, setMapping] = useState<Record<string, InternalField>>(initialMapping);
+  const [mapping, setMapping] = useState<Record<string, InternalField | ''>>(initialMapping);
   const [templates, setTemplates] = useState<MappingTemplate[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
 
@@ -64,7 +64,7 @@ export function useMappingStep(
     
     const newTemplate = TemplateStore.save({
       name: templateName.trim(),
-      columnMap: mapping
+      columnMap: mapping as Record<string, InternalField> // Type cast here
     });
     
     setTemplates([...templates, newTemplate]);
@@ -75,7 +75,7 @@ export function useMappingStep(
     const template = TemplateStore.get(templateId);
     if (template) {
       // Map the template to current headers
-      const newMapping: Record<string, InternalField> = {};
+      const newMapping: Record<string, InternalField | ''> = {};
       
       // Find matching headers (exact match or case-insensitive)
       Object.entries(template.columnMap).forEach(([originalHeader, field]) => {
@@ -96,7 +96,7 @@ export function useMappingStep(
 
   // Check if all required fields are mapped
   const getMissingRequiredFields = (): InternalField[] => {
-    const mappedFields = Object.values(mapping);
+    const mappedFields = Object.values(mapping).filter(Boolean) as InternalField[];
     return requiredFields.filter(field => !mappedFields.includes(field));
   };
 

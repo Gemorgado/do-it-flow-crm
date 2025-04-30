@@ -9,14 +9,6 @@ import { InternalField } from '@/integrations/importer/types';
 export default function ImporterPage() {
   const importer = useImporter();
   
-  // Updated wrapper function to adapt the signature for the component
-  const handleMappingChange = (mapping: Record<string, InternalField | ''>) => {
-    // If we receive a complete mapping object, update the entire mapping
-    Object.entries(mapping).forEach(([header, field]) => {
-      importer.handleMappingChange(header, field as InternalField | '');
-    });
-  };
-  
   return (
     <div className="container mx-auto p-4 space-y-8">
       <ImporterHeader />
@@ -32,7 +24,7 @@ export default function ImporterPage() {
             snapshot={importer.snapshot}
             isLoading={importer.isLoading}
             handleFileSelect={importer.handleFileSelect}
-            handleMappingChange={handleMappingChange}
+            handleMappingChange={importer.handleMappingChange}
             handleImport={importer.handleImport}
             handleDownloadErrors={importer.handleDownloadErrors}
             handleReset={importer.handleReset}

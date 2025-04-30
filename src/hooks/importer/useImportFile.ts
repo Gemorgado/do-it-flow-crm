@@ -1,20 +1,21 @@
 
-import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { readSpreadsheet } from '@/integrations/importer/readSpreadsheet';
-import { ImportStep, InternalField } from '@/integrations/importer/types';
 import { TemplateStore } from '@/integrations/importer/templateStore';
+import { useState } from 'react';
 import type { ImporterState } from './types';
 
 export function useImportFile(
   state: ImporterState,
-  setState: React.Dispatch<React.SetStateAction<ImporterState>>
+  setState: (newState: Partial<ImporterState>) => void
 ) {
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleFileSelect = async (selectedFile: File) => {
     try {
-      setState((prev) => ({ ...prev, file: selectedFile, isProcessing: true }));
+      setIsLoading(true);
+      setState({ file: selectedFile, isProcessing: true });
       
       toast({
         title: 'Processando arquivo',
@@ -29,14 +30,14 @@ export function useImportFile(
           description: 'Não foi possível detectar as colunas na planilha.',
           variant: 'destructive',
         });
+        setIsLoading(false);
         return;
       }
       
-      setState((prev) => ({
-        ...prev,
+      setState({
         headers: fileHeaders,
         rows: fileRows
-      }));
+      });
       
       // Check if this is a "Relatório de Contratos" file
       const isContratosReport = selectedFile.name.includes('Relatório de Contratos') || 
@@ -56,27 +57,25 @@ export function useImportFile(
             description: 'Utilizando template pré-definido para Relatório de Contratos.',
           });
           
-          setState(prev => ({
-            ...prev,
+          setState({
             mapping: conexaTemplate.columnMap,
             step: 'preview', // Skip the mapping step
             isProcessing: false
-          }));
+          });
         } else {
-          setState(prev => ({
-            ...prev,
+          setState({
             step: 'mapping',
             isProcessing: false
-          }));
+          });
         }
       } else {
         // If not matched or template not found, proceed to normal mapping
-        setState(prev => ({
-          ...prev,
+        setState({
           step: 'mapping',
           isProcessing: false
-        }));
+        });
       }
+      setIsLoading(false);
     } catch (error) {
       console.error('Error reading file:', error);
       toast({
@@ -84,9 +83,10 @@ export function useImportFile(
         description: error instanceof Error ? error.message : 'Erro desconhecido',
         variant: 'destructive',
       });
-      setState(prev => ({ ...prev, isProcessing: false }));
+      setState({ isProcessing: false });
+      setIsLoading(false);
     }
   };
 
-  return { handleFileSelect };
+  return { handleFileSelect, isLoading };
 }
