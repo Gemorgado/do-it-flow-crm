@@ -174,11 +174,12 @@ export function ConexaIntegration() {
               <Button
                 variant="outline"
                 className="w-full"
-                as={Link}
-                to="/import/conexa"
+                asChild
               >
-                <FileSpreadsheet className="mr-2 h-4 w-4" />
-                Importar planilha
+                <Link to="/import/conexa">
+                  <FileSpreadsheet className="mr-2 h-4 w-4" />
+                  Importar planilha
+                </Link>
               </Button>
             </div>
           </div>
