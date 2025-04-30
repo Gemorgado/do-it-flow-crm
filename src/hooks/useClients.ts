@@ -30,14 +30,23 @@ export function useClientContracts(clientId: string | null) {
       if (!clientId) return [];
       
       console.log(`Fetching contracts for client ${clientId}`);
+      
+      // Ensure we're returning the right format
       const filteredContracts = clientServices.filter(
         contract => contract.clientId === clientId && 
                    contract.status === "ativo"
       );
+      
       console.log(`Found ${filteredContracts.length} active contracts:`, filteredContracts);
+      
+      // Add delay to simulate API call and ensure UI updates properly
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
       return filteredContracts;
     },
     // Only run the query if we have a clientId
-    enabled: !!clientId
+    enabled: !!clientId,
+    staleTime: 0, // Always refetch when clientId changes
+    refetchOnMount: true
   });
 }

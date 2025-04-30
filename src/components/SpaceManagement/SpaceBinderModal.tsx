@@ -37,7 +37,7 @@ export function SpaceBinderModal({ isOpen, onClose, space }: SpaceBinderModalPro
   // Check if this space is already bound
   const existingBinding = space ? bindings.find(b => b.spaceId === space.id) : null;
   
-  // If space already has binding, select that client and contract
+  // Reset form when modal opens/closes or space changes
   useEffect(() => {
     if (existingBinding) {
       setSelectedClientId(existingBinding.clientId);
@@ -45,14 +45,19 @@ export function SpaceBinderModal({ isOpen, onClose, space }: SpaceBinderModalPro
       setUnitPrice(existingBinding.unitPrice || null);
       setStartDate(existingBinding.startDate || null);
       setEndDate(existingBinding.endDate || null);
+      console.log("Loading existing binding:", existingBinding);
     } else {
-      setSelectedClientId(null);
-      setSelectedContractId(null);
-      setUnitPrice(null);
-      setStartDate(null);
-      setEndDate(null);
+      // Only reset if modal is open (prevents unnecessary resets during initialization)
+      if (isOpen) {
+        console.log("Resetting form - no existing binding");
+        setSelectedClientId(null);
+        setSelectedContractId(null);
+        setUnitPrice(null);
+        setStartDate(null);
+        setEndDate(null);
+      }
     }
-  }, [existingBinding, space]);
+  }, [existingBinding, isOpen, space]);
   
   // Filter clients by search query
   const filteredClients = clientsList.filter(client => 
@@ -89,9 +94,23 @@ export function SpaceBinderModal({ isOpen, onClose, space }: SpaceBinderModalPro
   
   // Handle binding the space
   const handleSave = () => {
-    if (!space || !selectedClientId || !selectedContractId) {
+    if (!space) {
+      toast.error("Erro", {
+        description: "Nenhum espaço selecionado"
+      });
+      return;
+    }
+    
+    if (!selectedClientId) {
       toast.error("Dados incompletos", {
-        description: "Selecione um cliente e um contrato para vincular o espaço"
+        description: "Selecione um cliente para vincular o espaço"
+      });
+      return;
+    }
+    
+    if (!selectedContractId) {
+      toast.error("Dados incompletos", {
+        description: "Selecione um contrato para vincular o espaço"
       });
       return;
     }
@@ -120,17 +139,18 @@ export function SpaceBinderModal({ isOpen, onClose, space }: SpaceBinderModalPro
   
   // Reset selected contract when client changes
   useEffect(() => {
-    if (selectedContractId) {
+    if (selectedClientId && selectedContractId) {
       // Only reset if we're not loading existing binding data
       const isFromExistingBinding = existingBinding && 
                                    existingBinding.clientId === selectedClientId && 
                                    existingBinding.contractId === selectedContractId;
       
       if (!isFromExistingBinding) {
+        console.log("Client changed - resetting selected contract");
         setSelectedContractId(null);
       }
     }
-  }, [selectedClientId, existingBinding]);
+  }, [selectedClientId, existingBinding, selectedContractId]);
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>

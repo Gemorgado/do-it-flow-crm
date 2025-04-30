@@ -24,7 +24,7 @@ export function SpaceBinderContract({
   if (!selectedClientId) return null;
   
   const handleContractChange = (value: string) => {
-    console.log("Selected contract ID:", value);
+    console.log("Contract selected:", value);
     setSelectedContractId(value);
   };
 
@@ -32,6 +32,8 @@ export function SpaceBinderContract({
   useEffect(() => {
     if (contracts.length > 0) {
       console.log("Available contracts in dropdown:", contracts);
+    } else {
+      console.log("No contracts available for dropdown");
     }
   }, [contracts]);
 
@@ -53,7 +55,7 @@ export function SpaceBinderContract({
             <SelectValue placeholder="Selecione o contrato" />
           )}
         </SelectTrigger>
-        <SelectContent className="bg-white">
+        <SelectContent className="max-h-[200px] z-50 bg-white">
           {contracts.length === 0 ? (
             <SelectItem value="none" disabled>
               {isLoading ? "Carregando..." : "Nenhum contrato ativo disponível"}
