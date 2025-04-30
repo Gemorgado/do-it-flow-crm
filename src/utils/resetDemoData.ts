@@ -7,6 +7,7 @@ export async function resetDemoData() {
   const keys = [
     'leads', 'clients', 'contracts', 'proposals',
     'conexa_snapshot', 'space_bindings', 'import_templates',
+    'mockLeads', 'pipeline_data', 'pipeline_stages' // Adicionando chaves relacionadas ao pipeline
   ];
   
   // Remove all items from localStorage
@@ -26,6 +27,9 @@ export async function resetDemoData() {
 
   /* 3. Limpa cache React-Query para refletir imediatamente */
   queryClient.clear();
+  
+  // Invalida especificamente as queries relacionadas ao Pipeline
+  queryClient.invalidateQueries({ queryKey: ['pipeline', 'leads'] });
   
   console.log('All demo data has been cleared successfully');
 }
