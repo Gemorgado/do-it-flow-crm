@@ -42,7 +42,7 @@ export function Header() {
           variant="ghost"
           size="icon"
           className="text-gray-500 hover:text-doIt-primary"
-          onClick={() => navigate("/configuracoes")}
+          onClick={() => navigate("/settings")}
         >
           <Settings className="h-5 w-5" />
         </Button>
@@ -50,7 +50,7 @@ export function Header() {
           variant="ghost"
           size="icon"
           className="text-gray-500 hover:text-doIt-primary"
-          onClick={() => navigate("/perfil")}
+          onClick={() => navigate("/profile")}
         >
           <User className="h-5 w-5" />
         </Button>
