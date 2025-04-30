@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Users, DoorClosed } from "lucide-react";
 import { Location } from "@/types";
 import { useMemo } from "react";
+import { meetingRooms } from "@/data/locations/meetingRooms";
 
 interface RoomsOverviewProps {
   getRoomIconByCapacity: (capacity: number) => string;
@@ -13,8 +14,7 @@ interface RoomsOverviewProps {
 export function RoomsOverview({ getRoomIconByCapacity }: RoomsOverviewProps) {
   // Group meeting rooms by floor
   const roomsByFloor = useMemo(() => {
-    // Import the meeting rooms from the data file
-    const { meetingRooms } = require("@/data/locations");
+    // Use the imported meeting rooms data instead of require
     
     // Group rooms by floor based on identifier (first digit)
     return meetingRooms.reduce((acc: Record<string, Location[]>, room: Location) => {
