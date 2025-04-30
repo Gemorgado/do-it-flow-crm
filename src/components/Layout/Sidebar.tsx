@@ -34,7 +34,7 @@ import { TabKey } from "@/modules/settings/users/types";
 interface SidebarRoute {
   title: string;
   url: string;
-  icon: React.ComponentType;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   tabKey?: TabKey;
 }
 
