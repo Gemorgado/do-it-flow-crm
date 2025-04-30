@@ -1,14 +1,19 @@
 
 export type InternalField =
+  | 'id'
   | 'name'
-  | 'docNumber'
-  | 'email'
-  | 'phone'
-  | 'serviceType'
-  | 'roomNumber'
+  | 'plan'
   | 'contractStart'
   | 'contractEnd'
-  | 'amount';
+  | 'contractTerm'
+  | 'contractValue'
+  | 'dueDay'
+  | 'privateRoom'
+  | 'billingEmails'
+  | 'createdBy'
+  | 'lastReadjustDate'
+  | 'readjustIndex'
+  | 'isActive';
 
 export interface MappingTemplate {
   id: string;                 // uuid

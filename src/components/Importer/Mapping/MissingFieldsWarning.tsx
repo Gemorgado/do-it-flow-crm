@@ -1,5 +1,7 @@
 
 import React from 'react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertCircle } from 'lucide-react';
 import { InternalField } from '@/integrations/importer/types';
 
 interface MissingFieldsWarningProps {
@@ -13,13 +15,16 @@ export function MissingFieldsWarning({ missingFields, fieldLabels }: MissingFiel
   }
 
   return (
-    <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md text-yellow-800 text-sm">
-      <p className="font-medium">Campos obrigatórios não mapeados:</p>
-      <ul className="list-disc list-inside mt-1">
-        {missingFields.map(field => (
-          <li key={field}>{fieldLabels[field]}</li>
-        ))}
-      </ul>
-    </div>
+    <Alert variant="destructive" className="mt-4">
+      <AlertCircle className="h-4 w-4" />
+      <AlertDescription>
+        <p>Os seguintes campos são obrigatórios:</p>
+        <ul className="list-disc list-inside mt-1">
+          {missingFields.map(field => (
+            <li key={field}>{fieldLabels[field].replace(' *', '')}</li>
+          ))}
+        </ul>
+      </AlertDescription>
+    </Alert>
   );
 }

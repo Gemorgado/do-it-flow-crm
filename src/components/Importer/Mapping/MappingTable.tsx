@@ -17,14 +17,13 @@ import {
 } from '@/components/ui/select';
 import { InternalField } from '@/integrations/importer/types';
 import { selectContentClass, selectItemClass } from '@/lib/radixClass';
+import { FIELD_LABELS, REQUIRED_FIELDS } from '@/integrations/importer/fieldLabels';
 
 interface MappingTableProps {
   headers: string[];
   previewRows: Record<string, any>[];
   mapping: Record<string, InternalField | ''>;
   onMappingChange: (header: string, field: InternalField | '') => void;
-  fieldLabels: Record<InternalField, string>;
-  requiredFields: InternalField[];
 }
 
 export function MappingTable({
@@ -32,8 +31,6 @@ export function MappingTable({
   previewRows,
   mapping,
   onMappingChange,
-  fieldLabels,
-  requiredFields,
 }: MappingTableProps) {
   return (
     <div className="border rounded-md">
@@ -63,14 +60,14 @@ export function MappingTable({
                       <SelectValue placeholder="Selecione um campo" />
                     </SelectTrigger>
                     <SelectContent className={selectContentClass}>
-                      <SelectItem className={selectItemClass} value="not_mapped">Não mapear esta coluna</SelectItem>
-                      {Object.entries(fieldLabels).map(([field, label]) => (
+                      <SelectItem className={selectItemClass} value="">Não mapear esta coluna</SelectItem>
+                      {Object.entries(FIELD_LABELS).map(([field, label]) => (
                         <SelectItem 
                           key={field} 
                           value={field}
                           className={selectItemClass}
                         >
-                          {requiredFields.includes(field as InternalField) ? `${label} *` : label}
+                          {label}
                         </SelectItem>
                       ))}
                     </SelectContent>

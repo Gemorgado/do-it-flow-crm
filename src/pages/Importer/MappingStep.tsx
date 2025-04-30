@@ -6,7 +6,7 @@ import { InternalField } from '@/integrations/importer/types';
 import { TemplateControls } from '@/components/Importer/Mapping/TemplateControls';
 import { MappingTable } from '@/components/Importer/Mapping/MappingTable';
 import { MissingFieldsWarning } from '@/components/Importer/Mapping/MissingFieldsWarning';
-import { useMappingStep, fieldLabels, requiredFields } from '@/hooks/useMappingStep';
+import { useMappingStep } from '@/hooks/useMappingStep';
 
 interface MappingStepProps {
   headers: string[];
@@ -34,6 +34,8 @@ export function MappingStep({
     handleMappingChange,
     handleSaveTemplate,
     handleLoadTemplate,
+    fieldLabels,
+    requiredFields
   } = useMappingStep(headers, initialMapping, onMappingChange);
 
   return (
@@ -57,8 +59,6 @@ export function MappingStep({
             previewRows={previewRows}
             mapping={mapping}
             onMappingChange={handleMappingChange}
-            fieldLabels={fieldLabels}
-            requiredFields={requiredFields}
           />
           
           <MissingFieldsWarning 

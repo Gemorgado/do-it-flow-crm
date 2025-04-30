@@ -3,20 +3,7 @@ import { useState, useEffect } from 'react';
 import { InternalField, MappingTemplate } from '@/integrations/importer/types';
 import { suggestColumnMappings } from '@/integrations/importer/headerMappingUtils';
 import { TemplateStore } from '@/integrations/importer/templateStore';
-
-export const fieldLabels: Record<InternalField, string> = {
-  name: 'Nome',
-  docNumber: 'Documento (CNPJ/CPF)',
-  email: 'E-mail',
-  phone: 'Telefone',
-  serviceType: 'Tipo de Serviço',
-  roomNumber: 'Número da Sala',
-  contractStart: 'Início do Contrato',
-  contractEnd: 'Fim do Contrato',
-  amount: 'Valor'
-};
-
-export const requiredFields: InternalField[] = ['name', 'docNumber', 'serviceType'];
+import { FIELD_LABELS, REQUIRED_FIELDS } from '@/integrations/importer/fieldLabels';
 
 export function useMappingStep(
   headers: string[],
@@ -97,7 +84,7 @@ export function useMappingStep(
   // Check if all required fields are mapped
   const getMissingRequiredFields = (): InternalField[] => {
     const mappedFields = Object.values(mapping).filter(Boolean) as InternalField[];
-    return requiredFields.filter(field => !mappedFields.includes(field));
+    return REQUIRED_FIELDS.filter(field => !mappedFields.includes(field));
   };
 
   const missingFields = getMissingRequiredFields();
@@ -112,7 +99,7 @@ export function useMappingStep(
     handleMappingChange,
     handleSaveTemplate,
     handleLoadTemplate,
-    fieldLabels,
-    requiredFields
+    fieldLabels: FIELD_LABELS,
+    requiredFields: REQUIRED_FIELDS
   };
 }
