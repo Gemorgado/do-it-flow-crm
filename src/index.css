@@ -43,4 +43,12 @@
   .campaign-email {
     @apply bg-green-100 text-green-800;
   }
+  
+  /* Ensure modals have solid backgrounds */
+  .radix-dialog-content,
+  .radix-sheet-content,
+  .radix-alert-content,
+  .radix-drawer-content {
+    background-color: #FFFFFF !important;
+  }
 }
