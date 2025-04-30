@@ -21,7 +21,7 @@ export const requiredFields: InternalField[] = ['name', 'docNumber', 'serviceTyp
 export function useMappingStep(
   headers: string[],
   initialMapping: Record<string, InternalField> = {},
-  onMappingChange: (mapping: Record<string, InternalField>) => void
+  onMappingChange: (header: string, field: InternalField | '') => void
 ) {
   const [mapping, setMapping] = useState<Record<string, InternalField>>(initialMapping);
   const [templates, setTemplates] = useState<MappingTemplate[]>([]);
@@ -32,7 +32,11 @@ export function useMappingStep(
     if (headers.length > 0 && Object.keys(mapping).length === 0) {
       const suggestions = suggestColumnMappings(headers);
       setMapping(suggestions);
-      onMappingChange(suggestions);
+      
+      // Update each mapping individually
+      Object.entries(suggestions).forEach(([header, field]) => {
+        onMappingChange(header, field);
+      });
     }
   }, [headers, mapping, onMappingChange]);
 
@@ -52,7 +56,7 @@ export function useMappingStep(
     }
     
     setMapping(newMapping);
-    onMappingChange(newMapping);
+    onMappingChange(header, field);
   };
 
   const handleSaveTemplate = (templateName: string) => {
@@ -81,11 +85,11 @@ export function useMappingStep(
         
         if (matchingHeader) {
           newMapping[matchingHeader] = field;
+          onMappingChange(matchingHeader, field);
         }
       });
       
       setMapping(newMapping);
-      onMappingChange(newMapping);
       setSelectedTemplate(templateId);
     }
   };

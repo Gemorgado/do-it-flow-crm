@@ -4,12 +4,13 @@ import { ImporterHeader } from '@/components/Importer/ImporterHeader';
 import { HowItWorks } from '@/components/Importer/HowItWorks';
 import { ImporterStepper } from '@/components/Importer/ImporterStepper';
 import { useImporter } from '@/hooks/useImporter';
+import { InternalField } from '@/integrations/importer/types';
 
 export default function ImporterPage() {
   const importer = useImporter();
   
   // Wrapper function to adapt the signature for the component prop
-  const handleMappingChange = (header: string, field: string) => {
+  const handleMappingChange = (header: string, field: InternalField | '') => {
     importer.handleMappingChange(header, field);
   };
   

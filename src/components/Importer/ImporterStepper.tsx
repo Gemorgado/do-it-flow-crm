@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ImportStep } from '@/integrations/importer/types';
+import { ImportStep, InternalField } from '@/integrations/importer/types';
 import { UploadStep } from '@/pages/Importer/UploadStep';
 import { MappingStep } from '@/pages/Importer/MappingStep';
 import { PreviewStep } from '@/pages/Importer/PreviewStep';
@@ -11,12 +11,12 @@ interface ImporterStepperProps {
   step: ImportStep;
   headers: string[];
   rows: Record<string, any>[];
-  mapping: Record<string, any>;
+  mapping: Record<string, InternalField>;
   errors: any[];
   snapshot: any;
   isLoading: boolean;
   handleFileSelect: (file: File) => void;
-  handleMappingChange: (mapping: Record<string, any>) => void;
+  handleMappingChange: (header: string, field: InternalField | '') => void;
   handleImport: () => void;
   handleDownloadErrors: () => void;
   handleReset: () => void;

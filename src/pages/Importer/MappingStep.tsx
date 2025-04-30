@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,7 +11,7 @@ interface MappingStepProps {
   headers: string[];
   previewRows?: Record<string, any>[];
   initialMapping?: Record<string, InternalField>;
-  onMappingChange: (mapping: Record<string, InternalField>) => void;
+  onMappingChange: (header: string, field: InternalField | '') => void;
   onContinue: () => void;
   onBack: () => void;
 }
@@ -78,3 +77,4 @@ export function MappingStep({
     </div>
   );
 }
+
