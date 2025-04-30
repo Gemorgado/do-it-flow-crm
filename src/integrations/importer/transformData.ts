@@ -72,7 +72,11 @@ export function transformRows(
     } else {
       errors.push({
         line: index + 2, // +2 for 1-based index and header row
-        issues: result.error.issues,
+        issues: result.error.issues.map(issue => ({
+          code: issue.code,
+          message: issue.message,
+          path: issue.path.map(p => String(p))
+        })),
         rawData: row
       });
     }

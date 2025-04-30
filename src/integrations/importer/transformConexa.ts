@@ -1,4 +1,3 @@
-
 import { parse, format } from 'date-fns';
 import { SERVICE_OPTIONS } from '@/constants/serviceOptions';
 import type { ConexaSnapshot } from '@/integrations/conexa/types';
@@ -66,7 +65,7 @@ export function snapshotFromRows(
   const errors: Array<{ line: number; reason: string }> = [];
   
   // Create reverse mapping for easier access
-  const reverseMapping: Record<InternalField, string> = {};
+  const reverseMapping: Record<InternalField, string> = {} as Record<InternalField, string>;
   Object.entries(mapping).forEach(([key, value]) => {
     reverseMapping[value] = key;
   });
