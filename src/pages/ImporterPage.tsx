@@ -8,6 +8,7 @@ import { InternalField } from '@/integrations/importer/types';
 import { ConexaSnapshot } from '@/integrations/conexa/types';
 import { processConexaSnapshot } from '@/integrations/conexa/processConexaSnapshot';
 import { useNavigate } from 'react-router-dom';
+import { TemplateStore } from '@/integrations/importer/templateStore';
 
 // Import steps
 import { UploadStep } from './Importer/UploadStep';
@@ -46,6 +47,32 @@ export default function ImporterPage() {
       
       setHeaders(fileHeaders);
       setRows(fileRows);
+      
+      // Check if this is a "Relatório de Contratos" file
+      const isContratosReport = selectedFile.name.match(/Relatório de Contratos/i) || 
+                               (fileHeaders.includes('Razão Social') && 
+                                fileHeaders.includes('CNPJ') && 
+                                fileHeaders.includes('Data Início Contrato'));
+                                
+      if (isContratosReport) {
+        // Try to find the Conexa template
+        const templates = TemplateStore.list();
+        const conexaTemplate = templates.find(t => t.name === 'Conexa – Relatório de Contratos') || 
+                              templates.find(t => t.id === 'conexa_relatorio_contratos');
+        
+        if (conexaTemplate) {
+          toast({
+            title: 'Template encontrado',
+            description: 'Utilizando template pré-definido para Relatório de Contratos.',
+          });
+          
+          setMapping(conexaTemplate.columnMap);
+          setStep('preview'); // Skip the mapping step
+          return;
+        }
+      }
+      
+      // If not matched or template not found, proceed to normal mapping
       setStep('mapping');
     } catch (error) {
       console.error('Error reading file:', error);

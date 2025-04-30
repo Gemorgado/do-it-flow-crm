@@ -4,6 +4,24 @@ import { v4 as uuidv4 } from 'uuid';
 
 const STORAGE_KEY = 'import_templates';
 
+// Predefined template for Relatório de Contratos
+const CONTRATO_TEMPLATE: MappingTemplate = {
+  id: 'conexa_relatorio_contratos',
+  name: 'Conexa – Relatório de Contratos',
+  columnMap: {
+    'Razão Social': 'name',
+    'CNPJ': 'docNumber',
+    'E-mail': 'email',
+    'Telefone': 'phone',
+    'Plano': 'serviceType',
+    'Sala / Estação': 'roomNumber',
+    'Data Início Contrato': 'contractStart',
+    'Data Fim Contrato': 'contractEnd',
+    'Valor': 'amount',
+  },
+  createdAt: '2025-04-30T00:00:00Z',
+};
+
 export const TemplateStore = {
   list: (): MappingTemplate[] => {
     try {
@@ -50,5 +68,25 @@ export const TemplateStore = {
       STORAGE_KEY,
       JSON.stringify(templates.filter(t => t.id !== id))
     );
+  },
+  
+  // Initialize default templates if they don't exist yet
+  initialize: (): void => {
+    const templates = TemplateStore.list();
+    
+    // Check if template already exists
+    if (!templates.some(t => t.id === 'conexa_relatorio_contratos')) {
+      // Save the predefined template
+      const existing = templates.find(t => t.name === CONTRATO_TEMPLATE.name);
+      if (!existing) {
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify([...templates, CONTRATO_TEMPLATE])
+        );
+      }
+    }
   }
 };
+
+// Initialize templates on module load
+TemplateStore.initialize();
