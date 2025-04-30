@@ -15,7 +15,7 @@ import {
   CompanyDetailsFields,
   SourceFields,
   FormErrorSummary
-} from "./FormFields";
+} from "./components";
 
 interface LeadFormProps {
   onSubmit: (data: LeadFormValues & { stageId?: string }) => void;
