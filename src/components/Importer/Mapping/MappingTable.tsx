@@ -62,7 +62,7 @@ export function MappingTable({
                       <SelectValue placeholder="Selecione um campo" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Não mapear esta coluna</SelectItem>
+                      <SelectItem value="not_mapped">Não mapear esta coluna</SelectItem>
                       {Object.entries(fieldLabels).map(([field, label]) => (
                         <SelectItem key={field} value={field}>
                           {requiredFields.includes(field as InternalField) ? `${label} *` : label}
