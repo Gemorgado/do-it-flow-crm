@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { InternalField } from '@/integrations/importer/types';
+import { selectContentClass, selectItemClass } from '@/lib/radixClass';
 
 interface MappingTableProps {
   headers: string[];
@@ -61,10 +62,14 @@ export function MappingTable({
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione um campo" />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="not_mapped">Não mapear esta coluna</SelectItem>
+                    <SelectContent className={selectContentClass}>
+                      <SelectItem className={selectItemClass} value="not_mapped">Não mapear esta coluna</SelectItem>
                       {Object.entries(fieldLabels).map(([field, label]) => (
-                        <SelectItem key={field} value={field}>
+                        <SelectItem 
+                          key={field} 
+                          value={field}
+                          className={selectItemClass}
+                        >
                           {requiredFields.includes(field as InternalField) ? `${label} *` : label}
                         </SelectItem>
                       ))}

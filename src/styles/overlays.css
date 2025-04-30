@@ -23,3 +23,20 @@
   z-index: 110 !important;
   opacity: 1 !important;
 }
+
+/* ===== Radix Select Overlay / Content ===== */
+.radix-select-content {
+  @apply bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100
+         rounded-lg shadow-xl ring-1 ring-zinc-200 dark:ring-zinc-700
+         z-[120];
+}
+
+/* Remove transparência acidental */
+.radix-select-content[style*="opacity"] {
+  opacity: 1 !important;
+}
+
+/* Opcional: borda nas opções */
+.radix-select-item {
+  @apply focus:bg-zinc-100 dark:focus:bg-zinc-800;
+}
