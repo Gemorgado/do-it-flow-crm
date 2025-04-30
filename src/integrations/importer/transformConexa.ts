@@ -1,3 +1,4 @@
+
 import { parse, format } from 'date-fns';
 import { SERVICE_OPTIONS } from '@/constants/serviceOptions';
 import type { ConexaSnapshot } from '@/integrations/conexa/types';
@@ -76,7 +77,7 @@ export function snapshotFromRows(
       const getValue = (field: InternalField): any => 
         row[reverseMapping[field]] !== undefined ? row[reverseMapping[field]] : null;
       
-      const docNumber = String(getValue('docNumber')).replace(/\D/g, '');
+      const docNumber = String(getValue('id')).replace(/\D/g, ''); // Changed from docNumber to id
       
       // Validate document number
       if (!isValidDocNumber(docNumber)) {
@@ -87,7 +88,7 @@ export function snapshotFromRows(
         return; // Skip this row
       }
       
-      const serviceTypeRaw = getValue('serviceType');
+      const serviceTypeRaw = getValue('plan'); // Changed from serviceType to plan
       const serviceType = normalizeServiceType(serviceTypeRaw);
       
       // Check if service type is valid
@@ -115,8 +116,8 @@ export function snapshotFromRows(
         id: docNumber,
         name: getValue('name'),
         docNumber: docNumber,
-        email: getValue('email'),
-        phone: getValue('phone'),
+        email: getValue('billingEmails'), // Changed from email to billingEmails
+        phone: getValue('id'), // Changed from phone to id as placeholder
         updatedAt: new Date().toISOString()
       };
       
@@ -132,7 +133,7 @@ export function snapshotFromRows(
         customerId: docNumber,
         serviceId: serviceType,
         status: 'active',
-        amount: extractNumericValue(getValue('amount')),
+        amount: extractNumericValue(getValue('contractValue')), // Changed from amount to contractValue
         startDate,
         endDate,
         updatedAt: new Date().toISOString()
@@ -148,13 +149,13 @@ export function snapshotFromRows(
           id: serviceType, 
           label: serviceOption ? serviceOption.label : serviceTypeRaw, 
           category: serviceType, 
-          price: extractNumericValue(getValue('amount')),
+          price: extractNumericValue(getValue('contractValue')), // Changed from amount to contractValue
           updatedAt: new Date().toISOString() 
         });
       }
 
       // Add room occupation if room number exists
-      const roomNumber = getValue('roomNumber');
+      const roomNumber = getValue('privateRoom'); // Changed from roomNumber to privateRoom
       if (roomNumber) {
         roomOccupations.push({ 
           roomId: roomNumber, 

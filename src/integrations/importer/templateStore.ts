@@ -10,14 +10,14 @@ const CONTRATO_TEMPLATE: MappingTemplate = {
   name: 'Conexa – Relatório de Contratos',
   columnMap: {
     'Razão Social': 'name',
-    'CNPJ': 'docNumber',
-    'E-mail': 'email',
-    'Telefone': 'phone',
-    'Plano': 'serviceType',
-    'Sala / Estação': 'roomNumber',
+    'CNPJ': 'id', // Changed from docNumber to id
+    'E-mail': 'billingEmails', // Changed from email to billingEmails
+    'Telefone': 'id', // Changed from phone, using id as placeholder
+    'Plano': 'plan', // Changed from serviceType to plan
+    'Sala / Estação': 'privateRoom', // Changed from roomNumber to privateRoom
     'Data Início Contrato': 'contractStart',
     'Data Fim Contrato': 'contractEnd',
-    'Valor': 'amount',
+    'Valor': 'contractValue', // Changed from amount to contractValue
   },
   createdAt: '2025-04-30T00:00:00Z',
 };
