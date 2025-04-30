@@ -36,7 +36,7 @@ export function PipelineSearch({ onSearch, onFilterByUser }: PipelineSearchProps
             <SelectValue placeholder="Atribuído a" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="atribuido">Todos</SelectItem>
+            <SelectItem value="todos">Todos</SelectItem>
             <SelectItem value="1">Amanda Silva</SelectItem>
             <SelectItem value="2">Ricardo Barros</SelectItem>
             <SelectItem value="3">Camila Costa</SelectItem>
