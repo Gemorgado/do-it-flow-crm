@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ClientService } from "@/types";
@@ -28,15 +28,22 @@ export function SpaceBinderContract({
     setSelectedContractId(value);
   };
 
+  // Log when contracts change to help debug
+  useEffect(() => {
+    if (contracts.length > 0) {
+      console.log("Available contracts in dropdown:", contracts);
+    }
+  }, [contracts]);
+
   return (
     <div>
       <Label htmlFor="contract">Contrato</Label>
       <Select
         value={selectedContractId || ""}
         onValueChange={handleContractChange}
-        disabled={isLoading}
+        disabled={isLoading || contracts.length === 0}
       >
-        <SelectTrigger id="contract" className="w-full">
+        <SelectTrigger id="contract" className="w-full bg-white">
           {isLoading ? (
             <div className="flex items-center">
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -46,7 +53,7 @@ export function SpaceBinderContract({
             <SelectValue placeholder="Selecione o contrato" />
           )}
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="bg-white">
           {contracts.length === 0 ? (
             <SelectItem value="none" disabled>
               {isLoading ? "Carregando..." : "Nenhum contrato ativo disponível"}

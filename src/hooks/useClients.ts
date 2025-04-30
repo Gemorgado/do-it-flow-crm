@@ -34,7 +34,7 @@ export function useClientContracts(clientId: string | null) {
         contract => contract.clientId === clientId && 
                    contract.status === "ativo"
       );
-      console.log(`Found ${filteredContracts.length} active contracts`);
+      console.log(`Found ${filteredContracts.length} active contracts:`, filteredContracts);
       return filteredContracts;
     },
     // Only run the query if we have a clientId

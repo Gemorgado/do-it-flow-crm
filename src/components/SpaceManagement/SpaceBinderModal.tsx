@@ -9,6 +9,7 @@ import { SpaceBinderContract } from "./SpaceBinderContract";
 import { SpaceBinderContractDetails } from "./SpaceBinderContractDetails";
 import { SpaceBinderActions } from "./SpaceBinderActions";
 import { SpaceInfo } from "./SpaceInfo";
+import { toast } from "sonner";
 
 interface SpaceBinderModalProps {
   isOpen: boolean;
@@ -74,18 +75,26 @@ export function SpaceBinderModal({ isOpen, onClose, space }: SpaceBinderModalPro
       setUnitPrice(selectedContract.value);
       setStartDate(selectedContract.contractStart);
       setEndDate(selectedContract.contractEnd);
+    } else {
+      console.warn("Contract ID selected but not found in contracts list:", selectedContractId);
     }
   }, [selectedContractId, contracts]);
   
-  // Log contracts when they change for debugging purposes
+  // Log important state changes for debugging purposes
   useEffect(() => {
     console.log("Client ID:", selectedClientId);
     console.log("Available contracts:", contracts);
-  }, [selectedClientId, contracts]);
+    console.log("Selected contract ID:", selectedContractId);
+  }, [selectedClientId, contracts, selectedContractId]);
   
   // Handle binding the space
   const handleSave = () => {
-    if (!space || !selectedClientId || !selectedContractId) return;
+    if (!space || !selectedClientId || !selectedContractId) {
+      toast.error("Dados incompletos", {
+        description: "Selecione um cliente e um contrato para vincular o espaço"
+      });
+      return;
+    }
     
     const binding: SpaceBinding = {
       spaceId: space.id,
@@ -97,6 +106,7 @@ export function SpaceBinderModal({ isOpen, onClose, space }: SpaceBinderModalPro
       endDate
     };
     
+    console.log("Saving binding:", binding);
     bindSpace.mutate(binding);
     onClose();
   };
@@ -108,6 +118,20 @@ export function SpaceBinderModal({ isOpen, onClose, space }: SpaceBinderModalPro
     onClose();
   };
   
+  // Reset selected contract when client changes
+  useEffect(() => {
+    if (selectedContractId) {
+      // Only reset if we're not loading existing binding data
+      const isFromExistingBinding = existingBinding && 
+                                   existingBinding.clientId === selectedClientId && 
+                                   existingBinding.contractId === selectedContractId;
+      
+      if (!isFromExistingBinding) {
+        setSelectedContractId(null);
+      }
+    }
+  }, [selectedClientId, existingBinding]);
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-md">
