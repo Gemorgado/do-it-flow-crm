@@ -31,5 +31,8 @@ export const useCompanies = (query: string = "") => {
     queryKey: ['companies', query],
     queryFn: () => searchCompanies(query),
     staleTime: 60000, // 1 minute
+    // Ensure we always return an array, never undefined or null
+    select: (data) => data || [],
+    initialData: [],
   });
 };

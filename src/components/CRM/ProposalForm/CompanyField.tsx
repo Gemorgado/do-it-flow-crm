@@ -26,7 +26,7 @@ export function CompanyField({ control }: CompanyFieldProps) {
               placeholder="Selecione uma empresa"
               searchPlaceholder="Buscar empresa..."
               options={companies}
-              selected={companies.find(c => c.id === field.value) || null}
+              selected={field.value ? companies.find(c => c.id === field.value) || null : null}
               onSelect={(company: Company) => field.onChange(company.id)}
               onSearch={setQuery}
               getOptionLabel={(company: Company) => company.name}
