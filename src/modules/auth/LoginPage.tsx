@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -39,8 +39,28 @@ export default function LoginPage() {
   
   const { isSubmitting } = form.formState;
   
+  // Load saved credentials on component mount
+  useEffect(() => {
+    const savedEmail = localStorage.getItem("auth-email");
+    const savedRememberMe = localStorage.getItem("auth-remember-me") === "true";
+    
+    if (savedEmail && savedRememberMe) {
+      form.setValue("email", savedEmail);
+      form.setValue("rememberMe", true);
+    }
+  }, [form]);
+  
   const onSubmit = async (data: LoginFormData) => {
     try {
+      // Save or remove credentials based on rememberMe
+      if (data.rememberMe) {
+        localStorage.setItem("auth-email", data.email);
+        localStorage.setItem("auth-remember-me", "true");
+      } else {
+        localStorage.removeItem("auth-email");
+        localStorage.removeItem("auth-remember-me");
+      }
+      
       await login(data as LoginCredentials);
     } catch (error) {
       console.error("Login error:", error);
