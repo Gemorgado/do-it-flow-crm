@@ -16,7 +16,7 @@ interface ImporterStepperProps {
   snapshot: any;
   isLoading: boolean;
   handleFileSelect: (file: File) => void;
-  handleMappingChange: (header: string, field: InternalField | '') => void;
+  handleMappingChange: (mapping: Record<string, InternalField | ''>) => void;
   handleImport: () => void;
   handleDownloadErrors: () => void;
   handleReset: () => void;

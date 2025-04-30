@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,7 +12,7 @@ interface MappingStepProps {
   headers: string[];
   previewRows?: Record<string, any>[];
   initialMapping?: Record<string, InternalField>;
-  onMappingChange: (header: string, field: InternalField | '') => void;
+  onMappingChange: (mapping: Record<string, InternalField | ''>) => void;
   onContinue: () => void;
   onBack: () => void;
 }
@@ -33,7 +34,11 @@ export function MappingStep({
     handleMappingChange,
     handleSaveTemplate,
     handleLoadTemplate,
-  } = useMappingStep(headers, initialMapping, onMappingChange);
+  } = useMappingStep(headers, initialMapping, (header, field) => {
+    // Create a new mapping object with the updated field
+    const updatedMapping = { ...mapping, [header]: field };
+    onMappingChange(updatedMapping);
+  });
 
   return (
     <div className="space-y-4">
@@ -77,4 +82,3 @@ export function MappingStep({
     </div>
   );
 }
-

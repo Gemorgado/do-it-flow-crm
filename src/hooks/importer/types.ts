@@ -16,7 +16,7 @@ export interface ImporterState {
 export interface UseImporterReturn extends ImporterState {
   isLoading: boolean;
   handleFileSelect: (file: File) => Promise<void>;
-  handleMappingChange: (header: string, field: InternalField | '') => void;
+  handleMappingChange: (mapping: Record<string, InternalField | ''>) => void;
   handleImport: () => Promise<void>;
   handleDownloadErrors: () => void;
   handleReset: () => void;

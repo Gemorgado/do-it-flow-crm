@@ -9,9 +9,12 @@ import { InternalField } from '@/integrations/importer/types';
 export default function ImporterPage() {
   const importer = useImporter();
   
-  // Wrapper function to adapt the signature for the component prop
-  const handleMappingChange = (header: string, field: InternalField | '') => {
-    importer.handleMappingChange(header, field);
+  // Updated wrapper function to adapt the signature for the component
+  const handleMappingChange = (mapping: Record<string, InternalField | ''>) => {
+    // If we receive a complete mapping object, update the entire mapping
+    Object.entries(mapping).forEach(([header, field]) => {
+      importer.handleMappingChange(header, field as InternalField | '');
+    });
   };
   
   return (
