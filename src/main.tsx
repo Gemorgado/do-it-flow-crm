@@ -10,16 +10,17 @@ import { queryClient } from './lib/queryClient.ts'
 
 // ⚠️ Remova depois de corrigir
 if (import.meta.env.DEV) {
-  import('@radix-ui/react-select').then((radix) => {
+  import('@radix-ui/react-select').then((radix: any) => {
     const OrigItem = radix.Item;
-    radix.Item = (props: any) => {
+    // cast para any → não reclama de $$typeof
+    radix.Item = ((props: any) => {
       if (!props?.value || props.value === '') {
         // Mostra no console qual componente tentou renderizar
         console.error('🛑 <Select.Item> sem value:', props.children);
         debugger;                 // pausa no DevTools
       }
       return OrigItem(props);
-    };
+    }) as any;                // 👈 elimina TS2741
   });
 }
 
