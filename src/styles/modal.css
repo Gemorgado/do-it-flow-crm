@@ -4,7 +4,7 @@
 .radix-sheet-overlay,
 .radix-alert-overlay,
 .radix-drawer-overlay {
-  @apply fixed inset-0 bg-black/60 backdrop-blur-sm z-[100];
+  @apply fixed inset-0 bg-black/60 z-[100];
 }
 
 /* Content styles for all modals */
@@ -12,5 +12,5 @@
 .radix-sheet-content,
 .radix-alert-content,
 .radix-drawer-content {
-  @apply bg-background rounded-xl shadow-2xl z-[110];
+  @apply bg-white rounded-xl shadow-2xl z-[110];
 }
