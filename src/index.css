@@ -3,6 +3,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import './styles/modal.css';
+
 @layer components {
   .tooltip-trigger {
     @apply relative inline-flex cursor-help;
@@ -42,3 +44,4 @@
     @apply bg-green-100 text-green-800;
   }
 }
+

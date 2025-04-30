@@ -1,0 +1,16 @@
+
+/* Backdrop styles for all modals */
+.radix-dialog-overlay,
+.radix-sheet-overlay,
+.radix-alert-overlay,
+.radix-drawer-overlay {
+  @apply fixed inset-0 bg-black/60 backdrop-blur-sm z-[100];
+}
+
+/* Content styles for all modals */
+.radix-dialog-content,
+.radix-sheet-content,
+.radix-alert-content,
+.radix-drawer-content {
+  @apply bg-background rounded-xl shadow-2xl z-[110];
+}
