@@ -1,7 +1,12 @@
 
-import { BrowserRouter as Router, Routes, Route, Outlet } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
+
+// Auth
+import { AuthProvider } from "@/modules/auth/AuthProvider";
+import { ProtectedRoute } from "@/modules/auth/ProtectedRoute";
+import LoginPage from "@/modules/auth/LoginPage";
 
 // Pages
 import Dashboard from "@/pages/Dashboard";
@@ -33,34 +38,66 @@ const queryClient = new QueryClient();
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <CRMModalsProvider>
-        <Router>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/403" element={<AccessDenied />} />
-            <Route path="/" element={<MainLayout><Outlet /></MainLayout>}>
-              <Route path="dashboard" element={<Dashboard />} />
-              <Route path="contacts" element={<Contacts />} />
-              <Route path="pipeline" element={<Pipeline />} />
-              <Route path="spaces" element={<SpaceManagement />} />
-              <Route path="meeting-rooms" element={<MeetingRooms />} />
-              <Route path="fiscal-addresses" element={<FiscalAddresses />} />
-              <Route path="growth" element={<GrowthDashboard />} />
-              <Route path="growth-reports" element={<GrowthReports />} />
-              <Route path="integrations" element={<Integrations />} />
-              <Route path="plans" element={<PlansAndServices />} />
-              <Route path="automations" element={<Automations />} />
-              <Route path="messages" element={<Messages />} />
-              <Route path="proposals" element={<Proposals />} />
-              <Route path="schedule" element={<Schedule />} />
-              <Route path="settings" element={<Settings />} />
-              <Route path="profile" element={<Profile />} />
-              <Route path="*" element={<NotFound />} />
-            </Route>
-          </Routes>
-        </Router>
-        <Toaster />
-      </CRMModalsProvider>
+      <Router>
+        <AuthProvider>
+          <CRMModalsProvider>
+            <Routes>
+              <Route path="/" element={<Navigate to="/login" replace />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/403" element={<AccessDenied />} />
+              
+              <Route path="/" element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <Navigate to="/dashboard" replace />
+                  </MainLayout>
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/" element={
+                <ProtectedRoute>
+                  <MainLayout />
+                </ProtectedRoute>
+              }>
+                <Route path="dashboard" element={<Dashboard />} />
+                <Route path="contacts" element={<Contacts />} />
+                <Route path="pipeline" element={
+                  <ProtectedRoute tab="PIPELINE">
+                    <Pipeline />
+                  </ProtectedRoute>
+                } />
+                <Route path="spaces" element={
+                  <ProtectedRoute tab="OCCUPANCY_MAP">
+                    <SpaceManagement />
+                  </ProtectedRoute>
+                } />
+                <Route path="meeting-rooms" element={<MeetingRooms />} />
+                <Route path="fiscal-addresses" element={<FiscalAddresses />} />
+                <Route path="growth" element={
+                  <ProtectedRoute tab="GROWTH">
+                    <GrowthDashboard />
+                  </ProtectedRoute>
+                } />
+                <Route path="growth-reports" element={
+                  <ProtectedRoute tab="REPORTS">
+                    <GrowthReports />
+                  </ProtectedRoute>
+                } />
+                <Route path="integrations" element={<Integrations />} />
+                <Route path="plans" element={<PlansAndServices />} />
+                <Route path="automations" element={<Automations />} />
+                <Route path="messages" element={<Messages />} />
+                <Route path="proposals" element={<Proposals />} />
+                <Route path="schedule" element={<Schedule />} />
+                <Route path="settings" element={<Settings />} />
+                <Route path="profile" element={<Profile />} />
+                <Route path="*" element={<NotFound />} />
+              </Route>
+            </Routes>
+            <Toaster />
+          </CRMModalsProvider>
+        </AuthProvider>
+      </Router>
     </QueryClientProvider>
   );
 }
