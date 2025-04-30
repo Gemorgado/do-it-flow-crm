@@ -8,6 +8,7 @@ import { useUpsertUser } from '@/api/users';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
 import {
   Dialog,
   DialogContent,
@@ -22,6 +23,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from '@/components/ui/form';
 import {
   Select,
@@ -38,6 +40,7 @@ const userFormSchema = z.object({
   email: z.string().email({ message: 'Email inválido' }),
   team: z.enum(['financeiro', 'atendimento', 'frontdesk', 'comercial']),
   allowedTabs: z.array(z.string()).min(1, { message: 'Selecione pelo menos uma aba' }),
+  viewAllProposals: z.boolean().optional(),
 });
 
 export type UserFormValues = z.infer<typeof userFormSchema>;
@@ -59,6 +62,7 @@ export function UserModal({ user, open, onClose }: UserModalProps) {
       email: user?.email || '',
       team: user?.team || 'comercial',
       allowedTabs: user?.allowedTabs || [],
+      viewAllProposals: user?.viewAllProposals || false,
     },
   });
 
@@ -72,6 +76,7 @@ export function UserModal({ user, open, onClose }: UserModalProps) {
         email: data.email,
         team: data.team as Team,
         allowedTabs: data.allowedTabs as TabKey[],
+        viewAllProposals: data.viewAllProposals,
       });
       
       toast({
@@ -161,6 +166,28 @@ export function UserModal({ user, open, onClose }: UserModalProps) {
                     </SelectContent>
                   </Select>
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            {/* Nova permissão de visualizar todas as propostas */}
+            <FormField
+              control={form.control}
+              name="viewAllProposals"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                  <div className="space-y-0.5">
+                    <FormLabel>Ver todas as propostas</FormLabel>
+                    <FormDescription>
+                      Permite visualizar e editar propostas de todos os usuários
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
                 </FormItem>
               )}
             />

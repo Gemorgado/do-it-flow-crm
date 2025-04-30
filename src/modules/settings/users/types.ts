@@ -48,6 +48,7 @@ export interface User {
   email: string;
   team: Team;
   allowedTabs: TabKey[];
+  viewAllProposals?: boolean;  // NOVO: Permissão para ver todas as propostas
   createdAt: string;
 }
 

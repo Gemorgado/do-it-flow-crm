@@ -10,6 +10,7 @@ import { ServiceTypeField } from './ProposalForm/ServiceTypeField';
 import { AmountField } from './ProposalForm/AmountField';
 import { DateField } from './ProposalForm/DateField';
 import { FollowUpSection } from './ProposalForm/FollowUpSection';
+import { OwnerField } from './ProposalForm/OwnerField';
 
 interface ProposalModalProps {
   isOpen: boolean;
@@ -17,7 +18,7 @@ interface ProposalModalProps {
 }
 
 export function ProposalModal({ isOpen, onClose }: ProposalModalProps) {
-  const { form, isPending, onSubmit, formatCurrency } = useProposalForm(onClose);
+  const { form, isPending, onSubmit, formatCurrency, currentUser } = useProposalForm(onClose);
   
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -39,6 +40,14 @@ export function ProposalModal({ isOpen, onClose }: ProposalModalProps) {
               name="proposalDate" 
               label="Data da Proposta"
             />
+            
+            {/* Mostrar campo de responsável apenas para quem tem permissão */}
+            {currentUser?.viewAllProposals && (
+              <OwnerField 
+                control={form.control}
+                defaultValue={currentUser?.id || ''}
+              />
+            )}
             
             <FollowUpSection control={form.control} />
             

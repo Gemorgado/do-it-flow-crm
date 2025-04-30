@@ -10,6 +10,7 @@ const mockUsers: User[] = [
     email: 'admin@doitflow.com',
     team: 'comercial',
     allowedTabs: ['PIPELINE', 'PIPELINE_PROGRESS', 'GROWTH', 'REPORTS', 'OCCUPANCY_MAP'],
+    viewAllProposals: true, // Admin pode ver todas as propostas
     createdAt: '2023-01-01T00:00:00.000Z'
   },
   {
@@ -18,6 +19,7 @@ const mockUsers: User[] = [
     email: 'frontdesk@doitflow.com',
     team: 'frontdesk',
     allowedTabs: ['PIPELINE', 'OCCUPANCY_MAP'],
+    viewAllProposals: false, // Usuário comum só vê as próprias
     createdAt: '2023-02-15T00:00:00.000Z'
   }
 ];
@@ -65,11 +67,23 @@ export const useUpsertUser = () => {
       // return response.json();
       
       // Mock response
-      return {
+      const updatedUser = {
         ...user,
         id: user.id || Math.random().toString(36).substring(2, 9),
         createdAt: user.id ? (mockUsers.find(u => u.id === user.id)?.createdAt || new Date().toISOString()) : new Date().toISOString()
       };
+      
+      // Update or add user in mock data
+      if (user.id) {
+        const index = mockUsers.findIndex(u => u.id === user.id);
+        if (index >= 0) {
+          mockUsers[index] = updatedUser as User;
+        }
+      } else {
+        mockUsers.push(updatedUser as User);
+      }
+      
+      return updatedUser;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
@@ -91,7 +105,12 @@ export const useDeleteUser = () => {
       // });
       // return response.json();
       
-      // Mock response
+      // Mock response - remove from mock data
+      const index = mockUsers.findIndex(u => u.id === userId);
+      if (index >= 0) {
+        mockUsers.splice(index, 1);
+      }
+      
       return { success: true };
     },
     onSuccess: () => {

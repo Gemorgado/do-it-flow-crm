@@ -1,7 +1,49 @@
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { CreateProposalInput, Proposal } from "@/types/proposal";
 import { toast } from "@/hooks/use-toast";
+import { useAuth } from "@/modules/auth/AuthProvider";
+
+// Mock users for demonstration
+const mockUsers = [
+  { id: "1", name: "Admin" },
+  { id: "2", name: "Consultor 1" },
+  { id: "3", name: "Consultor 2" }
+];
+
+// Mock API for user fetching
+export const useUsers = () => {
+  return {
+    data: mockUsers,
+    isLoading: false
+  };
+};
+
+// Mock proposals data
+const mockProposals: Proposal[] = [];
+
+// Mock API for proposals fetching with owner filtering
+export const useProposals = () => {
+  const { currentUser } = useAuth();
+  
+  return useQuery({
+    queryKey: ['proposals', { owner: currentUser?.viewAllProposals ? 'all' : currentUser?.id }],
+    queryFn: async () => {
+      // Simulate network request
+      await new Promise((resolve) => setTimeout(resolve, 800));
+      
+      // Filter proposals based on user permissions
+      let filteredProposals = [...mockProposals];
+      
+      // If user doesn't have viewAllProposals permission, only show their own
+      if (currentUser && !currentUser.viewAllProposals) {
+        filteredProposals = filteredProposals.filter(p => p.ownerId === currentUser.id);
+      }
+      
+      return filteredProposals;
+    }
+  });
+};
 
 // Mock API for demonstration purposes
 // In a real app, this would be an actual API call
@@ -12,8 +54,12 @@ const createProposal = async (data: CreateProposalInput): Promise<Proposal> => {
   const proposal: Proposal = {
     id: `proposal-${Date.now()}`,
     ...data,
+    ownerId: data.ownerId || "1", // Default to user 1 if not provided
     createdAt: new Date().toISOString(),
   };
+
+  // Add to mock data
+  mockProposals.push(proposal);
 
   // If there's a followUp, create it
   if (data.followUpAt) {
