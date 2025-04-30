@@ -3,10 +3,10 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Check } from "lucide-react";
 import { ConexaStatusDisplay } from './Conexa/ConexaStatusDisplay';
 import { ConexaSyncStats } from './Conexa/ConexaSyncStats';
 import { ConexaSyncButton } from './Conexa/ConexaSyncButton';
+import { triggerManualSync } from '@/jobs/conexaSyncJob';
 
 // This would come from your API in a real implementation
 const mockIntegrationStatus = {
@@ -40,23 +40,28 @@ export function ConexaIntegration() {
   const handleManualSync = async () => {
     setIsLoading(true);
     
-    // This would be a real API call in production
     try {
-      // Simulating API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // In a real implementation, this would call your API
+      const result = await triggerManualSync();
       
-      // Update status with new values
-      setStatus({
-        ...status,
-        lastSync: new Date().toISOString(),
-        nextSync: new Date(Date.now() + 15 * 60 * 1000).toISOString() // +15 min
-      });
+      if (result) {
+        // Update status with new values from the sync result
+        setStatus(result);
+      } else {
+        // Fallback if no result is returned
+        setStatus({
+          ...status,
+          lastSync: new Date().toISOString(),
+          nextSync: new Date(Date.now() + 15 * 60 * 1000).toISOString()
+        });
+      }
       
       toast({
         title: "Sincronização concluída",
         description: "Os dados do Conexa foram sincronizados com sucesso.",
       });
     } catch (error) {
+      console.error("Sync error:", error);
       toast({
         title: "Erro na sincronização",
         description: "Não foi possível sincronizar com o Conexa. Tente novamente mais tarde.",

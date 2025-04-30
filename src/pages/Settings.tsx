@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { UserManagementTab } from "@/modules/settings/users/UserManagementTab";
+import { ConexaIntegration } from "@/components/Integrations/ConexaIntegration";
 
 export default function Settings() {
   return (
@@ -102,8 +103,12 @@ export default function Settings() {
             <h2 className="text-xl font-semibold mb-4">Integrações</h2>
             <Separator className="mb-4" />
             
-            <div className="space-y-2">
-              <p>Configurações de integração em desenvolvimento.</p>
+            <div className="space-y-6">
+              <h3 className="text-lg font-medium">Conexa ERP</h3>
+              <ConexaIntegration />
+              
+              <h3 className="text-lg font-medium mt-8">Outras Integrações</h3>
+              <p className="text-sm text-gray-500">Mais integrações em breve.</p>
             </div>
           </Card>
         </TabsContent>
