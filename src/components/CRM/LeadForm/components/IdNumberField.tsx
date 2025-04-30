@@ -12,19 +12,22 @@ import {
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { LeadFormValues } from "@/types/crm";
-import { formatDocument } from "@/utils/documentUtils";
 import { AlertCircle } from "lucide-react";
+import { useDocumentValidation } from "../hooks/useDocumentValidation";
 
 export const IdNumberField = () => {
-  const { control, setValue, formState } = useFormContext<LeadFormValues>();
+  const { control, setValue, watch } = useFormContext<LeadFormValues>();
+  const currentValue = watch("idNumber");
   
-  const handleIdNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formattedValue = formatDocument(e.target.value);
-    setValue("idNumber", formattedValue, { 
-      shouldValidate: true,
-      shouldDirty: true 
-    });
-  };
+  const { handleDocumentChange, documentType } = useDocumentValidation({
+    initialValue: currentValue,
+    onChange: (formattedValue) => {
+      setValue("idNumber", formattedValue, { 
+        shouldValidate: true,
+        shouldDirty: true 
+      });
+    }
+  });
   
   return (
     <FormField
@@ -45,7 +48,7 @@ export const IdNumberField = () => {
             <Input 
               placeholder="00.000.000/0000-00 ou 000.000.000-00" 
               {...field}
-              onChange={handleIdNumberChange}
+              onChange={(e) => handleDocumentChange(e.target.value)}
               className={cn(
                 fieldState.error && "border-destructive focus-visible:ring-destructive"
               )}

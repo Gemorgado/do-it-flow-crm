@@ -1,12 +1,22 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { formatDocument, validateDocument } from "@/utils/documentUtils";
 
-export function useDocumentValidation(initialValue: string = "") {
+interface UseDocumentValidationProps {
+  initialValue?: string;
+  onChange?: (value: string, isValid: boolean) => void;
+}
+
+export function useDocumentValidation({ 
+  initialValue = "", 
+  onChange 
+}: UseDocumentValidationProps = {}) {
   const [document, setDocument] = useState(initialValue);
   const [documentError, setDocumentError] = useState<string | null>(null);
   const [documentType, setDocumentType] = useState<'cpf' | 'cnpj' | null>(null);
+  const [isValid, setIsValid] = useState(false);
 
+  // Format and validate the document
   const handleDocumentChange = (value: string) => {
     const formattedValue = formatDocument(value);
     setDocument(formattedValue);
@@ -14,28 +24,43 @@ export function useDocumentValidation(initialValue: string = "") {
     if (!formattedValue) {
       setDocumentError(null);
       setDocumentType(null);
+      setIsValid(false);
+      if (onChange) onChange(formattedValue, false);
       return formattedValue;
     }
     
     // Determine document type
     const cleanValue = formattedValue.replace(/\D/g, '');
-    if (cleanValue.length <= 11) {
-      setDocumentType('cpf');
+    const newDocumentType = cleanValue.length <= 11 ? 'cpf' : 'cnpj';
+    setDocumentType(newDocumentType);
+    
+    // Validate the document
+    const docIsValid = validateDocument(formattedValue);
+    setIsValid(docIsValid);
+    
+    if (!docIsValid) {
+      setDocumentError(`${newDocumentType === 'cpf' ? 'CPF' : 'CNPJ'} inválido`);
     } else {
-      setDocumentType('cnpj');
+      setDocumentError(null);
     }
     
-    const isValid = validateDocument(formattedValue);
-    setDocumentError(isValid ? null : `${documentType === 'cpf' ? 'CPF' : 'CNPJ'} inválido`);
-    
+    if (onChange) onChange(formattedValue, docIsValid);
     return formattedValue;
   };
+
+  // Validate initial value if provided
+  useEffect(() => {
+    if (initialValue) {
+      handleDocumentChange(initialValue);
+    }
+  }, [initialValue]);
 
   return {
     document,
     documentError,
     documentType,
+    isValid,
     handleDocumentChange,
-    isValid: !documentError && !!document
+    setDocument
   };
 }
