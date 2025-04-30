@@ -1,14 +1,17 @@
 
 import { queryClient } from '@/lib/queryClient';
 import { toast } from '@/hooks/use-toast';
+import { resetPipelineDemo } from './resetPipelineDemo';
 
 export async function resetDemoData() {
+  /* First, reset pipeline data */
+  await resetPipelineDemo();
+  
   /* 1. LocalStorage / IndexedDB (MockAdapter) */
   const keys = [
-    'leads', 'clients', 'contracts', 'proposals',
+    'clients', 'contracts', 
     'conexa_snapshot', 'space_bindings', 'import_templates',
-    'mockLeads', 'pipeline_data', 'pipeline_stages',
-    'mockClients', 'mockContacts', 'customers', 'leads_data',
+    'mockClients', 'mockContacts', 'customers',
     'clients_data', 'crm_data', 'user_preferences'
   ];
   
@@ -16,7 +19,6 @@ export async function resetDemoData() {
   keys.forEach(k => localStorage.removeItem(k));
   
   // Clear specific items that might be named differently
-  localStorage.removeItem('mockLeads');
   localStorage.removeItem('mockClients');
   localStorage.removeItem('mockContacts');
   localStorage.removeItem('spaceBindings'); // Correct case from 'space_bindings' which might be wrong
@@ -31,8 +33,6 @@ export async function resetDemoData() {
   queryClient.clear();
   
   // Invalida especificamente as queries relacionadas aos dados que estamos limpando
-  queryClient.invalidateQueries({ queryKey: ['pipeline', 'leads'] });
-  queryClient.invalidateQueries({ queryKey: ['leads'] });
   queryClient.invalidateQueries({ queryKey: ['clients'] });
   queryClient.invalidateQueries({ queryKey: ['contacts'] });
   queryClient.invalidateQueries({ queryKey: ['contracts'] });
