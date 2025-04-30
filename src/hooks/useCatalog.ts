@@ -6,11 +6,11 @@ import { Plan } from '@/integrations/catalog/types';
 export function useCatalog() {
   // In a real application, this would likely use React Query to fetch from an API
   // and have mutation functions for updates
-  return catalog2025;
+  return catalog2025 || [];
 }
 
 export function useEditableCatalog() {
-  const [plans, setPlans] = useState<Plan[]>(catalog2025);
+  const [plans, setPlans] = useState<Plan[]>(catalog2025 || []);
   
   const updatePlan = (updatedPlan: Plan) => {
     setPlans(plans.map(p => p.id === updatedPlan.id ? updatedPlan : p));

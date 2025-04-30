@@ -22,7 +22,7 @@ export interface ComboboxOption {
 }
 
 interface ComboboxProps {
-  options: ComboboxOption[]
+  options: ComboboxOption[] | undefined | null
   selected: ComboboxOption | null
   onSelect: (value: ComboboxOption) => void
   onSearch?: (value: string) => void
@@ -47,6 +47,9 @@ export function Combobox({
   emptyMessage = "No results found."
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
+  
+  // Ensure options is always an array, even if it's null or undefined
+  const safeOptions = React.useMemo(() => options || [], [options]);
   
   const handleSearch = React.useCallback(
     (value: string) => {
@@ -78,7 +81,7 @@ export function Combobox({
           />
           <CommandEmpty>{emptyMessage}</CommandEmpty>
           <CommandGroup className="max-h-60 overflow-auto">
-            {options.map((option) => (
+            {safeOptions.map((option) => (
               <CommandItem
                 key={option.id}
                 value={option.id}
