@@ -62,7 +62,7 @@ export function ImporterStepper({
       
       {step === 'preview' && (
         <PreviewStep
-          // Use type assertion to handle the empty string values in mapping
+          // Filter out empty string values from mapping
           mapping={Object.fromEntries(
             Object.entries(mapping).filter(([_, field]) => field !== '')
           ) as Record<string, InternalField>}
