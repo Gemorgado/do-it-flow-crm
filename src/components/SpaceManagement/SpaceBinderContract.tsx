@@ -4,36 +4,52 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ClientService } from "@/types";
 import { formatCurrency } from "@/utils/formatters";
+import { Loader2 } from "lucide-react";
 
 interface SpaceBinderContractProps {
   selectedClientId: string | null;
   selectedContractId: string | null;
   setSelectedContractId: (id: string | null) => void;
   contracts: ClientService[];
+  isLoading?: boolean;
 }
 
 export function SpaceBinderContract({
   selectedClientId,
   selectedContractId,
   setSelectedContractId,
-  contracts
+  contracts,
+  isLoading = false
 }: SpaceBinderContractProps) {
   if (!selectedClientId) return null;
   
+  const handleContractChange = (value: string) => {
+    console.log("Selected contract ID:", value);
+    setSelectedContractId(value);
+  };
+
   return (
     <div>
       <Label htmlFor="contract">Contrato</Label>
       <Select
         value={selectedContractId || ""}
-        onValueChange={setSelectedContractId}
+        onValueChange={handleContractChange}
+        disabled={isLoading}
       >
-        <SelectTrigger id="contract">
-          <SelectValue placeholder="Selecione o contrato" />
+        <SelectTrigger id="contract" className="w-full">
+          {isLoading ? (
+            <div className="flex items-center">
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              <span>Carregando contratos...</span>
+            </div>
+          ) : (
+            <SelectValue placeholder="Selecione o contrato" />
+          )}
         </SelectTrigger>
         <SelectContent>
           {contracts.length === 0 ? (
             <SelectItem value="none" disabled>
-              Nenhum contrato ativo disponível
+              {isLoading ? "Carregando..." : "Nenhum contrato ativo disponível"}
             </SelectItem>
           ) : (
             contracts.map(contract => (

@@ -29,10 +29,13 @@ export function useClientContracts(clientId: string | null) {
       // Only get active contracts for the selected client
       if (!clientId) return [];
       
-      return clientServices.filter(
+      console.log(`Fetching contracts for client ${clientId}`);
+      const filteredContracts = clientServices.filter(
         contract => contract.clientId === clientId && 
                    contract.status === "ativo"
       );
+      console.log(`Found ${filteredContracts.length} active contracts`);
+      return filteredContracts;
     },
     // Only run the query if we have a clientId
     enabled: !!clientId

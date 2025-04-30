@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useClients, useClientContracts } from "@/hooks/useClients";
 import { useSpaceBindings, useBindSpace, useUnbindSpace } from "@/hooks/useSpaceBindings";
 import { Location, SpaceBinding } from "@/types";
@@ -28,7 +28,7 @@ export function SpaceBinderModal({ isOpen, onClose, space }: SpaceBinderModalPro
   
   const { data: bindings = [] } = useSpaceBindings();
   const { data: clientsList = [] } = useClients();
-  const { data: contracts = [] } = useClientContracts(selectedClientId);
+  const { data: contracts = [], isLoading: isLoadingContracts } = useClientContracts(selectedClientId);
   
   const bindSpace = useBindSpace();
   const unbindSpace = useUnbindSpace();
@@ -70,11 +70,18 @@ export function SpaceBinderModal({ isOpen, onClose, space }: SpaceBinderModalPro
     
     const selectedContract = contracts.find(c => c.id === selectedContractId);
     if (selectedContract) {
+      console.log("Selected contract:", selectedContract);
       setUnitPrice(selectedContract.value);
       setStartDate(selectedContract.contractStart);
       setEndDate(selectedContract.contractEnd);
     }
   }, [selectedContractId, contracts]);
+  
+  // Log contracts when they change for debugging purposes
+  useEffect(() => {
+    console.log("Client ID:", selectedClientId);
+    console.log("Available contracts:", contracts);
+  }, [selectedClientId, contracts]);
   
   // Handle binding the space
   const handleSave = () => {
@@ -108,6 +115,9 @@ export function SpaceBinderModal({ isOpen, onClose, space }: SpaceBinderModalPro
           <DialogTitle>
             {existingBinding ? "Editar Vinculação" : "Atribuir Espaço"}
           </DialogTitle>
+          <DialogDescription>
+            {existingBinding ? "Edite os detalhes da vinculação" : "Atribua este espaço a um cliente"}
+          </DialogDescription>
         </DialogHeader>
         
         {space && (
@@ -128,6 +138,7 @@ export function SpaceBinderModal({ isOpen, onClose, space }: SpaceBinderModalPro
               selectedContractId={selectedContractId}
               setSelectedContractId={setSelectedContractId}
               contracts={contracts}
+              isLoading={isLoadingContracts}
             />
             
             <SpaceBinderContractDetails
