@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ContactsHeader } from "@/components/Contacts/ContactsHeader";
@@ -16,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { queryClient } from "@/lib/queryClient";
 
 export default function Contacts() {
+  
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("leads");
   const [clientModalOpen, setClientModalOpen] = useState(false);
