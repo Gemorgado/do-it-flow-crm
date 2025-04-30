@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ContactsHeader } from "@/components/Contacts/ContactsHeader";
@@ -5,7 +6,7 @@ import { ContactsSearch } from "@/components/Contacts/ContactsSearch";
 import { LeadsTable } from "@/components/Contacts/LeadsTable";
 import { ClientsTable } from "@/components/Contacts/ClientsTable";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { useLeadModal, useContactModal } from "@/components/CRM/hooks/useModalContext";
 import { useCustomers } from "@/hooks/conexaData";
 import { Client } from "@/types/client";
@@ -13,6 +14,9 @@ import { ClientModal } from "@/components/Contacts/ClientModal";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { queryClient } from "@/lib/queryClient";
+import { resetDemoData } from "@/utils/resetDemoData";
+import { toast } from "@/hooks/use-toast";
+import { useAuth } from "@/modules/auth/AuthProvider";
 
 export default function Contacts() {
   
@@ -22,6 +26,8 @@ export default function Contacts() {
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [showOnlyActive, setShowOnlyActive] = useState(true);
   const [leads, setLeads] = useState([]);
+  const [isResetting, setIsResetting] = useState(false);
+  const { user } = useAuth();
   
   const leadModal = useLeadModal();
   const contactModal = useContactModal();
@@ -95,6 +101,30 @@ export default function Contacts() {
     setClientModalOpen(false);
     setSelectedClient(null);
   };
+  
+  const handleResetContacts = async () => {
+    if (confirm('Tem certeza que deseja zerar todos os dados de Contatos? Esta ação não pode ser desfeita.')) {
+      setIsResetting(true);
+      try {
+        await resetDemoData();
+        toast({
+          title: "Contatos zerados",
+          description: "Todos os dados de contatos foram removidos com sucesso",
+        });
+        // Forçar refresh da página para garantir que todos os componentes sejam recarregados
+        window.location.reload();
+      } catch (error) {
+        console.error("Erro ao zerar contatos:", error);
+        toast({
+          title: "Erro ao zerar contatos",
+          description: "Não foi possível zerar os dados. Tente novamente.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsResetting(false);
+      }
+    }
+  };
 
   // Function to force a refresh of data
   const refreshData = () => {
@@ -130,7 +160,23 @@ export default function Contacts() {
 
   return (
     <div className="animate-fade-in space-y-6">
-      <ContactsHeader onNewContact={handleNewContact} />
+      <div className="flex justify-between items-start">
+        <ContactsHeader onNewContact={handleNewContact} />
+        
+        {user?.viewAllProposals && (
+          <Button 
+            variant="destructive" 
+            size="sm"
+            onClick={handleResetContacts}
+            disabled={isResetting}
+            className="flex items-center gap-2"
+          >
+            <Trash2 className="h-4 w-4" />
+            {isResetting ? "Zerando..." : "Zerar Contatos"}
+          </Button>
+        )}
+      </div>
+      
       <ContactsSearch 
         searchTerm={searchTerm} 
         onSearchChange={setSearchTerm} 
