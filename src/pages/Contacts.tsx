@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { leads, clients } from "@/data/mockData";
+import { leads } from "@/data/mockData";
 import { ContactsHeader } from "@/components/Contacts/ContactsHeader";
 import { ContactsSearch } from "@/components/Contacts/ContactsSearch";
 import { LeadsTable } from "@/components/Contacts/LeadsTable";
@@ -9,6 +9,8 @@ import { ClientsTable } from "@/components/Contacts/ClientsTable";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useLeadModal, useContactModal } from "@/components/CRM/hooks/useModalContext";
+import { useCustomers } from "@/hooks/conexaData";
+import { Client } from "@/types";
 
 export default function Contacts() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -16,6 +18,22 @@ export default function Contacts() {
   
   const leadModal = useLeadModal();
   const contactModal = useContactModal();
+  
+  // Get imported customers from Conexa snapshot
+  const conexaCustomers = useCustomers();
+  
+  // Convert Conexa customers to Client type for display
+  const clients: Client[] = conexaCustomers.map(customer => ({
+    id: customer.id,
+    name: customer.name,
+    company: customer.docNumber, // Using docNumber as company for now
+    email: customer.email || "",
+    phone: customer.phone || "",
+    services: [],
+    status: "ativo", // Default status
+    createdAt: customer.updatedAt,
+    updatedAt: customer.updatedAt
+  }));
   
   // Simple filtering by name, email, or company
   const filteredLeads = leads.filter(lead => 
