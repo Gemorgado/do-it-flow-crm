@@ -9,6 +9,7 @@ import { StatsSection } from "@/components/SpaceManagement/StatsSection";
 import { BuildingMapSection } from "@/components/SpaceManagement/BuildingMapSection";
 import { SpaceDetailsDialog } from "@/components/SpaceManagement/SpaceDetailsDialog"; 
 import { SpaceBinderModal } from "@/components/SpaceManagement/SpaceBinderModal";
+import { SpaceManagementHeader } from "@/components/SpaceManagement/SpaceManagementHeader";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function SpaceManagement() {
@@ -44,10 +45,7 @@ export default function SpaceManagement() {
 
   return (
     <div className="animate-fade-in space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Gerenciamento de Espaços</h1>
-        <p className="text-gray-500">Visualize e gerencie a ocupação de salas e estações</p>
-      </div>
+      <SpaceManagementHeader />
       
       <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-4'}`}>
         {/* Estatísticas de ocupação */}
