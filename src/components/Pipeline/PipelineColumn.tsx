@@ -2,6 +2,7 @@
 import { PipelineStage, Lead } from "@/types";
 import { Plus } from "lucide-react";
 import { LeadCard } from "./LeadCard";
+import { useLeadModal } from "@/components/CRM/hooks/useModalContext";
 
 interface PipelineColumnProps {
   stage: PipelineStage;
@@ -20,6 +21,12 @@ export function PipelineColumn({
   onDragStart,
   onStageUpdate
 }: PipelineColumnProps) {
+  const leadModal = useLeadModal();
+
+  const handleAddLead = () => {
+    leadModal.open({ presetStage: stage });
+  };
+
   return (
     <div 
       className="flex-1 min-w-[300px] max-w-[320px]"
@@ -53,7 +60,10 @@ export function PipelineColumn({
           </div>
         )}
         
-        <button className="w-full border border-dashed border-gray-200 rounded-md p-3 text-gray-500 flex items-center justify-center hover:bg-gray-50 transition-colors bg-white">
+        <button 
+          onClick={handleAddLead}
+          className="w-full border border-dashed border-gray-200 rounded-md p-3 text-gray-500 flex items-center justify-center hover:bg-gray-50 transition-colors bg-white"
+        >
           <Plus className="h-4 w-4 mr-1" /> Adicionar Lead
         </button>
       </div>

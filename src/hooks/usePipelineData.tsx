@@ -1,18 +1,20 @@
 
 import { useState, useEffect } from "react";
 import { Lead, PipelineStage } from "@/types";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/components/ui/sonner";
 import { 
   getLeadsNeedingAttention, 
   triggerAutomation, 
   trackStageChange 
 } from "@/utils/pipelineAutomation";
 import { trackLeadEvent } from "@/utils/trackingUtils";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function usePipelineData(initialLeads: Lead[], pipelineStages: PipelineStage[]) {
   const [filteredLeads, setFilteredLeads] = useState<Lead[]>(initialLeads);
   const [draggedLead, setDraggedLead] = useState<Lead | null>(null);
   const [leadsNeedingAttention, setLeadsNeedingAttention] = useState<Lead[]>([]);
+  const queryClient = useQueryClient();
   
   // Group leads by pipeline stage
   const leadsByStage: Record<string, Lead[]> = {};
@@ -92,6 +94,9 @@ export function usePipelineData(initialLeads: Lead[], pipelineStages: PipelineSt
     // Update state
     setFilteredLeads(updatedLeads);
     setDraggedLead(null);
+    
+    // Invalidate relevant queries to refresh data
+    queryClient.invalidateQueries({ queryKey: ['pipeline', 'leads'] });
     
     // Show a success toast
     toast({

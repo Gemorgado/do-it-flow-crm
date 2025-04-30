@@ -1,15 +1,17 @@
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { LeadFormValues, ContactFormValues } from "@/types/crm";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/components/ui/sonner";
 
 /**
  * Hook para criar um novo lead
  * @returns Mutation para criar lead com métodos mutate, isLoading e error
  */
 export const useCreateLead = () => {
+  const queryClient = useQueryClient();
+  
   return useMutation({
-    mutationFn: async (data: LeadFormValues) => {
+    mutationFn: async (data: LeadFormValues & { stageId?: string }) => {
       const response = await fetch(`/api/crm/leads`, {
         method: "POST",
         headers: {
@@ -26,6 +28,10 @@ export const useCreateLead = () => {
       return response.json();
     },
     onSuccess: () => {
+      // Invalidate both the pipeline leads and general leads queries
+      queryClient.invalidateQueries({ queryKey: ['pipeline', 'leads'] });
+      queryClient.invalidateQueries({ queryKey: ['leads'] });
+      
       toast({
         title: "Lead criado com sucesso",
         description: "O lead foi adicionado ao sistema",

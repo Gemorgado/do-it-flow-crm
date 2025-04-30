@@ -1,5 +1,5 @@
 
-import { PipelineColumn } from "@/components/Pipeline/PipelineColumn";
+import { PipelineColumn } from "./PipelineColumn";
 import { PipelineStage, Lead } from "@/types";
 
 interface PipelineBoardProps {
@@ -11,29 +11,27 @@ interface PipelineBoardProps {
   onStageUpdate: (leadId: string, newStageId: string) => void;
 }
 
-export function PipelineBoard({ 
-  pipelineStages, 
-  leadsByStage, 
-  onDragOver, 
-  onDrop, 
-  onDragStart, 
-  onStageUpdate 
+export function PipelineBoard({
+  pipelineStages,
+  leadsByStage,
+  onDragOver,
+  onDrop,
+  onDragStart,
+  onStageUpdate
 }: PipelineBoardProps) {
   return (
-    <div className="overflow-x-auto pb-6">
-      <div className="flex gap-4" style={{ minWidth: pipelineStages.length * 320 + 'px' }}>
-        {pipelineStages.map((stage) => (
-          <PipelineColumn 
-            key={stage.id} 
-            stage={stage} 
-            leads={leadsByStage[stage.id] || []} 
-            onDragOver={onDragOver}
-            onDrop={(e) => onDrop(e, stage.id)}
-            onDragStart={onDragStart}
-            onStageUpdate={onStageUpdate}
-          />
-        ))}
-      </div>
+    <div className="flex gap-4 overflow-x-auto pb-6">
+      {pipelineStages.map((stage) => (
+        <PipelineColumn
+          key={stage.id}
+          stage={stage}
+          leads={leadsByStage[stage.id] || []}
+          onDragOver={onDragOver}
+          onDrop={(e) => onDrop(e, stage.id)}
+          onDragStart={onDragStart}
+          onStageUpdate={onStageUpdate}
+        />
+      ))}
     </div>
   );
 }

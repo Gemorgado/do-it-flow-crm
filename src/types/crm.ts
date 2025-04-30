@@ -6,8 +6,9 @@ export interface LeadFormValues {
   interestService: string;
   employees?: number;
   annualRevenue?: number;
-  sourceCategory: 'indicação' | 'rede social' | 'outro';
+  sourceCategory: 'indicacao' | 'rede_social' | 'outro';
   sourceDetail?: string;     // qual rede, quem indicou etc.
+  stageId?: string;          // ID do estágio no pipeline
 }
 
 export interface ContactFormValues {

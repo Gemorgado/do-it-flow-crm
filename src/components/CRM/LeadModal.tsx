@@ -41,6 +41,7 @@ import { LeadFormValues } from "@/types/crm";
 import { useCreateLead } from "@/api/crm";
 import { formatDocument, validateDocument } from "@/utils/documentUtils";
 import { useLeadModal } from "./hooks/useModalContext";
+import { pipelineStages } from "@/data/leadsData";
 
 // Schema de validação usando Zod
 const leadFormSchema = z.object({
@@ -58,16 +59,20 @@ const leadFormSchema = z.object({
   annualRevenue: z.number().optional(),
   sourceCategory: z.enum(["indicacao", "rede_social", "outro"]),
   sourceDetail: z.string().optional(),
+  stageId: z.string().optional(),
 });
 
 /**
  * Modal para criação de novos leads
  */
 export function LeadModal() {
-  const { isOpen, close } = useLeadModal();
+  const { isOpen, close, options } = useLeadModal();
   const { mutate, isPending } = useCreateLead();
+  
+  // Get preset stage ID if provided
+  const presetStageId = options?.presetStage?.id;
 
-  const form = useForm<LeadFormValues>({
+  const form = useForm<LeadFormValues & { stageId?: string }>({
     resolver: zodResolver(leadFormSchema),
     defaultValues: {
       companyOrPerson: "",
@@ -76,11 +81,15 @@ export function LeadModal() {
       interestService: "",
       sourceCategory: "outro",
       sourceDetail: "",
+      stageId: presetStageId || pipelineStages[0].id,
     },
   });
 
-  const onSubmit = (data: LeadFormValues) => {
-    mutate(data, {
+  const onSubmit = (data: LeadFormValues & { stageId?: string }) => {
+    mutate({
+      ...data,
+      stageId: data.stageId || presetStageId || pipelineStages[0].id
+    }, {
       onSuccess: () => {
         close();
         form.reset();
@@ -187,6 +196,36 @@ export function LeadModal() {
                 </FormItem>
               )}
             />
+
+            {!presetStageId && (
+              <FormField
+                control={form.control}
+                name="stageId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Estágio*</FormLabel>
+                    <Select 
+                      onValueChange={field.onChange} 
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione o estágio" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {pipelineStages.map((stage) => (
+                          <SelectItem key={stage.id} value={stage.id}>
+                            {stage.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FormField

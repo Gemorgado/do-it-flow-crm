@@ -1,77 +1,88 @@
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState } from "react";
+import { PipelineStage } from "@/types";
 
-interface ModalContextType {
-  isLeadModalOpen: boolean;
-  isContactModalOpen: boolean;
-  openLeadModal: () => void;
-  closeLeadModal: () => void;
-  openContactModal: () => void;
-  closeContactModal: () => void;
+// Lead Modal Context
+interface LeadModalOptions {
+  presetStage?: PipelineStage;
 }
 
-const ModalContext = createContext<ModalContextType | undefined>(undefined);
+interface LeadModalContextType {
+  isOpen: boolean;
+  options?: LeadModalOptions;
+  open: (options?: LeadModalOptions) => void;
+  close: () => void;
+}
 
-/**
- * Provider para gerenciar o estado dos modais de Lead e Contato
- */
-export function ModalProvider({ children }: { children: ReactNode }) {
-  const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
-  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+const LeadModalContext = createContext<LeadModalContextType | undefined>(undefined);
 
-  const openLeadModal = () => setIsLeadModalOpen(true);
-  const closeLeadModal = () => setIsLeadModalOpen(false);
-  const openContactModal = () => setIsContactModalOpen(true);
-  const closeContactModal = () => setIsContactModalOpen(false);
+// Contact Modal Context
+interface ContactModalContextType {
+  isOpen: boolean;
+  open: () => void;
+  close: () => void;
+}
+
+const ContactModalContext = createContext<ContactModalContextType | undefined>(undefined);
+
+// Provider
+export function ModalProvider({ children }: { children: React.ReactNode }) {
+  // Lead modal state
+  const [leadModalOpen, setLeadModalOpen] = useState(false);
+  const [leadModalOptions, setLeadModalOptions] = useState<LeadModalOptions | undefined>(undefined);
+
+  const openLeadModal = (options?: LeadModalOptions) => {
+    setLeadModalOptions(options);
+    setLeadModalOpen(true);
+  };
+
+  const closeLeadModal = () => {
+    setLeadModalOpen(false);
+    setLeadModalOptions(undefined);
+  };
+
+  // Contact modal state
+  const [contactModalOpen, setContactModalOpen] = useState(false);
+
+  const openContactModal = () => {
+    setContactModalOpen(true);
+  };
+
+  const closeContactModal = () => {
+    setContactModalOpen(false);
+  };
 
   return (
-    <ModalContext.Provider
-      value={{
-        isLeadModalOpen,
-        isContactModalOpen,
-        openLeadModal,
-        closeLeadModal,
-        openContactModal,
-        closeContactModal,
-      }}
-    >
-      {children}
-    </ModalContext.Provider>
+    <LeadModalContext.Provider value={{ 
+      isOpen: leadModalOpen, 
+      options: leadModalOptions,
+      open: openLeadModal, 
+      close: closeLeadModal 
+    }}>
+      <ContactModalContext.Provider value={{ 
+        isOpen: contactModalOpen, 
+        open: openContactModal, 
+        close: closeContactModal 
+      }}>
+        {children}
+      </ContactModalContext.Provider>
+    </LeadModalContext.Provider>
   );
 }
 
-/**
- * Hook para acessar o contexto de modais
- * @returns Objeto com estados e métodos para controlar os modais
- */
-export function useModalContext() {
-  const context = useContext(ModalContext);
+// Hooks
+export function useLeadModal() {
+  const context = useContext(LeadModalContext);
   if (context === undefined) {
-    throw new Error("useModalContext deve ser usado dentro de um ModalProvider");
+    throw new Error("useLeadModal must be used within a ModalProvider");
   }
   return context;
 }
 
-/**
- * Hook para controlar o modal de Lead
- */
-export function useLeadModal() {
-  const { isLeadModalOpen, openLeadModal, closeLeadModal } = useModalContext();
-  return {
-    isOpen: isLeadModalOpen,
-    open: openLeadModal,
-    close: closeLeadModal,
-  };
-}
-
-/**
- * Hook para controlar o modal de Contato
- */
 export function useContactModal() {
-  const { isContactModalOpen, openContactModal, closeContactModal } = useModalContext();
-  return {
-    isOpen: isContactModalOpen,
-    open: openContactModal,
-    close: closeContactModal,
-  };
+  const context = useContext(ContactModalContext);
+  if (context === undefined) {
+    throw new Error("useContactModal must be used within a ModalProvider");
+  }
+  return context;
 }
