@@ -87,6 +87,14 @@ export interface Location {
   area?: number;
 }
 
+// New interface for space bindings
+export interface SpaceBinding {
+  spaceId: string;          // id do elemento no mapa (sala ou desk)
+  clientId: string;
+  contractId: string;
+  boundAt: string;          // ISO datetime
+}
+
 export interface Interaction {
   id: string;
   contactId: string;

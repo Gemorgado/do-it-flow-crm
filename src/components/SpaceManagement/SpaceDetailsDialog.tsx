@@ -1,101 +1,118 @@
 
+import React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Location, ClientService, Client } from "@/types";
-import { format } from "date-fns";
-import { clients } from "@/data/mockData";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Location, ClientService } from "@/types";
+import { useSpaceBindings } from "@/hooks/useSpaceBindings";
+import { useClients } from "@/hooks/useClients";
 
 interface SpaceDetailsDialogProps {
   space: Location;
-  clientServices: ClientService[];
   isOpen: boolean;
   onClose: () => void;
+  clientServices: ClientService[];
+  onAssignSpace?: () => void;
 }
 
-export function SpaceDetailsDialog({ space, clientServices, isOpen, onClose }: SpaceDetailsDialogProps) {
-  const spaceTypeLabel = {
+export function SpaceDetailsDialog({ 
+  space, 
+  isOpen, 
+  onClose, 
+  clientServices,
+  onAssignSpace
+}: SpaceDetailsDialogProps) {
+  const { data: bindings = [] } = useSpaceBindings();
+  const { data: clients = [] } = useClients();
+  
+  // Check if this space is bound to a client
+  const binding = bindings.find(b => b.spaceId === space.id);
+  const client = binding ? clients.find(c => c.id === binding.clientId) : null;
+  
+  // Map service types to human-readable names
+  const serviceTypeLabels = {
     sala_privativa: "Sala Privativa",
-    estacao: "Estação",
+    estacao: "Estação de Trabalho",
     sala_reuniao: "Sala de Reunião",
     endereco_fiscal: "Endereço Fiscal"
   };
-
-  // Find client information
-  const getClientInfo = (clientId: string): Client | undefined => {
-    return clients.find(client => client.id === clientId);
-  };
-
-  const currentService = clientServices.length > 0 ? clientServices[0] : null;
-  const client = currentService ? getClientInfo(currentService.clientId) : null;
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    }).format(value);
-  };
-
+  
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle>
-            {spaceTypeLabel[space.type as keyof typeof spaceTypeLabel]} {space.identifier}
+          <DialogTitle className="flex items-center justify-between">
+            <span>Detalhes do Espaço</span>
+            <Badge variant={space.available ? "outline" : "secondary"}>
+              {space.available ? "Disponível" : "Indisponível"}
+            </Badge>
           </DialogTitle>
         </DialogHeader>
-        <div className="py-4">
-          {space.available ? (
-            <div className="text-center py-8">
-              <p className="text-green-600 font-semibold mb-2">Disponível</p>
-              <p className="text-gray-500">Este espaço está disponível para contratação.</p>
+        
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+            <div>
+              <h3 className="text-sm font-medium text-gray-500">Identificador</h3>
+              <p>{space.identifier}</p>
             </div>
-          ) : client && currentService ? (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-gray-500">Cliente</p>
-                  <p className="font-medium">{client.name}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Empresa</p>
-                  <p className="font-medium">{client.company}</p>
-                </div>
-              </div>
-
+            
+            <div>
+              <h3 className="text-sm font-medium text-gray-500">Tipo</h3>
+              <p>{serviceTypeLabels[space.type as keyof typeof serviceTypeLabels] || space.type}</p>
+            </div>
+            
+            {space.area && (
               <div>
-                <p className="text-sm text-gray-500">Plano Contratado</p>
-                <p className="font-medium">{currentService.description}</p>
+                <h3 className="text-sm font-medium text-gray-500">Área</h3>
+                <p>{space.area} m²</p>
               </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-gray-500">Início do Contrato</p>
-                  <p className="font-medium">
-                    {format(new Date(currentService.contractStart), 'dd/MM/yyyy')}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Fim do Contrato</p>
-                  <p className="font-medium">
-                    {format(new Date(currentService.contractEnd), 'dd/MM/yyyy')}
-                  </p>
-                </div>
+            )}
+            
+            {space.capacity && (
+              <div>
+                <h3 className="text-sm font-medium text-gray-500">Capacidade</h3>
+                <p>{space.capacity} pessoa{space.capacity > 1 ? 's' : ''}</p>
               </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-gray-500">Valor</p>
-                  <p className="font-bold text-lg">{formatCurrency(currentService.value)}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Faturamento</p>
-                  <p className="font-medium capitalize">{currentService.billingCycle}</p>
+            )}
+          </div>
+          
+          {client && binding && (
+            <div className="border-t pt-4">
+              <h3 className="text-sm font-medium mb-2">Cliente Vinculado</h3>
+              <div className="bg-green-50 border border-green-200 rounded-md p-3">
+                <div className="font-medium">{client.name}</div>
+                {client.company && <div className="text-sm text-gray-600">{client.company}</div>}
+                <div className="mt-2 text-xs text-gray-500">
+                  Vinculado em {new Date(binding.boundAt).toLocaleDateString()}
                 </div>
               </div>
             </div>
-          ) : (
-            <div className="text-center py-8">
-              <p className="text-amber-600 font-semibold mb-2">Ocupado</p>
-              <p className="text-gray-500">Informações do cliente não disponíveis.</p>
+          )}
+          
+          {clientServices.length > 0 && (
+            <div className="border-t pt-4">
+              <h3 className="text-sm font-medium mb-2">Serviços Associados</h3>
+              <div className="space-y-2">
+                {clientServices.map(service => (
+                  <div key={service.id} className="border rounded-md p-3">
+                    <div className="font-medium">{service.description}</div>
+                    <div className="text-sm">
+                      <span className="text-gray-600">Valor:</span> R$ {service.value.toFixed(2)}
+                    </div>
+                    <div className="text-sm">
+                      <span className="text-gray-600">Período:</span> {new Date(service.contractStart).toLocaleDateString()} a {new Date(service.contractEnd).toLocaleDateString()}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {space.available && onAssignSpace && (
+            <div className="pt-2 flex justify-end">
+              <Button onClick={onAssignSpace}>
+                Vincular a Cliente
+              </Button>
             </div>
           )}
         </div>

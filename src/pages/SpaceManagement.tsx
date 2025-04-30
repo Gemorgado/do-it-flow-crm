@@ -4,24 +4,32 @@ import { Card } from "@/components/ui/card";
 import { BuildingMap } from "@/components/SpaceManagement/BuildingMap";
 import { OccupancyStats } from "@/components/SpaceManagement/OccupancyStats";
 import { SpaceDetailsDialog } from "@/components/SpaceManagement/SpaceDetailsDialog"; 
+import { SpaceBinderModal } from "@/components/SpaceManagement/SpaceBinderModal";
 import { SpaceLegend } from "@/components/SpaceManagement/SpaceLegend";
 import { locations, clientServices } from "@/data/mockData";
 import { Location } from "@/types";
+import { useSpaceBindings } from "@/hooks/useSpaceBindings";
 
 export default function SpaceManagement() {
   const [selectedSpace, setSelectedSpace] = useState<Location | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isBinderOpen, setIsBinderOpen] = useState(false);
   const [floorFilter, setFloorFilter] = useState<string>("all");
+  
+  const { data: spaceBindings = [] } = useSpaceBindings();
   
   // Calculate occupancy statistics
   const stats = useMemo(() => {
     const totalSpaces = locations.length;
+    const boundSpaces = spaceBindings.length;
     const occupiedSpaces = locations.filter(space => !space.available).length;
-    const occupancyRate = Math.round((occupiedSpaces / totalSpaces) * 100);
-    const availableSpaces = totalSpaces - occupiedSpaces;
+    const occupancyRate = Math.round(((occupiedSpaces + boundSpaces) / totalSpaces) * 100);
+    const availableSpaces = totalSpaces - occupiedSpaces - boundSpaces;
     
     const availableByType = locations.reduce((acc, space) => {
-      if (space.available) {
+      const isSpaceBound = spaceBindings.some(binding => binding.spaceId === space.id);
+      
+      if (space.available && !isSpaceBound) {
         acc[space.type] = (acc[space.type] || 0) + 1;
       }
       return acc;
@@ -29,7 +37,9 @@ export default function SpaceManagement() {
 
     // Calculate available spaces by floor with separate counts for rooms and stations
     const availableByFloor = locations.reduce((acc, space) => {
-      if (space.available) {
+      const isSpaceBound = spaceBindings.some(binding => binding.spaceId === space.id);
+      
+      if (space.available && !isSpaceBound) {
         let floor = "";
         
         if (space.type === "sala_privativa" || space.type === "sala_reuniao") {
@@ -56,13 +66,14 @@ export default function SpaceManagement() {
 
     return {
       totalSpaces,
-      occupiedSpaces,
+      occupiedSpaces: occupiedSpaces + boundSpaces,
       occupancyRate,
       availableSpaces,
       availableByType,
-      availableByFloor
+      availableByFloor,
+      boundSpaces
     };
-  }, []);
+  }, [spaceBindings]);
   
   // Filter spaces by floor
   const filteredSpaces = useMemo(() => {
@@ -92,7 +103,20 @@ export default function SpaceManagement() {
   
   const handleSpaceClick = (space: Location) => {
     setSelectedSpace(space);
-    setIsDetailsOpen(true);
+    
+    // Check if it's already bound to a client, show details or binder
+    const isSpaceBound = spaceBindings.some(binding => binding.spaceId === space.id);
+    
+    if (isSpaceBound) {
+      setIsBinderOpen(true);
+    } else {
+      setIsDetailsOpen(true);
+    }
+  };
+  
+  const handleAssignSpace = () => {
+    setIsDetailsOpen(false);
+    setIsBinderOpen(true);
   };
 
   const handleFloorChange = (floor: string) => {
@@ -168,8 +192,16 @@ export default function SpaceManagement() {
           clientServices={clientServices.filter(
             service => service.locationId === selectedSpace.id
           )}
+          onAssignSpace={handleAssignSpace}
         />
       )}
+      
+      {/* Modal para vincular espaço a cliente */}
+      <SpaceBinderModal
+        isOpen={isBinderOpen}
+        onClose={() => setIsBinderOpen(false)}
+        space={selectedSpace}
+      />
     </div>
   );
 }

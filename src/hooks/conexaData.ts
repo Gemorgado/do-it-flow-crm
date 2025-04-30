@@ -1,49 +1,29 @@
 
-import { useMemo } from 'react';
-import { useSnapshot } from '@/contexts/SnapshotProvider';
+import { useQuery } from "@tanstack/react-query";
+import { persistence } from "@/integrations/persistence";
+import { useSpaceBindings } from "@/hooks/useSpaceBindings";
 
-export function useCustomers() {
-  const snap = useSnapshot();
-  if (!snap) {
-    console.log("snapshot ainda null - useCustomers");
-    return [];
-  }
-  return snap.customers ?? [];
+export function useTodayRoomOccupancy() {
+  const { data: spaceBindings = [] } = useSpaceBindings();
+  
+  return useQuery({
+    queryKey: ["todayOccupancy"],
+    queryFn: async () => {
+      // Use the space bindings to determine room occupancy
+      return spaceBindings.map(binding => ({
+        roomId: binding.spaceId,
+        contractId: binding.contractId
+      }));
+    }
+  }).data || [];
 }
 
 export function useContracts() {
-  const snap = useSnapshot();
-  if (!snap) {
-    console.log("snapshot ainda null - useContracts");
-    return [];
-  }
-  return snap.contracts ?? [];
-}
-
-export function useServices() {
-  const snap = useSnapshot();
-  if (!snap) {
-    console.log("snapshot ainda null - useServices");
-    return [];
-  }
-  return snap.services ?? [];
-}
-
-export function useRoomOccupations() {
-  const snap = useSnapshot();
-  if (!snap) {
-    console.log("snapshot ainda null - useRoomOccupations");
-    return [];
-  }
-  return snap.roomOccupations ?? [];
-}
-
-/** Ocupação diária por sala (exibida no Mapa) */
-export function useTodayRoomOccupancy() {
-  const rooms = useRoomOccupations();
-  const today = new Date().toISOString().slice(0, 10);
-  return useMemo(
-    () => rooms.filter(r => r.date === today),
-    [rooms, today]
-  );
+  return useQuery({
+    queryKey: ["contracts"],
+    queryFn: async () => {
+      const snap = await persistence.getLastSnapshot();
+      return snap?.contracts || [];
+    }
+  }).data || [];
 }
