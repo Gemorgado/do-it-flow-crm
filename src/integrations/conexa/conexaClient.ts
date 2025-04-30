@@ -3,16 +3,16 @@ import axios from 'axios';
 
 // Create axios instance for Conexa API
 export const conexa = axios.create({
-  baseURL: process.env.CONEXA_BASE_URL || 'https://api.conexa.com.br/v1',
+  baseURL: import.meta.env.VITE_CONEXA_BASE_URL || 'https://api.conexa.com.br/v1',
   headers: {
-    'Authorization': `Bearer ${process.env.CONEXA_API_TOKEN}`,
+    'Authorization': `Bearer ${import.meta.env.VITE_CONEXA_API_TOKEN}`,
     'Content-Type': 'application/json',
   },
 });
 
 // Helper function to check if config is valid
 export const isConexaConfigValid = (): boolean => {
-  return !!process.env.CONEXA_API_TOKEN && !!process.env.CONEXA_BASE_URL;
+  return !!import.meta.env.VITE_CONEXA_API_TOKEN && !!import.meta.env.VITE_CONEXA_BASE_URL;
 };
 
 // Type definitions for Conexa API responses
