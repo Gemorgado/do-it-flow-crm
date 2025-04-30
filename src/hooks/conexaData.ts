@@ -82,10 +82,13 @@ export function useSpaceStats(): SpaceStats {
   const { data: bindings = [] } = useSpaceBindings();
   const snap = useSnapshot();
   
+  // Calculate meeting rooms from room occupations, not directly from snapshot
+  const totalMeetingRooms = snap?.roomOccupations?.length || 0;
+  
   return {
     privateRooms: bindings.filter(b => b.spaceId.startsWith('sala-')).length,
     meetingRooms: {
-      total: bindings.filter(b => b.spaceId.startsWith('meeting-')).length,
+      total: totalMeetingRooms,
       capacity: 0, // We don't have capacity data available directly
     },
     workstations: {
