@@ -1,13 +1,11 @@
 
-import { useSpaceStats } from "@/hooks/conexaData";
-import { ServiceCategory } from "@/components/PlansAndServices/ServiceCategory";
-import { getServiceCategories } from "@/components/PlansAndServices/ServicesData";
+import { useCatalog } from "@/hooks/useCatalog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PlanVariantsTable } from "@/components/PlansAndServices/PlanVariantsTable";
+import { PlanBenefitsList } from "@/components/PlansAndServices/PlanBenefitsList";
 
 export default function PlansAndServicesPage() {
-  const spaceStats = useSpaceStats();
-  
-  // Get service categories with actual available units
-  const serviceCategories = getServiceCategories(spaceStats.privateRooms);
+  const plans = useCatalog();
   
   return (
     <div className="animate-fade-in space-y-6">
@@ -16,11 +14,21 @@ export default function PlansAndServicesPage() {
         <p className="text-gray-500">Conheça todas as opções disponíveis em nosso coworking</p>
       </div>
       
-      <div className="space-y-12">
-        {serviceCategories.map((category, i) => (
-          <ServiceCategory key={i} {...category} />
+      <Tabs defaultValue={plans[0].id} className="space-y-4">
+        <TabsList>
+          {plans.map(p => (
+            <TabsTrigger key={p.id} value={p.id}>
+              {p.title}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        {plans.map(p => (
+          <TabsContent key={p.id} value={p.id} className="space-y-6">
+            <PlanVariantsTable plan={p} />
+            <PlanBenefitsList benefits={p.benefits} />
+          </TabsContent>
         ))}
-      </div>
+      </Tabs>
     </div>
   );
 }
