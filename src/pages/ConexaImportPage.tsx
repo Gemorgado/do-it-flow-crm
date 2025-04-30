@@ -1,4 +1,3 @@
-
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Button } from '@/components/ui/button';
@@ -91,7 +90,7 @@ export default function ConexaImportPage() {
                 <SelectValue placeholder="Selecione a coluna" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Não mapear</SelectItem>
+                <SelectItem value="nao_mapear">Não mapear</SelectItem>
                 {results.headers.map(header => (
                   <SelectItem key={header} value={header}>{header}</SelectItem>
                 ))}

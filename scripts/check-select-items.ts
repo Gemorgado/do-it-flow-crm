@@ -4,7 +4,7 @@ import { readFileSync, readdirSync } from 'fs';
 import { join } from 'path';
 
 const SRC = join(__dirname, '..', 'src');
-const regex = /<SelectItem([^>]*?)>/g;
+const regex = /<(Select\.Item|SelectItem)([^>]*?)>/g;
 const offenders: string[] = [];
 
 function walk(dir: string): string[] {
