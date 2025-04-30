@@ -1,5 +1,6 @@
 
 import { queryClient } from '@/lib/queryClient';
+import { toast } from '@/hooks/use-toast';
 
 export async function resetDemoData() {
   /* 1. LocalStorage / IndexedDB (MockAdapter) */

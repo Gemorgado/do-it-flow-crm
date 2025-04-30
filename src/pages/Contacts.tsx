@@ -98,8 +98,9 @@ export default function Contacts() {
 
   // Function to force a refresh of data
   const refreshData = () => {
-    queryClient.invalidateQueries(['leads']);
-    queryClient.invalidateQueries(['clients']);
+    // Fix: Use the correct invalidateQueries syntax with queryKey as an object property
+    queryClient.invalidateQueries({ queryKey: ['leads'] });
+    queryClient.invalidateQueries({ queryKey: ['clients'] });
     
     // Re-fetch leads from localStorage
     const storedLeads = localStorage.getItem('leads');
