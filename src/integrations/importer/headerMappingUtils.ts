@@ -3,16 +3,21 @@ import { InternalField } from './types';
 import { SERVICE_OPTIONS } from '@/constants/serviceOptions';
 
 // Dictionary to map column headers to internal fields
-const headerMappings: Record<InternalField, string[]> = {
+const headerMappings: Partial<Record<InternalField, string[]>> = {
+  id: ['id', 'código', 'codigo'],
   name: ['nome', 'razão social', 'razao social', 'cliente', 'empresa', 'customer', 'company name'],
-  docNumber: ['cnpj', 'cpf', 'documento', 'document', 'doc', 'doc number'],
-  email: ['email', 'e-mail', 'e mail', 'contato email'],
-  phone: ['telefone', 'phone', 'celular', 'tel', 'contato', 'fone'],
-  serviceType: ['plano', 'serviço', 'servico', 'tipo serviço', 'tipo servico', 'service type', 'produto'],
-  roomNumber: ['sala', 'número sala', 'numero sala', 'espaço', 'espaco', 'room', 'local'],
+  plan: ['plano', 'serviço', 'servico', 'tipo serviço', 'tipo servico', 'service type', 'produto'],
   contractStart: ['início', 'inicio', 'data início', 'data inicio', 'start date', 'start'],
   contractEnd: ['fim', 'término', 'termino', 'data fim', 'end date', 'end'],
-  amount: ['valor', 'preço', 'preco', 'amount', 'price', 'mensalidade']
+  contractTerm: ['fidelidade', 'termo', 'period', 'meses', 'duração', 'duracao'],
+  contractValue: ['valor', 'preço', 'preco', 'amount', 'price', 'mensalidade'],
+  dueDay: ['vencimento', 'venc', 'dia vencimento', 'due day', 'due date'],
+  privateRoom: ['sala privativa', 'sala', 'private room'],
+  billingEmails: ['emails', 'e-mails', 'emails financeiros', 'contato financeiro'],
+  createdBy: ['cadastrado por', 'created by', 'autor', 'criador'],
+  lastReadjustDate: ['reajuste', 'último reajuste', 'data reajuste', 'adjustment date'],
+  readjustIndex: ['índice', 'índice reajuste', 'indicador', 'adjustment index'],
+  isActive: ['ativo', 'active', 'status', 'situação', 'situacao']
 };
 
 // Normalize text by removing accents, spaces, special chars and converting to lowercase
@@ -33,6 +38,8 @@ export function suggestColumnMappings(headers: string[]): Record<string, Interna
     const normalizedHeader = normalizeText(header);
     
     for (const [field, possibleHeaders] of Object.entries(headerMappings)) {
+      if (!possibleHeaders) continue;
+      
       const match = possibleHeaders.some(possible => 
         normalizeText(possible) === normalizedHeader || 
         normalizedHeader.includes(normalizeText(possible))

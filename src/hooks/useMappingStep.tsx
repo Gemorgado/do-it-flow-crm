@@ -51,7 +51,9 @@ export function useMappingStep(
     
     const newTemplate = TemplateStore.save({
       name: templateName.trim(),
-      columnMap: mapping as Record<string, InternalField> // Type cast here
+      columnMap: Object.fromEntries(
+        Object.entries(mapping).filter(([_, value]) => value !== '')
+      ) as Record<string, InternalField>
     });
     
     setTemplates([...templates, newTemplate]);

@@ -51,16 +51,16 @@ export function MappingTable({
                 <TableCell>{header}</TableCell>
                 <TableCell>
                   <Select
-                    value={mapping[header] || ''}
+                    value={mapping[header] || 'not_mapped'}
                     onValueChange={(value) => {
-                      onMappingChange(header, value as InternalField | '');
+                      onMappingChange(header, value === 'not_mapped' ? '' : value as InternalField);
                     }}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione um campo" />
                     </SelectTrigger>
                     <SelectContent className={selectContentClass}>
-                      <SelectItem className={selectItemClass} value="">Não mapear esta coluna</SelectItem>
+                      <SelectItem className={selectItemClass} value="not_mapped">Não mapear esta coluna</SelectItem>
                       {Object.entries(FIELD_LABELS).map(([field, label]) => (
                         <SelectItem 
                           key={field} 

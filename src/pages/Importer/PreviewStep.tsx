@@ -54,7 +54,7 @@ export function PreviewStep({
         mappedRow[field] = row[header];
         
         // Format special cases
-        if (field === 'serviceType' && mappedRow[field]) {
+        if (field === 'plan') {
           mappedRow[`${field}Label`] = getServiceLabel(mappedRow[field]);
         }
       }
@@ -88,7 +88,7 @@ export function PreviewStep({
                   <TableRow key={index}>
                     {mappedFields.map(field => (
                       <TableCell key={field}>
-                        {field === 'serviceType' && row[field] 
+                        {field === 'plan' && row[field] 
                           ? row[`${field}Label`] || row[field] 
                           : (row[field] !== undefined ? String(row[field]) : '')}
                       </TableCell>
