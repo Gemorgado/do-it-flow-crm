@@ -24,10 +24,10 @@ const mockProposals: Proposal[] = [];
 
 // Mock API for proposals fetching with owner filtering
 export const useProposals = () => {
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
   
   return useQuery({
-    queryKey: ['proposals', { owner: currentUser?.viewAllProposals ? 'all' : currentUser?.id }],
+    queryKey: ['proposals', { owner: user?.viewAllProposals ? 'all' : user?.id }],
     queryFn: async () => {
       // Simulate network request
       await new Promise((resolve) => setTimeout(resolve, 800));
@@ -36,8 +36,8 @@ export const useProposals = () => {
       let filteredProposals = [...mockProposals];
       
       // If user doesn't have viewAllProposals permission, only show their own
-      if (currentUser && !currentUser.viewAllProposals) {
-        filteredProposals = filteredProposals.filter(p => p.ownerId === currentUser.id);
+      if (user && !user.viewAllProposals) {
+        filteredProposals = filteredProposals.filter(p => p.ownerId === user.id);
       }
       
       return filteredProposals;

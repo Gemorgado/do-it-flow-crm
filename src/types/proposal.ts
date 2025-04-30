@@ -14,8 +14,16 @@ export interface Proposal {
   proposalDate: string;      // yyyy-mm-dd
   followUpAt?: string;       // ISO-datetime
   followUpNote?: string;
-  ownerId: string;           // NOVO: ID do usuário responsável
+  ownerId: string;           // ID do usuário responsável
   createdAt: string;
+  
+  // Additional fields used in the interface
+  title?: string;
+  leadId?: string;
+  value?: number;
+  expiresAt?: string;
+  status?: string;
+  products?: any[];
 }
 
 export interface CreateProposalInput {
@@ -25,7 +33,7 @@ export interface CreateProposalInput {
   proposalDate: string;
   followUpAt?: string;
   followUpNote?: string;
-  ownerId?: string;          // NOVO: opcional pois pode ser preenchido automaticamente
+  ownerId?: string;          // opcional pois pode ser preenchido automaticamente
 }
 
 export interface Company {

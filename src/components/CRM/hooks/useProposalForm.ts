@@ -21,7 +21,7 @@ type ProposalFormValues = z.infer<typeof formSchema>;
 
 export const useProposalForm = (onClose: () => void) => {
   const { mutate: createProposal, isPending } = useCreateProposal();
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
   
   const form = useForm<ProposalFormValues>({
     resolver: zodResolver(formSchema),
@@ -32,7 +32,7 @@ export const useProposalForm = (onClose: () => void) => {
       proposalDate: new Date().toISOString().split('T')[0],
       followUpAt: '',
       followUpNote: '',
-      ownerId: currentUser?.id || '',
+      ownerId: user?.id || '',
     },
   });
   
@@ -47,7 +47,7 @@ export const useProposalForm = (onClose: () => void) => {
       proposalDate: data.proposalDate,
       followUpAt: data.followUpAt || undefined,
       followUpNote: data.followUpNote || undefined,
-      ownerId: data.ownerId || currentUser?.id, // Use selected owner or current user
+      ownerId: data.ownerId || user?.id, // Use selected owner or current user
     };
     
     createProposal(proposalData, {
@@ -71,6 +71,6 @@ export const useProposalForm = (onClose: () => void) => {
     isPending,
     onSubmit: form.handleSubmit(onSubmit),
     formatCurrency,
-    currentUser,
+    user,
   };
 };

@@ -8,11 +8,12 @@ import { ProposalsTable } from "@/components/Proposals/ProposalsTable";
 import { ProposalViewDialog } from "@/components/CRM/ProposalViewDialog";
 import { ProposalEditDialog } from "@/components/CRM/ProposalEditDialog";
 import { useProposals } from "@/api/proposals";
+import { Proposal } from "@/types/proposal";
 
 export default function Proposals() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("todas");
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
   
   // Estado para controlar os modais de visualização e edição
   const [viewId, setViewId] = useState<string | null>(null);
@@ -38,7 +39,7 @@ export default function Proposals() {
   const filteredProposals = proposals.filter(proposal => {
     const matchesSearch = 
       proposal.title?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-      clientNames[proposal.leadId]?.toLowerCase().includes(searchTerm.toLowerCase());
+      clientNames[proposal.leadId || '']?.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesStatus = statusFilter === "todas" || proposal.status === statusFilter;
     
@@ -50,7 +51,7 @@ export default function Proposals() {
       <div className="flex items-center justify-between">
         <ProposalsHeader />
         
-        {currentUser && !currentUser.viewAllProposals && (
+        {user && !user.viewAllProposals && (
           <Badge variant="outline" className="ml-2">
             Mostrando apenas minhas propostas
           </Badge>
@@ -65,7 +66,7 @@ export default function Proposals() {
       />
       
       <ProposalsTable 
-        proposals={filteredProposals} 
+        proposals={filteredProposals as any[]} 
         clientNames={clientNames}
         onView={handleView} 
         onEdit={handleEdit} 

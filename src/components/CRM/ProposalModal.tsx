@@ -18,7 +18,7 @@ interface ProposalModalProps {
 }
 
 export function ProposalModal({ isOpen, onClose }: ProposalModalProps) {
-  const { form, isPending, onSubmit, formatCurrency, currentUser } = useProposalForm(onClose);
+  const { form, isPending, onSubmit, formatCurrency, user } = useProposalForm(onClose);
   
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -42,10 +42,10 @@ export function ProposalModal({ isOpen, onClose }: ProposalModalProps) {
             />
             
             {/* Mostrar campo de responsável apenas para quem tem permissão */}
-            {currentUser?.viewAllProposals && (
+            {user?.viewAllProposals && (
               <OwnerField 
                 control={form.control}
-                defaultValue={currentUser?.id || ''}
+                defaultValue={user?.id || ''}
               />
             )}
             
