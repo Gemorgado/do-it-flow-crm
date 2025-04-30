@@ -57,7 +57,7 @@ export function SpaceBinderContract({
         </SelectTrigger>
         <SelectContent className="max-h-[200px] z-50 bg-white">
           {contracts.length === 0 ? (
-            <SelectItem value="no_contracts">
+            <SelectItem value="no_contracts_available">
               {isLoading ? "Carregando..." : "Nenhum contrato ativo disponível"}
             </SelectItem>
           ) : (
