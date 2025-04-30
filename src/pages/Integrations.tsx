@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { MetaPixelIntegration } from '@/components/Integrations/MetaPixelIntegration';
 import { ConexaIntegration } from '@/components/Integrations/ConexaIntegration';
+import { WebhookCard } from '@/components/Integrations/WebhookCard';
 
 export default function Integrations() {
   return (
@@ -30,6 +31,7 @@ export default function Integrations() {
           <TabsTrigger value="available">Disponíveis</TabsTrigger>
           <TabsTrigger value="pixels">Pixel de Rastreamento</TabsTrigger>
           <TabsTrigger value="erp">Sistemas ERP</TabsTrigger>
+          <TabsTrigger value="webhooks">Webhooks</TabsTrigger>
         </TabsList>
         
         <TabsContent value="active" className="mt-4">
@@ -118,6 +120,10 @@ export default function Integrations() {
             <h3 className="text-lg font-medium mb-4">Conexa ERP</h3>
             <ConexaIntegration />
           </Card>
+        </TabsContent>
+        
+        <TabsContent value="webhooks" className="mt-4">
+          <WebhookCard />
         </TabsContent>
       </Tabs>
     </div>
