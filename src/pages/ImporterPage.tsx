@@ -1,52 +1,46 @@
 
 import React from 'react';
-import { useImporter } from '@/hooks/useImporter';
 import { ImporterHeader } from '@/components/Importer/ImporterHeader';
-import { ImporterStepper } from '@/components/Importer/ImporterStepper';
 import { HowItWorks } from '@/components/Importer/HowItWorks';
+import { ImporterStepper } from '@/components/Importer/ImporterStepper';
+import { useImporter } from '@/hooks/useImporter';
 
 export default function ImporterPage() {
-  const {
-    step,
-    headers,
-    rows,
-    mapping,
-    errors,
-    snapshot,
-    isLoading,
-    handleFileSelect,
-    handleMappingChange,
-    handleImport,
-    handleDownloadErrors,
-    handleReset,
-    handleViewData,
-    handleNavigateToStep
-  } = useImporter();
-
+  const importer = useImporter();
+  
+  // Wrapper function to adapt the signature for the component prop
+  const handleMappingChange = (header: string, field: string) => {
+    importer.handleMappingChange(header, field);
+  };
+  
   return (
-    <div className="container py-8 max-w-4xl mx-auto">
+    <div className="container mx-auto p-4 space-y-8">
       <ImporterHeader />
       
-      <div className="mb-8">
-        <ImporterStepper 
-          step={step}
-          headers={headers}
-          rows={rows}
-          mapping={mapping}
-          errors={errors}
-          snapshot={snapshot}
-          isLoading={isLoading}
-          handleFileSelect={handleFileSelect}
-          handleMappingChange={handleMappingChange}
-          handleImport={handleImport}
-          handleDownloadErrors={handleDownloadErrors}
-          handleReset={handleReset}
-          handleViewData={handleViewData}
-          handleNavigateToStep={handleNavigateToStep}
-        />
+      <div className="grid md:grid-cols-5 gap-8">
+        <div className="md:col-span-3">
+          <ImporterStepper
+            step={importer.step}
+            headers={importer.headers}
+            rows={importer.rows}
+            mapping={importer.mapping}
+            errors={importer.errors}
+            snapshot={importer.snapshot}
+            isLoading={importer.isLoading}
+            handleFileSelect={importer.handleFileSelect}
+            handleMappingChange={handleMappingChange}
+            handleImport={importer.handleImport}
+            handleDownloadErrors={importer.handleDownloadErrors}
+            handleReset={importer.handleReset}
+            handleViewData={importer.handleViewData}
+            handleNavigateToStep={importer.handleNavigateToStep}
+          />
+        </div>
+        
+        <div className="md:col-span-2">
+          <HowItWorks />
+        </div>
       </div>
-      
-      <HowItWorks />
     </div>
   );
 }

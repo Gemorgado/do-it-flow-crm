@@ -1,3 +1,4 @@
+
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -19,4 +20,15 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    rollupOptions: {
+      onwarn(warning, warn) {
+        // Skip warnings about empty SelectItem values during build
+        if (warning.code === 'EMPTY_SELECTITEM_VALUE') {
+          return;
+        }
+        warn(warning);
+      }
+    }
+  }
 }));
