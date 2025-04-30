@@ -1,4 +1,3 @@
-
 import { z } from 'zod';
 import { InternalField, ImportError } from './types';
 import { ConexaSnapshot } from '@/integrations/conexa/types';
@@ -43,11 +42,26 @@ export function transformRows(
   const errors: ImportError[] = [];
   const validRows: ValidRow[] = [];
   
-  // Reverse mapping for easy access
-  const columnMapping: Record<InternalField, string> = {};
+  // Create a complete mapping with default values for any missing fields
+  const completeMapping: Record<InternalField, string> = {
+    name: '',
+    docNumber: '',
+    email: '',
+    phone: '',
+    serviceType: '',
+    roomNumber: '',
+    contractStart: '',
+    contractEnd: '',
+    amount: ''
+  };
+  
+  // Fill in the complete mapping with values from the provided mapping
   Object.entries(mapping).forEach(([column, field]) => {
-    columnMapping[field] = column;
+    completeMapping[field] = column;
   });
+  
+  // Reverse mapping for easy access
+  const columnMapping: Record<InternalField, string> = completeMapping;
   
   // Process each row
   rows.forEach((row, idx) => {
@@ -56,14 +70,16 @@ export function transformRows(
       const mappedData: Partial<Record<InternalField, any>> = {};
       
       Object.entries(columnMapping).forEach(([field, column]) => {
-        let value = row[column];
-        
-        // Special handling for serviceType
-        if (field === 'serviceType' && value) {
-          value = mapServiceType(value) || value;
+        if (column) { // Only map if column is specified
+          let value = row[column];
+          
+          // Special handling for serviceType
+          if (field === 'serviceType' && value) {
+            value = mapServiceType(value) || value;
+          }
+          
+          mappedData[field as InternalField] = value;
         }
-        
-        mappedData[field as InternalField] = value;
       });
       
       // Validate the mapped data
@@ -72,7 +88,11 @@ export function transformRows(
       if (!parseResult.success) {
         errors.push({
           line: idx + 2, // +2 because idx is 0-based and we skip header row
-          issues: parseResult.error.errors,
+          issues: parseResult.error.errors.map(err => ({
+            code: err.code,
+            message: err.message,
+            path: err.path.map(p => String(p))
+          })),
           rawData: row
         });
       } else {
@@ -185,7 +205,7 @@ export function generateErrorCSV(errors: ImportError[]): string {
   errors.forEach(err => {
     err.issues.forEach(issue => {
       allIssues.add(issue.code);
-      issue.path.forEach(path => uniqueFields.add(String(path)));
+      issue.path.forEach(path => uniqueFields.add(path));
     });
     
     if (err.rawData) {

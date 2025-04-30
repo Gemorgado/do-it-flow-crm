@@ -7,7 +7,7 @@ import { ImportStep, ImportError, PreviewData } from '@/integrations/importer/ty
 import { InternalField } from '@/integrations/importer/types';
 import { ConexaSnapshot } from '@/integrations/conexa/types';
 import { processConexaSnapshot } from '@/integrations/conexa/processConexaSnapshot';
-import { useRouter } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 // Import steps
 import { UploadStep } from './Importer/UploadStep';
@@ -18,7 +18,7 @@ import { SuccessStep } from './Importer/SuccessStep';
 
 export default function ImporterPage() {
   const { toast } = useToast();
-  const router = useRouter();
+  const navigate = useNavigate();
   const [step, setStep] = useState<ImportStep>('upload');
   const [file, setFile] = useState<File | null>(null);
   const [headers, setHeaders] = useState<string[]>([]);
@@ -128,8 +128,11 @@ export default function ImporterPage() {
   
   // View the imported data
   const handleViewData = () => {
-    router.push('/integrations/conexa');
+    navigate('/integrations/conexa');
   };
+
+  // Safe condition checks for isLoading
+  const isLoading = step === 'processing';
 
   return (
     <div className="container py-8 max-w-4xl mx-auto">
@@ -142,7 +145,7 @@ export default function ImporterPage() {
         {step === 'upload' && (
           <UploadStep 
             onFileSelect={handleFileSelect} 
-            isLoading={step === 'processing'}
+            isLoading={isLoading}
           />
         )}
         
@@ -163,7 +166,7 @@ export default function ImporterPage() {
             previewRows={rows.slice(0, 5)}
             onBack={() => setStep('mapping')}
             onImport={handleImport}
-            isLoading={step === 'processing'}
+            isLoading={isLoading}
           />
         )}
         

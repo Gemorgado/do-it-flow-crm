@@ -35,21 +35,28 @@ export function PreviewStep({
   isLoading = false,
 }: PreviewStepProps) {
   // Create a reverse mapping (InternalField -> header)
-  const reverseMapping: Record<InternalField, string> = {};
+  const reverseMapping: Record<string, string> = {};
+  
   Object.entries(mapping).forEach(([header, field]) => {
     reverseMapping[field] = header;
   });
+  
+  // Ensure we only show columns that have been mapped
+  const mappedFields = Object.values(mapping);
 
   // Get the mapped preview data
   const mappedPreviewRows = previewRows.map(row => {
     const mappedRow: Record<string, any> = {};
     
-    Object.entries(reverseMapping).forEach(([field, header]) => {
-      mappedRow[field] = row[header];
-      
-      // Format special cases
-      if (field === 'serviceType' && mappedRow[field]) {
-        mappedRow[`${field}Label`] = getServiceLabel(mappedRow[field]);
+    mappedFields.forEach(field => {
+      const header = reverseMapping[field];
+      if (header) {
+        mappedRow[field] = row[header];
+        
+        // Format special cases
+        if (field === 'serviceType' && mappedRow[field]) {
+          mappedRow[`${field}Label`] = getServiceLabel(mappedRow[field]);
+        }
       }
     });
     
@@ -71,7 +78,7 @@ export function PreviewStep({
             <Table>
               <TableHeader>
                 <TableRow>
-                  {Object.entries(reverseMapping).map(([field]) => (
+                  {mappedFields.map(field => (
                     <TableHead key={field}>{field}</TableHead>
                   ))}
                 </TableRow>
@@ -79,7 +86,7 @@ export function PreviewStep({
               <TableBody>
                 {displayRows.map((row, index) => (
                   <TableRow key={index}>
-                    {Object.entries(reverseMapping).map(([field]) => (
+                    {mappedFields.map(field => (
                       <TableCell key={field}>
                         {field === 'serviceType' && row[field] 
                           ? row[`${field}Label`] || row[field] 

@@ -2,7 +2,7 @@
 import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Card } from '@/components/ui/card';
-import { FileUpload } from 'lucide-react';
+import { UploadCloud } from 'lucide-react';
 
 interface UploadStepProps {
   onFileSelect: (file: File) => void;
@@ -36,7 +36,7 @@ export function UploadStep({ onFileSelect, isLoading = false }: UploadStepProps)
     >
       <input {...getInputProps()} />
       <div className="flex flex-col items-center justify-center gap-2">
-        <FileUpload 
+        <UploadCloud 
           className={`h-12 w-12 ${isLoading ? 'animate-pulse text-muted' : 'text-primary/60'}`}
         />
         <h3 className="text-lg font-medium">
