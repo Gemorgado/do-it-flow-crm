@@ -1,116 +1,146 @@
 
-import { processConexaSnapshot } from '@/integrations/conexa/processConexaSnapshot';
-import { mapContracts } from '@/integrations/conexa/mapper';
-import type { ColumnMapping } from '../useConexaMapper';
-import type { CustomerApi, ServiceApi, ContractApi, RoomOccupationApi, ConexaSnapshot } from '@/integrations/conexa/types';
+import { useToast } from '@/hooks/use-toast';
+import { useApplySnapshot } from '@/hooks/useConexaSnapshot';
 import type { ProcessImportParams, ImportResults } from './types';
+import type { ConexaSnapshot, CustomerApi, ContractApi, ServiceApi, RoomOccupationApi } from '@/integrations/conexa/types';
 
 export async function processImportData({ mapping, rows }: ProcessImportParams): Promise<ImportResults> {
-  // Process rows
-  const customers: Record<string, CustomerApi> = {};
-  const services: Record<string, ServiceApi> = {};
-  const contracts: ContractApi[] = [];
-  const roomOccupations: RoomOccupationApi[] = [];
-  const errorRows: Array<{
-    index: number;
-    row: Record<string, any>;
-    error: string;
-  }> = [];
-
-  try {
-    rows.forEach((row, index) => {
-      try {
-        // Skip empty rows
-        if (!row[mapping.name!] || !row[mapping.docNumber!]) {
-          return;
-        }
-
-        // Process customer
-        const docNumber = String(row[mapping.docNumber!]).replace(/\D/g, '');
-        if (!customers[docNumber]) {
-          customers[docNumber] = {
-            id: `cust-${docNumber}`,
-            name: String(row[mapping.name!]),
-            docNumber,
-            email: mapping.email ? String(row[mapping.email]) : undefined,
-            phone: mapping.phone ? String(row[mapping.phone]) : undefined,
-            updatedAt: new Date().toISOString()
-          };
-        }
-
-        // Process service
-        const serviceType = String(row[mapping.serviceType!]);
-        const serviceId = `serv-${serviceType.toLowerCase().replace(/\s+/g, '-')}`;
-        if (!services[serviceId]) {
-          services[serviceId] = {
-            id: serviceId,
-            label: serviceType,
-            category: serviceType,
-            price: 0, // Default price, can be updated later
-            updatedAt: new Date().toISOString()
-          };
-        }
-
-        // Process contract
-        const contractId = `contract-${docNumber}-${serviceId}`;
-        const status = mapping.status ? String(row[mapping.status]).toLowerCase() : 'active';
+  console.log('Processing import data with mapping:', mapping);
+  
+  // Prepare the snapshot structure
+  const snapshot: ConexaSnapshot = {
+    customers: [],
+    contracts: [],
+    services: [],
+    roomOccupations: [],
+    syncedAt: new Date().toISOString()
+  };
+  
+  // Error rows tracking
+  const errorRows: ImportResults['errorRows'] = [];
+  
+  // Process each row
+  rows.forEach((row, index) => {
+    try {
+      // Extract customer data
+      if (mapping.name && mapping.docNumber) {
+        const customerName = row[mapping.name];
+        const docNumber = row[mapping.docNumber];
         
-        contracts.push({
-          id: contractId,
-          customerId: customers[docNumber].id,
-          serviceId: serviceId,
-          status: status.includes('ativ') || status.includes('active') ? 'active' : 'closed',
-          amount: 0, // Default amount, can be updated later
-          startDate: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        });
-
-        // Process room occupation if available
-        if (mapping.roomNumber && row[mapping.roomNumber]) {
-          const roomNumber = String(row[mapping.roomNumber]);
-          if (roomNumber) {
-            roomOccupations.push({
-              roomId: `room-${roomNumber}`,
-              contractId: contractId,
-              date: new Date().toISOString().split('T')[0]
-            });
+        if (!customerName || !docNumber) {
+          throw new Error('Nome ou documento em branco');
+        }
+        
+        // Check if customer already exists in our processed data
+        const existingCustomer = snapshot.customers.find(c => c.docNumber === docNumber);
+        
+        if (!existingCustomer) {
+          // Create new customer
+          const customer: CustomerApi = {
+            id: `cust_${docNumber.replace(/\D/g, '')}`,
+            name: customerName,
+            docNumber: docNumber,
+            email: mapping.email ? row[mapping.email] : undefined,
+            phone: mapping.phone ? row[mapping.phone] : undefined,
+            updatedAt: new Date().toISOString()
+          };
+          
+          snapshot.customers.push(customer);
+        }
+        
+        // Get customer id (either existing or new)
+        const customerId = existingCustomer ? existingCustomer.id : `cust_${docNumber.replace(/\D/g, '')}`;
+        
+        // Process service if service type is mapped
+        if (mapping.serviceType) {
+          const serviceType = row[mapping.serviceType];
+          if (serviceType) {
+            // Generate a deterministic ID for the service based on its name
+            const serviceId = `svc_${serviceType.toLowerCase().replace(/\s+/g, '_')}`;
+            
+            // Check if service already exists
+            const existingService = snapshot.services.find(s => s.id === serviceId);
+            
+            if (!existingService) {
+              // Create new service
+              const service: ServiceApi = {
+                id: serviceId,
+                label: serviceType,
+                category: 'imported',
+                price: 0, // Default price, can be updated later
+                updatedAt: new Date().toISOString()
+              };
+              
+              snapshot.services.push(service);
+            }
+            
+            // Create contract
+            const contract: ContractApi = {
+              id: `contract_${customerId}_${serviceId}_${index}`,
+              customerId,
+              serviceId,
+              status: mapping.status && row[mapping.status]?.toLowerCase() === 'inativo' ? 'closed' : 'active',
+              amount: 0, // Default amount
+              startDate: new Date().toISOString().split('T')[0],
+              updatedAt: new Date().toISOString()
+            };
+            
+            snapshot.contracts.push(contract);
+            
+            // Process room occupation if room number is mapped
+            if (mapping.roomNumber) {
+              const roomNumber = row[mapping.roomNumber];
+              if (roomNumber) {
+                const roomOccupation: RoomOccupationApi = {
+                  roomId: roomNumber,
+                  contractId: contract.id,
+                  date: new Date().toISOString().split('T')[0]
+                };
+                
+                snapshot.roomOccupations.push(roomOccupation);
+              }
+            }
           }
         }
-      } catch (error) {
-        console.error(`Error processing row ${index}:`, error);
-        errorRows.push({
-          index,
-          row,
-          error: String(error)
-        });
+      } else {
+        throw new Error('Mapeamento não inclui nome ou documento');
       }
-    });
-
-    // Create snapshot
-    const snapshot: ConexaSnapshot = {
-      customers: Object.values(customers),
-      contracts: mapContracts(contracts),
-      services: Object.values(services),
-      roomOccupations,
-      syncedAt: new Date().toISOString()
-    };
-
-    // Process snapshot
-    await processConexaSnapshot(snapshot);
-
-    return {
-      headers: [], // Will be filled by caller
-      rows: [], // Will be filled by caller
-      processedCount: {
-        customers: Object.keys(customers).length,
-        contracts: contracts.length,
-        services: Object.keys(services).length,
-        roomOccupations: roomOccupations.length
-      },
-      errorRows
-    };
+    } catch (error) {
+      console.error(`Error processing row ${index}:`, error);
+      errorRows.push({
+        index,
+        row,
+        error: error instanceof Error ? error.message : 'Erro desconhecido'
+      });
+    }
+  });
+  
+  // Create the results object
+  const results: ImportResults = {
+    headers: rows.length > 0 ? Object.keys(rows[0]) : [],
+    rows,
+    processedCount: {
+      customers: snapshot.customers.length,
+      contracts: snapshot.contracts.length, 
+      services: snapshot.services.length,
+      roomOccupations: snapshot.roomOccupations.length
+    },
+    errorRows
+  };
+  
+  // Apply the snapshot
+  try {
+    await persistSnapshot(snapshot);
   } catch (error) {
-    console.error('Error processing import:', error);
-    throw error;
+    console.error('Error persisting snapshot:', error);
+    throw new Error('Falha ao salvar os dados processados.');
   }
+  
+  return results;
+}
+
+async function persistSnapshot(snapshot: ConexaSnapshot): Promise<void> {
+  // We'll use the existing processConexaSnapshot function
+  const { processConexaSnapshot } = await import('@/integrations/conexa/processConexaSnapshot');
+  await processConexaSnapshot(snapshot);
 }

@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 import { trackMetaPixelEvent } from './utils/metaPixelUtils.ts'
+import { SnapshotProvider } from './contexts/SnapshotProvider.tsx'
 
 // Rastrear evento de visualização da página ao carregar o aplicativo
 document.addEventListener('DOMContentLoaded', () => {
@@ -13,4 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-createRoot(document.getElementById("root")!).render(<App />);
+createRoot(document.getElementById("root")!).render(
+  <SnapshotProvider>
+    <App />
+  </SnapshotProvider>
+);

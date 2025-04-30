@@ -29,6 +29,9 @@ import Profile from "@/pages/Profile";
 import NotFound from "@/pages/NotFound";
 import AccessDenied from "@/pages/AccessDenied";
 import Index from "@/pages/Index";
+import CustomersPage from "@/pages/CustomersPage";
+import ContractsPage from "@/pages/ContractsPage";
+import OccupancyMapPage from "@/pages/OccupancyMapPage";
 
 import { MainLayout } from "@/components/Layout/MainLayout";
 import { CRMModalsProvider } from "@/components/CRM/CRMModalsProvider";
@@ -95,6 +98,9 @@ function App() {
                 <Route path="schedule" element={<Schedule />} />
                 <Route path="settings" element={<Settings />} />
                 <Route path="profile" element={<Profile />} />
+                <Route path="customers" element={<CustomersPage />} />
+                <Route path="contracts" element={<ContractsPage />} />
+                <Route path="occupancy-map" element={<OccupancyMapPage />} />
                 <Route path="*" element={<NotFound />} />
               </Route>
             </Routes>
