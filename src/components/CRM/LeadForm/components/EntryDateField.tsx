@@ -2,7 +2,7 @@
 import React from "react";
 import { useFormContext } from "react-hook-form";
 import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, AlertCircle } from "lucide-react";
 import {
   FormControl,
   FormField,
@@ -29,7 +29,15 @@ export const EntryDateField = () => {
       name="entryDate"
       render={({ field, fieldState }) => (
         <FormItem className="flex flex-col">
-          <FormLabel>Data de Entrada*</FormLabel>
+          <div className="flex items-center justify-between">
+            <FormLabel>Data de Entrada*</FormLabel>
+            {fieldState.error && (
+              <span className="text-xs text-destructive flex items-center gap-1">
+                <AlertCircle className="h-3 w-3" />
+                {fieldState.error.message}
+              </span>
+            )}
+          </div>
           <Popover>
             <PopoverTrigger asChild>
               <FormControl>
@@ -38,8 +46,9 @@ export const EntryDateField = () => {
                   className={cn(
                     "w-full pl-3 text-left font-normal",
                     !field.value && "text-muted-foreground",
-                    fieldState.error && "border-red-500"
+                    fieldState.error && "border-destructive focus-visible:ring-destructive"
                   )}
+                  aria-invalid={!!fieldState.error}
                 >
                   {field.value ? (
                     format(new Date(field.value), "dd/MM/yyyy")

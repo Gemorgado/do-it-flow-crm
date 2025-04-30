@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { LeadFormValues } from "@/types/crm";
+import { AlertCircle } from "lucide-react";
 
 export const SourceFields = () => {
   const { control, watch } = useFormContext<LeadFormValues>();
@@ -30,11 +31,19 @@ export const SourceFields = () => {
         name="sourceCategory"
         render={({ field, fieldState }) => (
           <FormItem>
-            <FormLabel>Origem*</FormLabel>
+            <div className="flex items-center justify-between">
+              <FormLabel>Origem*</FormLabel>
+              {fieldState.error && (
+                <span className="text-xs text-destructive flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" />
+                  {fieldState.error.message}
+                </span>
+              )}
+            </div>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
               <FormControl>
                 <SelectTrigger className={cn(
-                  fieldState.error && "border-red-500"
+                  fieldState.error && "border-destructive focus-visible:ring-destructive"
                 )}>
                   <SelectValue placeholder="Selecione a origem" />
                 </SelectTrigger>
@@ -53,15 +62,23 @@ export const SourceFields = () => {
       <FormField
         control={control}
         name="sourceDetail"
-        render={({ field }) => (
+        render={({ field, fieldState }) => (
           <FormItem>
-            <FormLabel>
-              {sourceCategory === "indicacao" 
-                ? "Quem indicou" 
-                : sourceCategory === "rede_social" 
-                  ? "Qual rede social" 
-                  : "Detalhes da origem"}
-            </FormLabel>
+            <div className="flex items-center justify-between">
+              <FormLabel>
+                {sourceCategory === "indicacao" 
+                  ? "Quem indicou" 
+                  : sourceCategory === "rede_social" 
+                    ? "Qual rede social" 
+                    : "Detalhes da origem"}
+              </FormLabel>
+              {fieldState.error && (
+                <span className="text-xs text-destructive flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" />
+                  {fieldState.error.message}
+                </span>
+              )}
+            </div>
             <FormControl>
               <Input 
                 placeholder={
@@ -72,6 +89,9 @@ export const SourceFields = () => {
                       : "Ex: Site, Google"
                 } 
                 {...field} 
+                className={cn(
+                  fieldState.error && "border-destructive focus-visible:ring-destructive"
+                )}
               />
             </FormControl>
             <FormMessage />

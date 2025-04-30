@@ -22,13 +22,21 @@ export const leadFormSchema = z.object({
   interestService: z.string().min(1, {
     message: "Serviço de interesse é obrigatório",
   }),
-  employees: z.number().optional(),
-  annualRevenue: z.number().optional(),
+  employees: z.number().optional()
+    .refine(val => !val || val >= 0, {
+      message: "O número de funcionários não pode ser negativo",
+    }),
+  annualRevenue: z.number().optional()
+    .refine(val => !val || val >= 0, {
+      message: "O faturamento anual não pode ser negativo",
+    }),
   sourceCategory: z.enum(["indicacao", "rede_social", "outro"], {
     errorMap: () => ({ message: "Selecione uma categoria de origem válida" }),
   }),
   sourceDetail: z.string().optional(),
-  stageId: z.string().optional(),
+  stageId: z.string().min(1, {
+    message: "É necessário selecionar um estágio"
+  }).optional(),
 });
 
 interface UseLeadFormLogicProps {
@@ -64,5 +72,7 @@ export function useLeadFormLogic({ onSubmit, presetStageId }: UseLeadFormLogicPr
     errors: form.formState.errors,
     isSubmitting: form.formState.isSubmitting,
     isDirty: form.formState.isDirty,
+    touchedFields: form.formState.touchedFields,
+    isValid: form.formState.isValid,
   };
 }

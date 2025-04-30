@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FormProvider } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
@@ -16,6 +16,8 @@ import {
   SourceFields,
   FormErrorSummary
 } from "./components";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { InfoIcon } from "lucide-react";
 
 interface LeadFormProps {
   onSubmit: (data: LeadFormValues & { stageId?: string }) => void;
@@ -33,7 +35,7 @@ export function LeadForm({
   // Get preset stage ID if provided
   const presetStageId = presetStage?.id;
 
-  const { form, handleSubmit } = useLeadFormLogic({
+  const { form, handleSubmit, isValid } = useLeadFormLogic({
     onSubmit,
     presetStageId
   });
@@ -46,24 +48,56 @@ export function LeadForm({
     handleSubmit(data);
   });
 
+  // Show error summary if user has attempted to submit and there are errors
+  useEffect(() => {
+    if (attemptedSubmit && !isValid) {
+      const firstError = document.querySelector('[aria-invalid="true"]');
+      if (firstError) {
+        (firstError as HTMLElement).focus();
+      }
+    }
+  }, [attemptedSubmit, isValid]);
+
   return (
     <FormProvider {...form}>
       <Form {...form}>
-        <form onSubmit={onSubmitWithValidation} className="space-y-4">
+        <form onSubmit={onSubmitWithValidation} className="space-y-4" noValidate>
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-medium text-muted-foreground">Informações básicas</h3>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <InfoIcon className="h-4 w-4 text-muted-foreground" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-xs">Campos marcados com * são obrigatórios</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+          
           <CompanyPersonField />
           <IdNumberField />
           <EntryDateField />
           <InterestServiceField />
           <StageField presetStageId={presetStageId} />
-          <CompanyDetailsFields />
-          <SourceFields />
+          
+          <div className="border-t pt-4 mt-6">
+            <h3 className="text-sm font-medium text-muted-foreground mb-4">Detalhes adicionais</h3>
+            <CompanyDetailsFields />
+          </div>
+          
+          <div className="border-t pt-4 mt-6">
+            <h3 className="text-sm font-medium text-muted-foreground mb-4">Origem</h3>
+            <SourceFields />
+          </div>
           
           {/* Show summary of errors when form is submitted with errors */}
           {attemptedSubmit && Object.keys(form.formState.errors).length > 0 && (
             <FormErrorSummary />
           )}
           
-          <div className="flex justify-end space-x-2 pt-2">
+          <div className="flex justify-end space-x-2 pt-6 border-t">
             <Button 
               type="button" 
               variant="outline" 

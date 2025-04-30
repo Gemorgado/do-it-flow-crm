@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { LeadFormValues } from "@/types/crm";
 import { formatDocument } from "@/utils/documentUtils";
+import { AlertCircle } from "lucide-react";
 
 export const IdNumberField = () => {
   const { control, setValue, formState } = useFormContext<LeadFormValues>();
@@ -31,18 +32,28 @@ export const IdNumberField = () => {
       name="idNumber"
       render={({ field, fieldState }) => (
         <FormItem>
-          <FormLabel>CNPJ/CPF*</FormLabel>
+          <div className="flex items-center justify-between">
+            <FormLabel>CNPJ/CPF*</FormLabel>
+            {fieldState.error && (
+              <span className="text-xs text-destructive flex items-center gap-1">
+                <AlertCircle className="h-3 w-3" />
+                {fieldState.error.message}
+              </span>
+            )}
+          </div>
           <FormControl>
             <Input 
               placeholder="00.000.000/0000-00 ou 000.000.000-00" 
               {...field}
               onChange={handleIdNumberChange}
               className={cn(
-                fieldState.error && "border-red-500"
+                fieldState.error && "border-destructive focus-visible:ring-destructive"
               )}
+              aria-invalid={!!fieldState.error}
+              aria-describedby={fieldState.error ? `${field.name}-error` : undefined}
             />
           </FormControl>
-          <FormMessage />
+          <FormMessage id={`${field.name}-error`} />
           {!fieldState.error && field.value && field.value.length > 11 && (
             <FormDescription>
               CNPJ com 14 dígitos

@@ -11,6 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { LeadFormValues } from "@/types/crm";
+import { AlertCircle } from "lucide-react";
 
 export const InterestServiceField = () => {
   const { control } = useFormContext<LeadFormValues>();
@@ -21,14 +22,23 @@ export const InterestServiceField = () => {
       name="interestService"
       render={({ field, fieldState }) => (
         <FormItem>
-          <FormLabel>Serviço de Interesse*</FormLabel>
+          <div className="flex items-center justify-between">
+            <FormLabel>Serviço de Interesse*</FormLabel>
+            {fieldState.error && (
+              <span className="text-xs text-destructive flex items-center gap-1">
+                <AlertCircle className="h-3 w-3" />
+                {fieldState.error.message}
+              </span>
+            )}
+          </div>
           <FormControl>
             <Input 
               placeholder="Descreva o serviço" 
               {...field} 
               className={cn(
-                fieldState.error && "border-red-500"
+                fieldState.error && "border-destructive focus-visible:ring-destructive"
               )}
+              aria-invalid={!!fieldState.error}
             />
           </FormControl>
           <FormMessage />

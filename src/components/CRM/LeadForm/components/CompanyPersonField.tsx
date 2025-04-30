@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { LeadFormValues } from "@/types/crm";
+import { AlertCircle } from "lucide-react";
 
 export const CompanyPersonField = () => {
   const { control } = useFormContext<LeadFormValues>();
@@ -22,13 +23,21 @@ export const CompanyPersonField = () => {
       name="companyOrPerson"
       render={({ field, fieldState }) => (
         <FormItem>
-          <FormLabel>Empresa/Pessoa*</FormLabel>
+          <div className="flex items-center justify-between">
+            <FormLabel>Empresa/Pessoa*</FormLabel>
+            {fieldState.error && (
+              <span className="text-xs text-destructive flex items-center gap-1">
+                <AlertCircle className="h-3 w-3" />
+                {fieldState.error.message}
+              </span>
+            )}
+          </div>
           <FormControl>
             <Input 
               placeholder="Nome da empresa ou pessoa" 
               {...field} 
               className={cn(
-                fieldState.error && "border-red-500"
+                fieldState.error && "border-destructive focus-visible:ring-destructive"
               )}
             />
           </FormControl>

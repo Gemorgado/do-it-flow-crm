@@ -18,6 +18,7 @@ import {
 import { cn } from "@/lib/utils";
 import { LeadFormValues } from "@/types/crm";
 import { pipelineStages } from "@/data/leadsData";
+import { AlertCircle } from "lucide-react";
 
 interface StageFieldProps {
   presetStageId?: string;
@@ -34,14 +35,22 @@ export const StageField = ({ presetStageId }: StageFieldProps) => {
       name="stageId"
       render={({ field, fieldState }) => (
         <FormItem>
-          <FormLabel>Estágio*</FormLabel>
+          <div className="flex items-center justify-between">
+            <FormLabel>Estágio*</FormLabel>
+            {fieldState.error && (
+              <span className="text-xs text-destructive flex items-center gap-1">
+                <AlertCircle className="h-3 w-3" />
+                {fieldState.error.message}
+              </span>
+            )}
+          </div>
           <Select 
             onValueChange={field.onChange} 
             defaultValue={field.value}
           >
             <FormControl>
               <SelectTrigger className={cn(
-                fieldState.error && "border-red-500"
+                fieldState.error && "border-destructive focus-visible:ring-destructive"
               )}>
                 <SelectValue placeholder="Selecione o estágio" />
               </SelectTrigger>

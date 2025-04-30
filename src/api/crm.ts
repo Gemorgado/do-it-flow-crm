@@ -12,20 +12,25 @@ export const useCreateLead = () => {
   
   return useMutation({
     mutationFn: async (data: LeadFormValues & { stageId?: string }) => {
-      const response = await fetch(`/api/crm/leads`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      try {
+        const response = await fetch(`/api/crm/leads`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Erro ao criar lead");
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "Erro ao criar lead");
+        }
+
+        return response.json();
+      } catch (error) {
+        console.error("Erro na criação do lead:", error);
+        throw error instanceof Error ? error : new Error("Erro desconhecido ao criar lead");
       }
-
-      return response.json();
     },
     onSuccess: () => {
       // Invalidate both the pipeline leads and general leads queries
@@ -38,7 +43,7 @@ export const useCreateLead = () => {
     },
     onError: (error: Error) => {
       toast.error("Erro ao criar lead", {
-        description: error.message
+        description: error.message || "Não foi possível criar o lead. Tente novamente."
       });
     },
   });
@@ -49,31 +54,41 @@ export const useCreateLead = () => {
  * @returns Mutation para criar contato com métodos mutate, isLoading e error
  */
 export const useCreateContact = () => {
+  const queryClient = useQueryClient();
+  
   return useMutation({
     mutationFn: async (data: ContactFormValues) => {
-      const response = await fetch(`/api/crm/contacts`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      try {
+        const response = await fetch(`/api/crm/contacts`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Erro ao criar contato");
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "Erro ao criar contato");
+        }
+
+        return response.json();
+      } catch (error) {
+        console.error("Erro na criação do contato:", error);
+        throw error instanceof Error ? error : new Error("Erro desconhecido ao criar contato");
       }
-
-      return response.json();
     },
     onSuccess: () => {
+      // Invalidate contacts query
+      queryClient.invalidateQueries({ queryKey: ['contacts'] });
+      
       toast.success("Contato criado com sucesso", {
         description: "O contato foi adicionado ao sistema"
       });
     },
     onError: (error: Error) => {
       toast.error("Erro ao criar contato", {
-        description: error.message
+        description: error.message || "Não foi possível criar o contato. Tente novamente."
       });
     },
   });
