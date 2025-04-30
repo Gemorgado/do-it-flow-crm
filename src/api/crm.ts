@@ -1,7 +1,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { LeadFormValues, ContactFormValues } from "@/types/crm";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 
 /**
  * Hook para criar um novo lead

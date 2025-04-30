@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { Lead, PipelineStage } from "@/types";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 import { 
   getLeadsNeedingAttention, 
   triggerAutomation, 
