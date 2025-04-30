@@ -19,7 +19,7 @@ import GrowthDashboard from "@/pages/GrowthDashboard";
 import GrowthReports from "@/pages/GrowthReports";
 import Integrations from "@/pages/Integrations";
 import ConexaImportPage from "@/pages/ConexaImportPage";
-import PlansAndServices from "@/pages/PlansAndServices";
+import PlansAndServicesPage from "@/pages/PlansAndServicesPage";
 import Automations from "@/pages/Automations";
 import Messages from "@/pages/Messages";
 import Proposals from "@/pages/Proposals";
@@ -91,7 +91,7 @@ function App() {
                 } />
                 <Route path="integrations" element={<Integrations />} />
                 <Route path="import/conexa" element={<ConexaImportPage />} />
-                <Route path="plans" element={<PlansAndServices />} />
+                <Route path="plans" element={<PlansAndServicesPage />} />
                 <Route path="automations" element={<Automations />} />
                 <Route path="messages" element={<Messages />} />
                 <Route path="proposals" element={<Proposals />} />

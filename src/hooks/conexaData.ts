@@ -58,3 +58,34 @@ export function useServices() {
     }
   }).data || [];
 }
+
+/**
+ * Hook to get space statistics
+ * @returns Statistics about space usage
+ */
+export function useSpaceStats() {
+  const { data: bindings = [] } = useSpaceBindings();
+  const { meetingRooms } = useMeetingRooms();
+  
+  return {
+    privateRooms: bindings.filter(b => b.spaceId.startsWith('sala-')).length,
+    meetingRooms: meetingRooms?.length || 0,
+    workstations: {
+      total: bindings.filter(b => b.spaceId.startsWith('estacao-')).length,
+      flex: bindings.filter(b => b.spaceId.startsWith('estacao-flex-')).length,
+      fixed: bindings.filter(b => b.spaceId.startsWith('estacao-fixa-')).length,
+    },
+    totalCapacity: meetingRooms?.reduce((acc, room) => acc + (room.capacity || 0), 0) || 0
+  };
+}
+
+// Helper function to access meeting room data
+function useMeetingRooms() {
+  return useQuery({
+    queryKey: ["meetingRooms"],
+    queryFn: async () => {
+      const snap = await persistence.getLastSnapshot();
+      return snap?.meetingRooms || [];
+    }
+  });
+}
