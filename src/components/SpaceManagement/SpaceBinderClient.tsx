@@ -13,7 +13,6 @@ interface SpaceBinderClientProps {
   filteredClients: Client[];
   selectedClientId: string | null;
   setSelectedClientId: (id: string | null) => void;
-  setSelectedContractId: (id: string | null) => void;
 }
 
 export function SpaceBinderClient({
@@ -22,7 +21,6 @@ export function SpaceBinderClient({
   filteredClients,
   selectedClientId,
   setSelectedClientId,
-  setSelectedContractId,
 }: SpaceBinderClientProps) {
   return (
     <div>
@@ -47,7 +45,6 @@ export function SpaceBinderClient({
                 className="w-full justify-start py-2 px-2 h-auto my-1"
                 onClick={() => {
                   setSelectedClientId(client.id);
-                  setSelectedContractId(null);
                 }}
               >
                 <div className="flex items-center">
