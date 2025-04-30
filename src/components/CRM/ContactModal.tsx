@@ -265,8 +265,8 @@ export function ContactModal() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="indicação">Indicação</SelectItem>
-                      <SelectItem value="rede social">Rede Social</SelectItem>
+                      <SelectItem value="indicacao">Indicação</SelectItem>
+                      <SelectItem value="rede_social">Rede Social</SelectItem>
                       <SelectItem value="outro">Outro</SelectItem>
                     </SelectContent>
                   </Select>
