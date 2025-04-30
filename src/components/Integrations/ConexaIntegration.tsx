@@ -9,8 +9,9 @@ import { ConexaSyncButton } from './Conexa/ConexaSyncButton';
 import { triggerManualSync } from '@/jobs/conexaSyncJob';
 import { useConexaSnapshot, useApplySnapshot } from '@/hooks/useConexaSnapshot';
 import { Button } from '@/components/ui/button';
-import { Loader } from 'lucide-react';
+import { Loader, FileSpreadsheet } from 'lucide-react';
 import { mapContracts } from '@/integrations/conexa/mapper';
+import { Link } from 'react-router-dom';
 
 // This would come from your API in a real implementation
 const mockIntegrationStatus = {
@@ -158,15 +159,28 @@ export function ConexaIntegration() {
             <p className="text-sm text-muted-foreground mb-2">
               Último snapshot: {snapshot?.syncedAt ? formatDate(snapshot.syncedAt) : '—'}
             </p>
-            <Button
-              variant="outline"
-              onClick={handleApplySnapshot}
-              disabled={applyMutation.isPending}
-              className="w-full mb-4"
-            >
-              {applyMutation.isPending ? <Loader className="mr-2 h-4 w-4 animate-spin" /> : null}
-              Aplicar snapshot
-            </Button>
+            
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Button
+                variant="outline"
+                onClick={handleApplySnapshot}
+                disabled={applyMutation.isPending}
+                className="w-full"
+              >
+                {applyMutation.isPending ? <Loader className="mr-2 h-4 w-4 animate-spin" /> : null}
+                Aplicar snapshot
+              </Button>
+              
+              <Button
+                variant="outline"
+                className="w-full"
+                as={Link}
+                to="/import/conexa"
+              >
+                <FileSpreadsheet className="mr-2 h-4 w-4" />
+                Importar planilha
+              </Button>
+            </div>
           </div>
         </div>
       </CardContent>
