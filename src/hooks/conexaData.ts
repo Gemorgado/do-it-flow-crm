@@ -65,17 +65,18 @@ export function useServices() {
  */
 export function useSpaceStats() {
   const { data: bindings = [] } = useSpaceBindings();
-  const { meetingRooms } = useMeetingRooms();
+  const { data: meetingRoomsData } = useMeetingRooms();
+  const meetingRooms = meetingRoomsData || [];
   
   return {
     privateRooms: bindings.filter(b => b.spaceId.startsWith('sala-')).length,
-    meetingRooms: meetingRooms?.length || 0,
+    meetingRooms: meetingRooms.length,
     workstations: {
       total: bindings.filter(b => b.spaceId.startsWith('estacao-')).length,
       flex: bindings.filter(b => b.spaceId.startsWith('estacao-flex-')).length,
       fixed: bindings.filter(b => b.spaceId.startsWith('estacao-fixa-')).length,
     },
-    totalCapacity: meetingRooms?.reduce((acc, room) => acc + (room.capacity || 0), 0) || 0
+    totalCapacity: meetingRooms.reduce((acc, room) => acc + (room.capacity || 0), 0)
   };
 }
 
