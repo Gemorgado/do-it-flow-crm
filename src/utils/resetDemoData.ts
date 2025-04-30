@@ -16,7 +16,14 @@ export async function resetDemoData() {
   ];
   
   // Remove all items from localStorage
-  keys.forEach(k => localStorage.removeItem(k));
+  keys.forEach(k => {
+    try {
+      localStorage.removeItem(k);
+      console.log(`Removed ${k} from localStorage`);
+    } catch (e) {
+      console.warn(`Failed to remove ${k} from localStorage`, e);
+    }
+  });
   
   // Clear specific items that might be named differently
   localStorage.removeItem('mockClients');
@@ -25,12 +32,14 @@ export async function resetDemoData() {
   
   // Clear session storage as well
   sessionStorage.clear();
+  console.log("Session storage cleared");
 
   /* 2. Se houver backend: endpoint opcional */
   // await api.delete('/admin/demo-data');   // descomente quando existir
 
   /* 3. Limpa cache React-Query para refletir imediatamente */
   queryClient.clear();
+  console.log("Query cache cleared");
   
   // Invalida especificamente as queries relacionadas aos dados que estamos limpando
   queryClient.invalidateQueries({ queryKey: ['clients'] });
@@ -39,4 +48,5 @@ export async function resetDemoData() {
   queryClient.invalidateQueries({ queryKey: ['proposals'] });
   
   console.log('All demo data has been cleared successfully');
+  return true;
 }
