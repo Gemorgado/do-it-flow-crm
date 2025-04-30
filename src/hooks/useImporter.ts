@@ -19,6 +19,7 @@ export function useImporter() {
   const [mapping, setMapping] = useState<Record<string, InternalField>>({});
   const [errors, setErrors] = useState<ImportError[]>([]);
   const [snapshot, setSnapshot] = useState<ConexaSnapshot | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   // Handle navigation between steps
   const handleNavigateToStep = (newStep: ImportStep) => {
@@ -27,10 +28,14 @@ export function useImporter() {
 
   // Handle file upload
   const handleFileSelect = async (selectedFile: File) => {
-    setFile(selectedFile);
-    setStep('upload'); // Reset to upload step while reading
-    
     try {
+      setFile(selectedFile);
+      setIsProcessing(true);
+      toast({
+        title: 'Processando arquivo',
+        description: 'Aguarde enquanto lemos seu arquivo...',
+      });
+      
       const { headers: fileHeaders, rows: fileRows } = await readSpreadsheet(selectedFile);
       
       if (fileHeaders.length === 0) {
@@ -46,10 +51,10 @@ export function useImporter() {
       setRows(fileRows);
       
       // Check if this is a "Relatório de Contratos" file
-      const isContratosReport = selectedFile.name.match(/Relatório de Contratos/i) || 
-                               (fileHeaders.includes('Razão Social') && 
-                                fileHeaders.includes('CNPJ') && 
-                                fileHeaders.includes('Data Início Contrato'));
+      const isContratosReport = selectedFile.name.includes('Relatório de Contratos') || 
+                               (fileHeaders.some(h => h.includes('Razão Social')) && 
+                                fileHeaders.some(h => h.includes('CNPJ')) && 
+                                fileHeaders.some(h => h.includes('Data Início Contrato')));
                                 
       if (isContratosReport) {
         // Try to find the Conexa template
@@ -65,12 +70,13 @@ export function useImporter() {
           
           setMapping(conexaTemplate.columnMap);
           setStep('preview'); // Skip the mapping step
-          return;
+        } else {
+          setStep('mapping');
         }
+      } else {
+        // If not matched or template not found, proceed to normal mapping
+        setStep('mapping');
       }
-      
-      // If not matched or template not found, proceed to normal mapping
-      setStep('mapping');
     } catch (error) {
       console.error('Error reading file:', error);
       toast({
@@ -78,17 +84,28 @@ export function useImporter() {
         description: error instanceof Error ? error.message : 'Erro desconhecido',
         variant: 'destructive',
       });
+    } finally {
+      setIsProcessing(false);
     }
   };
 
   // Handle mapping changes
-  const handleMappingChange = (newMapping: Record<string, InternalField>) => {
+  const handleMappingChange = (header: string, field: InternalField | '') => {
+    const newMapping = { ...mapping };
+    
+    if (field === '') {
+      delete newMapping[header];
+    } else {
+      newMapping[header] = field;
+    }
+    
     setMapping(newMapping);
   };
 
   // Process the import
   const handleImport = async () => {
     setStep('processing');
+    setIsProcessing(true);
     
     try {
       // Transform rows using the mapping
@@ -121,6 +138,8 @@ export function useImporter() {
         variant: 'destructive',
       });
       setStep('error');
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -156,7 +175,7 @@ export function useImporter() {
   };
 
   // Safe condition checks for isLoading
-  const isLoading = step === 'processing';
+  const isLoading = isProcessing || step === 'processing';
   
   return {
     step,
