@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, ReactNode } from "react";
 import { PipelineStage } from "@/types";
 
 // Lead Modal Context
@@ -26,7 +26,7 @@ interface ContactModalContextType {
 const ContactModalContext = createContext<ContactModalContextType | undefined>(undefined);
 
 // Provider
-export function ModalProvider({ children }: { children: React.ReactNode }) {
+export function ModalProvider({ children }: { children: ReactNode }) {
   // Lead modal state
   const [leadModalOpen, setLeadModalOpen] = useState(false);
   const [leadModalOptions, setLeadModalOptions] = useState<LeadModalOptions | undefined>(undefined);
