@@ -6,6 +6,7 @@ import { Plus, MessageSquare, Calendar, Facebook, Code, FileCode } from "lucide-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { MetaPixelIntegration } from '@/components/Integrations/MetaPixelIntegration';
+import { ConexaIntegration } from '@/components/Integrations/ConexaIntegration';
 
 export default function Integrations() {
   return (
@@ -28,6 +29,7 @@ export default function Integrations() {
           <TabsTrigger value="active">Ativas</TabsTrigger>
           <TabsTrigger value="available">Disponíveis</TabsTrigger>
           <TabsTrigger value="pixels">Pixel de Rastreamento</TabsTrigger>
+          <TabsTrigger value="erp">Sistemas ERP</TabsTrigger>
         </TabsList>
         
         <TabsContent value="active" className="mt-4">
@@ -108,6 +110,13 @@ export default function Integrations() {
           <Card className="p-6">
             <h3 className="text-lg font-medium mb-4">Configurações do Meta Pixel</h3>
             <MetaPixelIntegration />
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="erp" className="mt-4">
+          <Card className="p-6">
+            <h3 className="text-lg font-medium mb-4">Conexa ERP</h3>
+            <ConexaIntegration />
           </Card>
         </TabsContent>
       </Tabs>
