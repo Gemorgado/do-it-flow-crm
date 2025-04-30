@@ -38,16 +38,16 @@ export default function OccupancyMapPage() {
               </TableHeader>
               <TableBody>
                 {todayOccupations.map((occupation, index) => {
-                  const contract = contractMap[occupation.contractId] || {};
+                  const contract = contractMap[occupation.contractId];
                   return (
                     <TableRow key={index}>
                       <TableCell>{occupation.roomId}</TableCell>
                       <TableCell>{occupation.contractId}</TableCell>
                       <TableCell>
-                        {contract.amount ? `R$ ${contract.amount.toFixed(2)}` : '-'}
+                        {contract && contract.amount ? `R$ ${contract.amount.toFixed(2)}` : '-'}
                       </TableCell>
                       <TableCell>
-                        {contract.status && (
+                        {contract && contract.status && (
                           <span className={`px-2 py-1 rounded text-xs ${contract.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
                             {contract.status === 'active' ? 'Ativo' : 'Encerrado'}
                           </span>

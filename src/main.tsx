@@ -4,6 +4,8 @@ import App from './App.tsx'
 import './index.css'
 import { trackMetaPixelEvent } from './utils/metaPixelUtils.ts'
 import { SnapshotProvider } from './contexts/SnapshotProvider.tsx'
+import { QueryClientProvider } from '@tanstack/react-query'
+import { queryClient } from './lib/queryClient.ts'
 
 // Rastrear evento de visualização da página ao carregar o aplicativo
 document.addEventListener('DOMContentLoaded', () => {
@@ -15,7 +17,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 createRoot(document.getElementById("root")!).render(
-  <SnapshotProvider>
-    <App />
-  </SnapshotProvider>
+  <QueryClientProvider client={queryClient}>
+    <SnapshotProvider>
+      <App />
+    </SnapshotProvider>
+  </QueryClientProvider>
 );
