@@ -37,7 +37,7 @@ class LocalStorageAdapter implements PersistenceAdapter {
     // Remove existing binding for this space if any
     const filtered = bindings.filter(b => b.spaceId !== binding.spaceId);
     
-    // Add new binding
+    // Add new binding with all contract details
     filtered.push(binding);
     
     localStorage.setItem(this.BINDINGS_KEY, JSON.stringify(filtered));

@@ -8,8 +8,10 @@ import { Input } from "@/components/ui/input";
 import { useClients, useClientContracts } from "@/hooks/useClients";
 import { useSpaceBindings, useBindSpace, useUnbindSpace } from "@/hooks/useSpaceBindings";
 import { Client, Location, SpaceBinding } from "@/types";
-import { Check, X, Trash } from "lucide-react";
+import { Check, X, Trash, Calendar } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 interface SpaceBinderModalProps {
   isOpen: boolean;
@@ -21,6 +23,11 @@ export function SpaceBinderModal({ isOpen, onClose, space }: SpaceBinderModalPro
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   const [selectedContractId, setSelectedContractId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  
+  // Contract details state
+  const [unitPrice, setUnitPrice] = useState<number | null>(null);
+  const [startDate, setStartDate] = useState<string | null>(null);
+  const [endDate, setEndDate] = useState<string | null>(null);
   
   const { data: bindings = [] } = useSpaceBindings();
   const { data: clientsList = [] } = useClients();
@@ -37,9 +44,15 @@ export function SpaceBinderModal({ isOpen, onClose, space }: SpaceBinderModalPro
     if (existingBinding) {
       setSelectedClientId(existingBinding.clientId);
       setSelectedContractId(existingBinding.contractId);
+      setUnitPrice(existingBinding.unitPrice || null);
+      setStartDate(existingBinding.startDate || null);
+      setEndDate(existingBinding.endDate || null);
     } else {
       setSelectedClientId(null);
       setSelectedContractId(null);
+      setUnitPrice(null);
+      setStartDate(null);
+      setEndDate(null);
     }
   }, [existingBinding, space]);
   
@@ -49,6 +62,23 @@ export function SpaceBinderModal({ isOpen, onClose, space }: SpaceBinderModalPro
     (client.company && client.company.toLowerCase().includes(searchQuery.toLowerCase()))
   );
   
+  // Update contract details when contract is selected
+  useEffect(() => {
+    if (!selectedContractId) {
+      setUnitPrice(null);
+      setStartDate(null);
+      setEndDate(null);
+      return;
+    }
+    
+    const selectedContract = contracts.find(c => c.id === selectedContractId);
+    if (selectedContract) {
+      setUnitPrice(selectedContract.value);
+      setStartDate(selectedContract.contractStart);
+      setEndDate(selectedContract.contractEnd);
+    }
+  }, [selectedContractId, contracts]);
+  
   // Handle binding the space
   const handleSave = () => {
     if (!space || !selectedClientId || !selectedContractId) return;
@@ -57,7 +87,10 @@ export function SpaceBinderModal({ isOpen, onClose, space }: SpaceBinderModalPro
       spaceId: space.id,
       clientId: selectedClientId,
       contractId: selectedContractId,
-      boundAt: new Date().toISOString()
+      boundAt: new Date().toISOString(),
+      unitPrice,
+      startDate,
+      endDate
     };
     
     bindSpace.mutate(binding);
@@ -75,6 +108,25 @@ export function SpaceBinderModal({ isOpen, onClose, space }: SpaceBinderModalPro
   const getClientName = (id: string): string => {
     const client = clientsList.find(c => c.id === id);
     return client ? client.name : "Cliente desconhecido";
+  };
+  
+  // Format currency
+  const formatCurrency = (value: number | null): string => {
+    if (value === null) return "";
+    return new Intl.NumberFormat('pt-BR', { 
+      style: 'currency', 
+      currency: 'BRL' 
+    }).format(value);
+  };
+  
+  // Format date
+  const formatDate = (dateString: string | null): string => {
+    if (!dateString) return "";
+    try {
+      return format(new Date(dateString), "dd/MM/yyyy", { locale: ptBR });
+    } catch (e) {
+      return "";
+    }
   };
   
   return (
@@ -157,12 +209,56 @@ export function SpaceBinderModal({ isOpen, onClose, space }: SpaceBinderModalPro
                     ) : (
                       contracts.map(contract => (
                         <SelectItem key={contract.id} value={contract.id}>
-                          {contract.description} - R$ {contract.value.toFixed(2)}
+                          {contract.description} - {formatCurrency(contract.value)}
                         </SelectItem>
                       ))
                     )}
                   </SelectContent>
                 </Select>
+              </div>
+            )}
+            
+            {selectedContractId && (
+              <div className="space-y-3 pt-2">
+                <div>
+                  <Label htmlFor="unitPrice">Valor mensal</Label>
+                  <Input
+                    id="unitPrice"
+                    value={formatCurrency(unitPrice)}
+                    readOnly
+                    disabled
+                    className="bg-gray-50"
+                  />
+                </div>
+                
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label htmlFor="startDate">Início</Label>
+                    <div className="relative">
+                      <Input
+                        id="startDate"
+                        value={formatDate(startDate)}
+                        readOnly
+                        disabled
+                        className="bg-gray-50 pr-8"
+                      />
+                      <Calendar className="absolute right-2 top-2.5 h-4 w-4 text-gray-400" />
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="endDate">Término</Label>
+                    <div className="relative">
+                      <Input
+                        id="endDate"
+                        value={formatDate(endDate)}
+                        readOnly
+                        disabled
+                        className="bg-gray-50 pr-8"
+                      />
+                      <Calendar className="absolute right-2 top-2.5 h-4 w-4 text-gray-400" />
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </div>

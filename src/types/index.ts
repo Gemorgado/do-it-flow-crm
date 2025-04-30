@@ -93,6 +93,9 @@ export interface SpaceBinding {
   clientId: string;
   contractId: string;
   boundAt: string;          // ISO datetime
+  unitPrice?: number;       // Contract price
+  startDate?: string;       // Contract start date
+  endDate?: string;         // Contract end date
 }
 
 export interface Interaction {

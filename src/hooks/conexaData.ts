@@ -12,7 +12,10 @@ export function useTodayRoomOccupancy() {
       // Use the space bindings to determine room occupancy
       return spaceBindings.map(binding => ({
         roomId: binding.spaceId,
-        contractId: binding.contractId
+        contractId: binding.contractId,
+        amount: binding.unitPrice,
+        startDate: binding.startDate,
+        endDate: binding.endDate
       }));
     }
   }).data || [];
