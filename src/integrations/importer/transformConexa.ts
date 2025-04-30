@@ -77,18 +77,18 @@ export function snapshotFromRows(
       const getValue = (field: InternalField): any => 
         row[reverseMapping[field]] !== undefined ? row[reverseMapping[field]] : null;
       
-      const docNumber = String(getValue('id')).replace(/\D/g, ''); // Changed from docNumber to id
+      const docNumber = String(getValue('id')).replace(/\D/g, '');
       
       // Validate document number
       if (!isValidDocNumber(docNumber)) {
         errors.push({ 
-          line: index + 2, // +2 because index is 0-based and we skip header row
+          line: index + 2,
           reason: `Invalid document number: ${docNumber} (must have 11 or 14 digits)` 
         });
         return; // Skip this row
       }
       
-      const serviceTypeRaw = getValue('plan'); // Changed from serviceType to plan
+      const serviceTypeRaw = getValue('plan');
       const serviceType = normalizeServiceType(serviceTypeRaw);
       
       // Check if service type is valid
@@ -116,8 +116,8 @@ export function snapshotFromRows(
         id: docNumber,
         name: getValue('name'),
         docNumber: docNumber,
-        email: getValue('billingEmails'), // Changed from email to billingEmails
-        phone: getValue('id'), // Changed from phone to id as placeholder
+        email: getValue('billingEmails'),
+        phone: getValue('id'),
         updatedAt: new Date().toISOString()
       };
       
@@ -133,7 +133,7 @@ export function snapshotFromRows(
         customerId: docNumber,
         serviceId: serviceType,
         status: 'active',
-        amount: extractNumericValue(getValue('contractValue')), // Changed from amount to contractValue
+        amount: extractNumericValue(getValue('contractValue')),
         startDate,
         endDate,
         updatedAt: new Date().toISOString()
@@ -149,13 +149,13 @@ export function snapshotFromRows(
           id: serviceType, 
           label: serviceOption ? serviceOption.label : serviceTypeRaw, 
           category: serviceType, 
-          price: extractNumericValue(getValue('contractValue')), // Changed from amount to contractValue
+          price: extractNumericValue(getValue('contractValue')), 
           updatedAt: new Date().toISOString() 
         });
       }
 
       // Add room occupation if room number exists
-      const roomNumber = getValue('privateRoom'); // Changed from roomNumber to privateRoom
+      const roomNumber = getValue('privateRoom');
       if (roomNumber) {
         roomOccupations.push({ 
           roomId: roomNumber, 
