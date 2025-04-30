@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
@@ -7,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { UserManagementTab } from "@/modules/settings/users/UserManagementTab";
 import { ConexaIntegration } from "@/components/Integrations/ConexaIntegration";
+import { DebugTools } from "@/modules/settings/debug/DebugTools";
 
 export default function Settings() {
   return (
@@ -21,6 +21,8 @@ export default function Settings() {
           <TabsTrigger value="notificacoes">Notificações</TabsTrigger>
           <TabsTrigger value="integracao">Integrações</TabsTrigger>
         </TabsList>
+        
+        
         
         <TabsContent value="perfil">
           <Card className="p-6">
@@ -54,8 +56,13 @@ export default function Settings() {
                 <Button>Salvar Alterações</Button>
               </div>
             </div>
+            
+            {/* Add Debug Tools component for admins */}
+            <DebugTools />
           </Card>
         </TabsContent>
+        
+        
         
         <TabsContent value="empresa">
           <Card className="p-6">
