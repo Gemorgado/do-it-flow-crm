@@ -7,7 +7,7 @@ export default function PlansAndServicesPage() {
   const spaceStats = useSpaceStats();
   
   // Get service categories with actual available units
-  const serviceCategories = getServiceCategories(40); // Default value, could be dynamic
+  const serviceCategories = getServiceCategories(spaceStats.privateRooms);
   
   return (
     <div className="animate-fade-in space-y-6">

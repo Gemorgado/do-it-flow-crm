@@ -2,6 +2,21 @@
 import { useQuery } from "@tanstack/react-query";
 import { persistence } from "@/integrations/persistence";
 import { useSpaceBindings } from "@/hooks/useSpaceBindings";
+import { useSnapshot } from "@/contexts/SnapshotProvider";
+
+// Define interface for space statistics
+export interface SpaceStats {
+  privateRooms: number;
+  meetingRooms: {
+    total: number;
+    capacity: number;
+  };
+  workstations: {
+    total: number;
+    flex: number;
+    fixed: number;
+  };
+}
 
 export function useTodayRoomOccupancy() {
   const { data: spaceBindings = [] } = useSpaceBindings();
@@ -63,30 +78,20 @@ export function useServices() {
  * Hook to get space statistics
  * @returns Statistics about space usage
  */
-export function useSpaceStats() {
+export function useSpaceStats(): SpaceStats {
   const { data: bindings = [] } = useSpaceBindings();
-  const { data: meetingRoomsData } = useMeetingRooms();
-  const meetingRooms = meetingRoomsData || [];
+  const snap = useSnapshot();
   
   return {
     privateRooms: bindings.filter(b => b.spaceId.startsWith('sala-')).length,
-    meetingRooms: meetingRooms.length,
+    meetingRooms: {
+      total: bindings.filter(b => b.spaceId.startsWith('meeting-')).length,
+      capacity: 0, // We don't have capacity data available directly
+    },
     workstations: {
       total: bindings.filter(b => b.spaceId.startsWith('estacao-')).length,
       flex: bindings.filter(b => b.spaceId.startsWith('estacao-flex-')).length,
       fixed: bindings.filter(b => b.spaceId.startsWith('estacao-fixa-')).length,
-    },
-    totalCapacity: meetingRooms.reduce((acc, room) => acc + (room.capacity || 0), 0)
-  };
-}
-
-// Helper function to access meeting room data
-function useMeetingRooms() {
-  return useQuery({
-    queryKey: ["meetingRooms"],
-    queryFn: async () => {
-      const snap = await persistence.getLastSnapshot();
-      return snap?.meetingRooms || [];
     }
-  });
+  };
 }
