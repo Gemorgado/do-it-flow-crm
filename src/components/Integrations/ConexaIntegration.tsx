@@ -4,7 +4,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { database, refresh, sync, check, loader } from "lucide-react";
+import { Database, RefreshCw, Check, Loader } from "lucide-react";
 
 // This would come from your API in a real implementation
 const mockIntegrationStatus = {
@@ -82,14 +82,14 @@ export function ConexaIntegration() {
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex items-center gap-2">
-              <refresh className="h-4 w-4 text-gray-500" />
+              <RefreshCw className="h-4 w-4 text-gray-500" />
               <div>
                 <p className="text-sm text-gray-500">Última sincronização</p>
                 <p className="font-medium">{formatDate(status.lastSync)}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <sync className="h-4 w-4 text-gray-500" />
+              <RefreshCw className="h-4 w-4 text-gray-500" />
               <div>
                 <p className="text-sm text-gray-500">Próxima sincronização</p>
                 <p className="font-medium">{formatDate(status.nextSync)}</p>
@@ -124,12 +124,12 @@ export function ConexaIntegration() {
         >
           {isLoading ? (
             <>
-              <loader className="mr-2 h-4 w-4 animate-spin" />
+              <Loader className="mr-2 h-4 w-4 animate-spin" />
               Sincronizando...
             </>
           ) : (
             <>
-              <database className="mr-2 h-4 w-4" />
+              <Database className="mr-2 h-4 w-4" />
               Sincronizar Agora
             </>
           )}

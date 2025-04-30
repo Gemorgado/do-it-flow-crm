@@ -11,6 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useCreateProposal } from '@/api/proposals';
 import { CreateProposalInput, ServiceType } from '@/types/proposal';
+import { Loader } from 'lucide-react';
 
 const serviceTypeOptions: { value: ServiceType; label: string }[] = [
   { value: 'endereços_fiscais', label: 'Endereços Fiscais' },
@@ -42,7 +43,7 @@ interface ProposalModalProps {
 }
 
 export function ProposalModal({ isOpen, onClose }: ProposalModalProps) {
-  const { mutate: createProposal, isLoading } = useCreateProposal();
+  const { mutate: createProposal, isPending } = useCreateProposal();
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -61,8 +62,12 @@ export function ProposalModal({ isOpen, onClose }: ProposalModalProps) {
     const amountInCents = Math.round(data.amount * 100);
     
     const proposalData: CreateProposalInput = {
-      ...data,
+      companyId: data.companyId,
+      serviceType: data.serviceType,
       amount: amountInCents,
+      proposalDate: data.proposalDate,
+      followUpAt: data.followUpAt || undefined,
+      followUpNote: data.followUpNote || undefined,
     };
     
     createProposal(proposalData, {
@@ -224,12 +229,19 @@ export function ProposalModal({ isOpen, onClose }: ProposalModalProps) {
                 type="button" 
                 variant="outline" 
                 onClick={onClose}
-                disabled={isLoading}
+                disabled={isPending}
               >
                 Cancelar
               </Button>
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? 'Salvando...' : 'Salvar Proposta'}
+              <Button type="submit" disabled={isPending}>
+                {isPending ? (
+                  <>
+                    <Loader className="mr-2 h-4 w-4 animate-spin" />
+                    Salvando...
+                  </>
+                ) : (
+                  'Salvar Proposta'
+                )}
               </Button>
             </DialogFooter>
           </form>
