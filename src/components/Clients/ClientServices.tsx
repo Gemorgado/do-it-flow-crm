@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -24,13 +23,15 @@ export function ClientServices({
   const getServiceTypeName = (type: ServiceType): string => {
     switch (type) {
       case "sala_privativa": return "Sala Privativa";
-      case "estacao": return "Estação";
+      case "estacao_flex": return "Estação Flex";
+      case "estacao_fixa": return "Estação Fixa";
       case "endereco_fiscal": return "Endereço Fiscal";
       case "sala_reuniao": return "Sala de Reunião";
+      case "auditorio": return "Auditório";
       default: return "Desconhecido";
     }
   };
-
+  
   const getStatusBadge = (status: ServiceStatus) => {
     switch (status) {
       case "ativo":

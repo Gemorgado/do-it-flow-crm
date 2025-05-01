@@ -10,4 +10,5 @@ export const SERVICE_OPTIONS = [
   { value: 'auditorio',       label: 'Auditório'      },
 ] as const;
 
-export { ServiceType };
+// Use "export type" instead of just "export" for re-exporting types when isolatedModules is enabled
+export type { ServiceType };

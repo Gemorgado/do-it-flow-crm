@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller } from "react-hook-form";
 import * as z from "zod";
-import { ServiceType } from "@/types/client";
+import { ServiceType } from "@/types/service";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -36,7 +36,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 import { v4 as uuidv4 } from "uuid";
 import { useClientFormEnhancements } from "@/hooks/useClientFormEnhancements";
-import { Location } from "@/types";
+import { Location, SpaceBinding } from "@/types";
 import { persistence } from "@/integrations/persistence";
 
 const clientFormSchema = z.object({
@@ -139,15 +139,17 @@ export function ClientForm({ onSuccess, onCancel, initialData }: ClientFormProps
       if (data.selectedSpaceId && (data.plan === 'sala_privativa' || data.plan === 'estacao_fixa')) {
         try {
           // Create a binding between client and space
-          await persistence.bindSpace({
-            id: uuidv4(),
+          const binding: SpaceBinding = {
             spaceId: data.selectedSpaceId,
             clientId: formattedData.id,
-            startDate: data.contractStart ? format(data.contractStart, 'yyyy-MM-dd') : new Date().toISOString().split('T')[0],
+            contractId: uuidv4(),
+            boundAt: new Date().toISOString(),
+            startDate: data.contractStart ? format(data.contractStart, 'yyyy-MM-dd') : undefined,
             endDate: data.contractEnd ? format(data.contractEnd, 'yyyy-MM-dd') : undefined,
-            status: 'active',
-            notes: `Bound via client creation form on ${new Date().toLocaleDateString()}`
-          });
+            unitPrice: data.contractValue || null
+          };
+          
+          await persistence.bindSpace(binding);
           
           console.log("Space binding created successfully");
         } catch (error) {
