@@ -1,9 +1,7 @@
 
-import React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Location } from "@/types";
 import { SpaceBinderModalContent } from "./SpaceBinderModalContent";
-import { useSpaceBinding } from "@/hooks/useSpaceBinding";
 
 interface SpaceBinderModalProps {
   isOpen: boolean;
@@ -12,54 +10,15 @@ interface SpaceBinderModalProps {
 }
 
 export function SpaceBinderModal({ isOpen, onClose, space }: SpaceBinderModalProps) {
-  const {
-    selectedClientId,
-    setSelectedClientId,
-    searchQuery,
-    setSearchQuery,
-    contractId,
-    unitPrice,
-    startDate,
-    endDate,
-    existingBinding,
-    isLoadingContract,
-    activeContract,
-    handleSave,
-    handleUnbind,
-    bindSpace,
-    unbindSpace
-  } = useSpaceBinding(space, onClose);
-
+  if (!space) return null;
+  
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-md">
+    <Dialog open={isOpen} onOpenChange={open => !open && onClose()}>
+      <DialogContent className="sm:max-w-[550px]">
         <DialogHeader>
-          <DialogTitle>
-            {existingBinding ? "Editar Vinculação" : "Atribuir Espaço"}
-          </DialogTitle>
+          <DialogTitle>Vincular Espaço a Cliente</DialogTitle>
         </DialogHeader>
-        
-        {space && (
-          <SpaceBinderModalContent 
-            space={space}
-            selectedClientId={selectedClientId}
-            setSelectedClientId={setSelectedClientId}
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            contractId={contractId}
-            unitPrice={unitPrice}
-            startDate={startDate}
-            endDate={endDate}
-            existingBinding={existingBinding}
-            isLoadingContract={isLoadingContract}
-            activeContract={activeContract}
-            onClose={onClose}
-            handleSave={handleSave}
-            handleUnbind={handleUnbind}
-            bindSpace={bindSpace}
-            unbindSpace={unbindSpace}
-          />
-        )}
+        <SpaceBinderModalContent space={space} onClose={onClose} />
       </DialogContent>
     </Dialog>
   );

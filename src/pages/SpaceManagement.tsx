@@ -32,9 +32,9 @@ export default function SpaceManagement() {
     const isSpaceBound = spaceBindings.some(binding => binding.spaceId === space.id);
     
     if (isSpaceBound) {
-      setIsBinderOpen(true);
-    } else {
       setIsDetailsOpen(true);
+    } else {
+      setIsDetailsOpen(true); // Alterado para mostrar sempre os detalhes primeiro
     }
   };
   
