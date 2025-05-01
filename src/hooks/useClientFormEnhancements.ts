@@ -4,7 +4,7 @@ import { useCatalog } from "@/hooks/useCatalog";
 import { useQuery } from "@tanstack/react-query";
 import { persistence } from "@/integrations/persistence";
 import { Location, SpaceBinding } from "@/types";
-import { ServiceType } from "@/constants/serviceOptions";
+import { SERVICE_OPTIONS, ServiceType } from "@/constants/serviceOptions";
 
 export function useClientFormEnhancements() {
   const catalog = useCatalog();
@@ -36,11 +36,11 @@ export function useClientFormEnhancements() {
     
     if (planType === 'sala_privativa') {
       filteredSpaces = spaces.filter(space => 
-        space.type === 'private_room' || space.type === 'office'
+        space.type === 'sala_privativa' || space.type === 'endereco_fiscal'
       );
     } else if (planType === 'estacao_fixa') {
       filteredSpaces = spaces.filter(space => 
-        space.type === 'workstation' || space.type === 'desk'
+        space.type === 'estacao_fixa' || space.type === 'estacao'
       );
     }
     
