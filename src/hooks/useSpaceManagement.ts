@@ -32,6 +32,7 @@ export function useUpdateSpace() {
       // Invalidate queries para recarregar os dados
       queryClient.invalidateQueries({ queryKey: ['locations'] });
       queryClient.invalidateQueries({ queryKey: ['spaces', 'bindings'] });
+      toast.success("Informações atualizadas com sucesso");
     },
     
     onError: (error) => {

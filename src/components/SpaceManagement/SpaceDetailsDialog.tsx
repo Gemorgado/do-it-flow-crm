@@ -1,15 +1,16 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Location, ClientService } from "@/types";
+import { Location, ClientService, SpaceBinding } from "@/types";
 import { useSpaceBindings } from "@/hooks/useSpaceBindings";
 import { useClients } from "@/hooks/useClients";
 import { useUpdateSpace } from "@/hooks/useSpaceManagement";
 import { toast } from "sonner";
+import { format } from "date-fns";
 
 interface SpaceDetailsDialogProps {
   space: Location;
@@ -34,19 +35,29 @@ export function SpaceDetailsDialog({
   const [area, setArea] = useState<string>(space.area ? String(space.area) : "");
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [unitPrice, setUnitPrice] = useState<string>("");
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
 
   // Check if this space is bound to a client
   const binding = bindings.find(b => b.spaceId === space.id);
   const client = binding ? clients.find(c => c.id === binding.clientId) : null;
   
   // Reset state when dialog opens with new space
-  React.useEffect(() => {
-    setArea(space.area ? String(space.area) : "");
-    setIsEditing(false);
-    if (binding?.unitPrice) {
-      setUnitPrice(String(binding.unitPrice));
-    } else {
-      setUnitPrice("");
+  useEffect(() => {
+    if (space) {
+      setArea(space.area ? String(space.area) : "");
+      setIsEditing(false);
+      
+      if (binding) {
+        // Initialize binding-related fields if they exist
+        setUnitPrice(binding.unitPrice ? String(binding.unitPrice) : "");
+        setStartDate(binding.startDate || "");
+        setEndDate(binding.endDate || "");
+      } else {
+        setUnitPrice("");
+        setStartDate("");
+        setEndDate("");
+      }
     }
   }, [space, binding]);
   
@@ -64,9 +75,11 @@ export function SpaceDetailsDialog({
       area: area ? parseFloat(area) : undefined
     };
     
-    const updatedBinding = binding && unitPrice ? {
+    const updatedBinding = binding ? {
       ...binding,
-      unitPrice: parseFloat(unitPrice)
+      unitPrice: unitPrice ? parseFloat(unitPrice) : binding.unitPrice,
+      startDate: startDate || binding.startDate,
+      endDate: endDate || binding.endDate
     } : null;
 
     updateSpace.mutate(
@@ -74,13 +87,19 @@ export function SpaceDetailsDialog({
       {
         onSuccess: () => {
           setIsEditing(false);
-          toast.success("Informações atualizadas com sucesso");
-        },
-        onError: () => {
-          toast.error("Erro ao atualizar informações");
         }
       }
     );
+  };
+
+  // Format date for display
+  const formatLocalDate = (dateString?: string) => {
+    if (!dateString) return "";
+    try {
+      return new Date(dateString).toLocaleDateString();
+    } catch (e) {
+      return dateString;
+    }
   };
   
   return (
@@ -138,6 +157,7 @@ export function SpaceDetailsDialog({
               <div className="bg-green-50 border border-green-200 rounded-md p-3">
                 <div className="font-medium">{client.name}</div>
                 {client.company && <div className="text-sm text-gray-600">{client.company}</div>}
+                
                 <div className="mt-2">
                   <Label htmlFor="unitPrice" className="text-xs font-medium text-gray-500">Valor Mensal (R$)</Label>
                   {isEditing ? (
@@ -159,9 +179,37 @@ export function SpaceDetailsDialog({
                     </p>
                   )}
                 </div>
-                <div className="text-xs text-gray-500 mt-2">
-                  Vinculado em {new Date(binding.boundAt).toLocaleDateString()}
-                </div>
+                
+                {isEditing ? (
+                  <div className="grid grid-cols-2 gap-2 mt-2">
+                    <div>
+                      <Label htmlFor="startDate" className="text-xs font-medium text-gray-500">Data Início</Label>
+                      <Input
+                        id="startDate"
+                        type="date"
+                        value={startDate ? startDate.substring(0, 10) : ""}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        className="mt-1 text-sm"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="endDate" className="text-xs font-medium text-gray-500">Data Fim</Label>
+                      <Input
+                        id="endDate"
+                        type="date"
+                        value={endDate ? endDate.substring(0, 10) : ""}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        className="mt-1 text-sm"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-xs text-gray-500 mt-2">
+                    {binding.startDate && <p>Início: {formatLocalDate(binding.startDate)}</p>}
+                    {binding.endDate && <p>Término: {formatLocalDate(binding.endDate)}</p>}
+                    <p>Vinculado em {formatLocalDate(binding.boundAt)}</p>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -191,7 +239,7 @@ export function SpaceDetailsDialog({
                 <Button variant="outline" onClick={() => setIsEditing(false)}>
                   Cancelar
                 </Button>
-                <Button onClick={handleSaveChanges}>
+                <Button onClick={handleSaveChanges} disabled={updateSpace.isPending}>
                   Salvar Alterações
                 </Button>
               </>
