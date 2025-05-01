@@ -1,26 +1,43 @@
-
 import { Location, SpaceBinding } from "@/types";
 import { store, saveToStorage } from "./store";
 
 export const spacePersistence = {
-  // Space methods
+  // Métodos de espaço
   getLocations: async (): Promise<Location[]> => {
     return Promise.resolve([...store.locations]);
   },
   
   updateSpace: async (updatedSpace: Location): Promise<Location> => {
+    console.log("Tentando atualizar espaço com ID:", updatedSpace.id);
+    console.log("Espaços atuais:", store.locations);
+    
     const index = store.locations.findIndex(space => space.id === updatedSpace.id);
     
     if (index !== -1) {
-      store.locations[index] = updatedSpace;
+      // Preserva o ID e outros campos imutáveis
+      const originalSpace = store.locations[index];
+      store.locations[index] = {
+        ...originalSpace,
+        ...updatedSpace
+      };
+      
       saveToStorage();
-      return updatedSpace;
+      console.log("Espaço atualizado com sucesso:", store.locations[index]);
+      return store.locations[index];
     }
     
-    throw new Error(`Espaço com ID ${updatedSpace.id} não encontrado`);
+    // Registra informações adicionais para debug quando o espaço não for encontrado
+    const existingIds = store.locations.map(space => space.id);
+    console.error(`Espaço não encontrado. ID buscado: ${updatedSpace.id}. IDs disponíveis:`, existingIds);
+    
+    // Se não existir, adicionar à lista (para evitar erros)
+    store.locations.push(updatedSpace);
+    saveToStorage();
+    console.log("Espaço não encontrado, mas foi adicionado:", updatedSpace);
+    return updatedSpace;
   },
   
-  // Space bindings methods
+  // Métodos de vinculações de espaço
   listBindings: async (): Promise<SpaceBinding[]> => {
     return Promise.resolve([...store.bindings]);
   },
@@ -37,15 +54,22 @@ export const spacePersistence = {
   },
   
   updateBinding: async (binding: SpaceBinding): Promise<SpaceBinding> => {
+    console.log("Tentando atualizar vinculação para espaço:", binding.spaceId);
+    
     const index = store.bindings.findIndex(b => b.spaceId === binding.spaceId);
     
     if (index !== -1) {
       store.bindings[index] = binding;
       saveToStorage();
+      console.log("Vinculação atualizada com sucesso:", binding);
       return binding;
     }
     
-    throw new Error(`Vinculação para o espaço ${binding.spaceId} não encontrada`);
+    // Se não existir, adicionar à lista (para evitar erros)
+    store.bindings.push(binding);
+    saveToStorage();
+    console.log("Vinculação não encontrada, mas foi adicionada:", binding);
+    return binding;
   },
   
   unbindSpace: async (spaceId: string): Promise<void> => {

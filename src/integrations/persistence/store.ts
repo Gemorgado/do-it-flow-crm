@@ -1,6 +1,7 @@
 
 import type { Client, Interaction, Lead, Location, SpaceBinding, Task } from "@/types";
 import type { ConexaSnapshot } from "../conexa/types";
+import { locations as mockLocations } from "@/data/locations";
 
 // Simula um armazenamento persistente
 export const store = {
@@ -29,7 +30,13 @@ export const loadFromStorage = () => {
     if (interactionsData) store.interactions = JSON.parse(interactionsData);
     
     const locationsData = localStorage.getItem('doitflow_locations');
-    if (locationsData) store.locations = JSON.parse(locationsData);
+    if (locationsData) {
+      store.locations = JSON.parse(locationsData);
+    } else {
+      // Se não houver dados armazenados, use os dados mockados
+      store.locations = [...mockLocations];
+      console.log("Usando dados mockados para localizações", store.locations.length);
+    }
     
     const bindingsData = localStorage.getItem('doitflow_bindings');
     if (bindingsData) store.bindings = JSON.parse(bindingsData);
@@ -38,6 +45,10 @@ export const loadFromStorage = () => {
     if (snapshotsData) store.snapshots = JSON.parse(snapshotsData);
   } catch (error) {
     console.error('Erro ao carregar dados do armazenamento local:', error);
+    
+    // Em caso de erro, garantir que temos pelo menos os dados mockados para localizações
+    store.locations = [...mockLocations];
+    console.log("Usando dados mockados após erro", store.locations.length);
   }
 };
 
@@ -51,10 +62,14 @@ export const saveToStorage = () => {
     localStorage.setItem('doitflow_locations', JSON.stringify(store.locations));
     localStorage.setItem('doitflow_bindings', JSON.stringify(store.bindings));
     localStorage.setItem('doitflow_snapshots', JSON.stringify(store.snapshots));
+    console.log("Dados salvos no localStorage com sucesso");
   } catch (error) {
     console.error('Erro ao salvar dados no armazenamento local:', error);
   }
 };
 
-// Carregar dados iniciais
+// Garantir que os dados sejam carregados no início
 loadFromStorage();
+
+// Log para debug
+console.log("Store inicializado com", store.locations.length, "localizações");

@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Location, SpaceBinding } from "@/types";
 import { persistence } from "@/integrations/persistence";
 import { toast } from "sonner";
+import { useEffect } from "react";
 
 interface SpaceUpdateData {
   space: Location;
@@ -10,34 +11,60 @@ interface SpaceUpdateData {
 }
 
 /**
- * Hook for updating space information
+ * Hook para atualizar informações de espaço
  */
 export function useUpdateSpace() {
   const queryClient = useQueryClient();
   
+  // Carregar as localizações para verificar se o espaço existe antes de tentar atualizar
+  useEffect(() => {
+    // Pré-carrega as localizações para garantir que temos dados atualizados
+    persistence.getLocations().catch(error => 
+      console.error("Erro ao carregar localizações:", error)
+    );
+  }, []);
+  
   return useMutation({
     mutationFn: async ({ space, binding }: SpaceUpdateData) => {
-      // Update the space first
-      await persistence.updateSpace(space);
+      console.log("Tentando atualizar espaço:", space);
       
-      // If there's a binding to update
-      if (binding) {
-        await persistence.updateBinding(binding);
+      try {
+        // Verificar se o espaço existe antes de atualizar
+        const locations = await persistence.getLocations();
+        const spaceExists = locations.some(loc => loc.id === space.id);
+        
+        if (!spaceExists) {
+          throw new Error(`Espaço com ID ${space.id} não encontrado na lista de espaços`);
+        }
+        
+        // Atualiza o espaço
+        await persistence.updateSpace(space);
+        
+        // Se houver um binding para atualizar
+        if (binding) {
+          await persistence.updateBinding(binding);
+        }
+        
+        return { space, binding };
+      } catch (error) {
+        console.error("Erro durante a atualização do espaço:", error);
+        throw error;
       }
-      
-      return { space, binding };
     },
     
-    onSuccess: () => {
-      // Invalidate queries to reload data
+    onSuccess: (data) => {
+      // Invalidar queries para recarregar dados
       queryClient.invalidateQueries({ queryKey: ['locations'] });
       queryClient.invalidateQueries({ queryKey: ['spaces', 'bindings'] });
       toast.success("Informações atualizadas com sucesso");
+      console.log("Espaço atualizado com sucesso:", data.space);
     },
     
-    onError: (error) => {
+    onError: (error: Error) => {
       console.error("Erro ao atualizar espaço:", error);
-      toast.error("Erro ao atualizar as informações do espaço");
+      toast.error("Erro ao atualizar as informações do espaço", {
+        description: error.message
+      });
     }
   });
 }
