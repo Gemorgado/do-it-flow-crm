@@ -1,5 +1,6 @@
 
 import * as z from "zod";
+import { ServiceType } from "@/types/service";
 
 export const clientFormSchema = z.object({
   id: z.string().optional(),

@@ -1,4 +1,6 @@
 
+import { ServiceType } from "@/types/service";
+
 export const SERVICE_OPTIONS = [
   { value: 'endereco_fiscal', label: 'Endereço Fiscal' },
   { value: 'estacao_flex',    label: 'Estação Flex'   },
@@ -8,4 +10,4 @@ export const SERVICE_OPTIONS = [
   { value: 'auditorio',       label: 'Auditório'      },
 ] as const;
 
-export type ServiceType = typeof SERVICE_OPTIONS[number]['value'];
+export { ServiceType };

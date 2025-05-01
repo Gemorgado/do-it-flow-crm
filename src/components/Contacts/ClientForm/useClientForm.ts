@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ClientFormValues, clientFormSchema, defaultValues } from "./schemas";
 import { useClientFormEnhancements } from "@/hooks/useClientFormEnhancements";
 import { persistence } from "@/integrations/persistence";
-import { ServiceType } from "@/constants/serviceOptions";
+import { ServiceType } from "@/types/service";
 import { Location, SpaceBinding } from "@/types";
 import { toast } from "@/hooks/use-toast";
 import { v4 as uuidv4 } from "uuid";
@@ -30,7 +30,7 @@ export function useClientForm({ onSuccess, initialData }: UseClientFormProps) {
   // Update available spaces when plan changes
   useEffect(() => {
     if (watchPlan === 'sala_privativa' || watchPlan === 'estacao_fixa') {
-      const spaces = getAvailableSpaces(watchPlan);
+      const spaces = getAvailableSpaces(watchPlan as ServiceType);
       setAvailableSpaces(spaces);
     } else {
       setAvailableSpaces([]);

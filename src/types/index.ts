@@ -1,3 +1,4 @@
+
 export interface Lead {
   id: string;
   name: string;
@@ -51,11 +52,9 @@ export interface Client {
   assignedTo?: string;
 }
 
-export type ServiceType = 
-  | "sala_privativa" 
-  | "estacao" 
-  | "endereco_fiscal" 
-  | "sala_reuniao";
+// Import and re-export ServiceType from our dedicated file
+import { ServiceType } from "./service";
+export type { ServiceType };
 
 export type ServiceStatus = 
   | "ativo" 
@@ -80,23 +79,16 @@ export interface ClientService {
 export interface Location {
   id: string;
   name: string;
-  type: ServiceType;
+  type: string;
   identifier: string;
   available: boolean;
   capacity?: number;
   area?: number;
 }
 
-// New interface for space bindings
-export interface SpaceBinding {
-  spaceId: string;          // id do elemento no mapa (sala ou desk)
-  clientId: string;
-  contractId: string;
-  boundAt: string;          // ISO datetime
-  unitPrice?: number;       // Contract price
-  startDate?: string;       // Contract start date
-  endDate?: string;         // Contract end date
-}
+// Import and re-export SpaceBinding from our dedicated file
+import { SpaceBinding } from "./space";
+export type { SpaceBinding };
 
 export interface Interaction {
   id: string;

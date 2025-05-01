@@ -11,6 +11,7 @@ import {
 import { UseFormReturn } from "react-hook-form";
 import { Location } from "@/types";
 import { ClientFormValues } from "../schemas";
+import { ServiceType } from "@/types/service";
 
 interface SpaceSelectionSectionProps {
   form: UseFormReturn<ClientFormValues>;
@@ -19,6 +20,7 @@ interface SpaceSelectionSectionProps {
 }
 
 export function SpaceSelectionSection({ form, watchPlan, availableSpaces }: SpaceSelectionSectionProps) {
+  // Check if the plan type requires space selection
   if (!(watchPlan === 'sala_privativa' || watchPlan === 'estacao_fixa')) {
     return null;
   }
