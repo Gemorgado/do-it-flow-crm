@@ -16,8 +16,27 @@ export interface ConexaCustomer {
   updatedAt: string;
 }
 
+// API-specific customer type
+export interface CustomerApi {
+  id: string;
+  name: string;
+  docNumber: string;
+  email?: string;
+  phone?: string;
+  updatedAt: string;
+}
+
 // Types for Conexa service
 export interface ConexaService {
+  id: string;
+  label: string;
+  category: string;
+  price: number;
+  updatedAt: string;
+}
+
+// API-specific service type
+export interface ServiceApi {
   id: string;
   label: string;
   category: string;
@@ -37,8 +56,27 @@ export interface ConexaContract {
   updatedAt: string;
 }
 
+// API-specific contract type
+export interface ContractApi {
+  id: string;
+  customerId: string;
+  serviceId: string;
+  status: 'active' | 'closed';
+  amount: number;
+  startDate: string;
+  endDate?: string;
+  updatedAt: string;
+}
+
 // Types for room occupation
 export interface ConexaRoomOccupation {
+  roomId: string;
+  contractId: string;
+  date: string; // ISO date format
+}
+
+// API-specific room occupation type
+export interface RoomOccupationApi {
   roomId: string;
   contractId: string;
   date: string; // ISO date format
