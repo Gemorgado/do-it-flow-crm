@@ -2,6 +2,7 @@
 import { queryClient } from "@/lib/queryClient";
 import { toast } from "@/hooks/use-toast";
 import { resetPipelineDemo } from "./resetPipelineDemo";
+import { store } from "@/integrations/persistence/store";
 
 /**
  * Remove dados de demonstração do storage local e, se houver,
@@ -53,15 +54,15 @@ export async function resetAllDemoData() {
   
   // Limpa também o store - para garantir que os dados fictícios sejam removidos
   try {
-    if (window.store) {
-      window.store.leads = [];
-      window.store.clients = [];
-      window.store.tasks = [];
-      window.store.interactions = [];
-      window.store.bindings = [];
-      window.store.snapshots = [];
-      console.log("✓ Store do aplicativo limpo");
-    }
+    // Limpa o store importado diretamente em vez de acessar via window
+    store.leads = [];
+    store.clients = [];
+    store.tasks = [];
+    store.interactions = [];
+    store.locations = [];
+    store.bindings = [];
+    store.snapshots = [];
+    console.log("✓ Store do aplicativo limpo");
   } catch (error) {
     console.warn("× Não foi possível limpar o store do aplicativo", error);
   }
