@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DateRange } from "react-day-picker";
 import { subDays } from "date-fns";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
+import { ResetAllData } from "@/components/ResetAllData";
 
 // Import report components
 import { OccupancyReport } from "@/components/Reports/OccupancyReport";
@@ -29,11 +30,14 @@ export default function GrowthReports() {
           <h1 className="text-3xl font-bold tracking-tight">Relatórios</h1>
           <p className="text-gray-500">Análise detalhada de ocupação, contratos e receitas com dados reais</p>
         </div>
-        <DateRangePicker
-          value={dateRange}
-          onValueChange={handleDateRangeChange}
-          align="end"
-        />
+        <div className="flex items-center gap-4">
+          <DateRangePicker
+            value={dateRange}
+            onValueChange={handleDateRangeChange}
+            align="end"
+          />
+          <ResetAllData />
+        </div>
       </div>
       
       <Tabs defaultValue="occupancy" className="space-y-6">

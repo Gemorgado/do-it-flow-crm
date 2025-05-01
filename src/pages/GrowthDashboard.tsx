@@ -7,6 +7,7 @@ import { subDays } from "date-fns";
 import type { ChartData } from "chart.js";
 import { PieSlice } from "@/types/pie";
 import { useProtectedRoute } from "@/modules/settings/users/hooks/useProtectedRoute";
+import { ResetAllData } from "@/components/ResetAllData";
 
 // Import our newly created components
 import { GrowthHeader } from "@/components/Growth/GrowthHeader";
@@ -82,7 +83,10 @@ export default function GrowthDashboard() {
 
   return (
     <div className="animate-fade-in space-y-6">
-      <GrowthHeader dateRange={dateRange} onDateRangeChange={handleDateRangeChange} />
+      <div className="flex justify-between items-center">
+        <GrowthHeader dateRange={dateRange} onDateRangeChange={handleDateRangeChange} />
+        <ResetAllData />
+      </div>
 
       {/* Métricas principais em cards */}
       <MetricsSummary metrics={typedMetrics} />

@@ -9,7 +9,7 @@ export function ResetAllData() {
   const [isResetting, setIsResetting] = useState(false);
   
   const handleResetAllData = async () => {
-    if (confirm("⚠️ ATENÇÃO: Esta ação irá apagar TODOS os dados fictícios da plataforma. Esta ação é irreversível. Deseja continuar?")) {
+    if (confirm("⚠️ ATENÇÃO: Esta ação irá apagar TODOS os dados fictícios da plataforma (Dashboard, Growth, Relatórios, Pipeline, etc). Esta ação é irreversível. Deseja continuar?")) {
       setIsResetting(true);
       try {
         await resetAllDemoData();
@@ -47,7 +47,7 @@ export function ResetAllData() {
       ) : (
         <>
           <Trash2 className="h-4 w-4" />
-          Limpar Todos os Dados
+          Limpar Dados
         </>
       )}
     </Button>

@@ -23,6 +23,9 @@ export async function resetAllDemoData() {
     "conexa_snapshot", "spaceBindings", "space_bindings", "import_templates",
     // Growth e dados de marketing
     "growth_data", "campaigns", "marketing_data", 
+    // Store do DoitFlow
+    "doitflow_leads", "doitflow_clients", "doitflow_tasks", "doitflow_interactions",
+    "doitflow_locations", "doitflow_bindings", "doitflow_snapshots",
     // Usuários e preferências
     "users", "user_preferences", "preferences"
   ];
@@ -47,6 +50,21 @@ export async function resetAllDemoData() {
   /* 4. Cache React-Query: limpa tudo ------------------------- */
   queryClient.clear();
   console.log("✓ Cache React Query limpo");
+  
+  // Limpa também o store - para garantir que os dados fictícios sejam removidos
+  try {
+    if (window.store) {
+      window.store.leads = [];
+      window.store.clients = [];
+      window.store.tasks = [];
+      window.store.interactions = [];
+      window.store.bindings = [];
+      window.store.snapshots = [];
+      console.log("✓ Store do aplicativo limpo");
+    }
+  } catch (error) {
+    console.warn("× Não foi possível limpar o store do aplicativo", error);
+  }
   
   // Útil para debugging
   console.log("resetAllDemoData concluído com sucesso");
