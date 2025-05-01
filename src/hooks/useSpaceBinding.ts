@@ -6,6 +6,7 @@ import { Location, SpaceBinding } from "@/types";
 import { toast } from "sonner";
 
 export function useSpaceBinding(space: Location | null, onClose: () => void) {
+  // State for client selection and search
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   
@@ -15,9 +16,11 @@ export function useSpaceBinding(space: Location | null, onClose: () => void) {
   const [endDate, setEndDate] = useState<string | null>(null);
   const [contractId, setContractId] = useState<string | null>(null);
   
+  // Get existing bindings and client's contract
   const { data: bindings = [] } = useSpaceBindings();
   const { data: activeContract, isLoading: isLoadingContract } = useClientActiveContract(selectedClientId);
   
+  // Get mutation functions for binding/unbinding spaces
   const bindSpace = useBindSpace();
   const unbindSpace = useUnbindSpace();
   

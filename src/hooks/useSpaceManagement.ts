@@ -10,17 +10,17 @@ interface SpaceUpdateData {
 }
 
 /**
- * Hook para atualizar informações de um espaço
+ * Hook for updating space information
  */
 export function useUpdateSpace() {
   const queryClient = useQueryClient();
   
   return useMutation({
     mutationFn: async ({ space, binding }: SpaceUpdateData) => {
-      // Atualiza o espaço primeiro
+      // Update the space first
       await persistence.updateSpace(space);
       
-      // Se houver um binding para atualizar
+      // If there's a binding to update
       if (binding) {
         await persistence.updateBinding(binding);
       }
@@ -29,7 +29,7 @@ export function useUpdateSpace() {
     },
     
     onSuccess: () => {
-      // Invalidate queries para recarregar os dados
+      // Invalidate queries to reload data
       queryClient.invalidateQueries({ queryKey: ['locations'] });
       queryClient.invalidateQueries({ queryKey: ['spaces', 'bindings'] });
       toast.success("Informações atualizadas com sucesso");
