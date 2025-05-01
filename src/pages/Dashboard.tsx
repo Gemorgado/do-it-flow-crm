@@ -19,6 +19,7 @@ import { ClientRevenueCard } from "@/components/Dashboard/ClientRevenueCard";
 import { ChartsSection } from "@/components/Dashboard/ChartsSection";
 import { TasksLeadsSection } from "@/components/Dashboard/TasksLeadsSection";
 import { transformChartData, transformPieChartData } from "@/components/Dashboard/ChartDataUtils";
+import { ResetAllData } from "@/components/ResetAllData";
 
 export default function Dashboard() {
   // Transform chart data for the components
@@ -130,7 +131,10 @@ export default function Dashboard() {
 
   return (
     <div className="animate-fade-in">
-      <DashboardHeader />
+      <div className="flex justify-between items-center mb-4">
+        <DashboardHeader />
+        <ResetAllData />
+      </div>
       
       <StatCardsSection stats={dashboardStats} />
 
