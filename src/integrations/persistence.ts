@@ -1,4 +1,5 @@
 import { Client, Interaction, Lead, Location, SpaceBinding, Task } from "@/types";
+import type { ConexaSnapshot } from "./conexa/types";
 
 // Simula um armazenamento persistente
 const store = {
@@ -7,7 +8,8 @@ const store = {
   tasks: [] as Task[],
   interactions: [] as Interaction[],
   locations: [] as Location[],
-  bindings: [] as SpaceBinding[]
+  bindings: [] as SpaceBinding[],
+  snapshots: [] as ConexaSnapshot[]
 };
 
 // Carregar dados do localStorage, se existirem
@@ -30,6 +32,9 @@ const loadFromStorage = () => {
     
     const bindingsData = localStorage.getItem('doitflow_bindings');
     if (bindingsData) store.bindings = JSON.parse(bindingsData);
+    
+    const snapshotsData = localStorage.getItem('doitflow_snapshots');
+    if (snapshotsData) store.snapshots = JSON.parse(snapshotsData);
   } catch (error) {
     console.error('Erro ao carregar dados do armazenamento local:', error);
   }
@@ -44,6 +49,7 @@ const saveToStorage = () => {
     localStorage.setItem('doitflow_interactions', JSON.stringify(store.interactions));
     localStorage.setItem('doitflow_locations', JSON.stringify(store.locations));
     localStorage.setItem('doitflow_bindings', JSON.stringify(store.bindings));
+    localStorage.setItem('doitflow_snapshots', JSON.stringify(store.snapshots));
   } catch (error) {
     console.error('Erro ao salvar dados no armazenamento local:', error);
   }
@@ -54,6 +60,7 @@ loadFromStorage();
 
 // Persistência simulada para leads, clientes, tarefas e interações
 export const persistence = {
+  
   listLeads: async (): Promise<Lead[]> => {
     return Promise.resolve([...store.leads]);
   },
@@ -113,7 +120,7 @@ export const persistence = {
     saveToStorage();
     return Promise.resolve();
   },
-
+  
   listTasks: async (): Promise<Task[]> => {
     return Promise.resolve([...store.tasks]);
   },
@@ -224,5 +231,42 @@ export const persistence = {
     saveToStorage();
     
     return Promise.resolve();
+  },
+  
+  // Métodos para snapshots do Conexa
+  upsertSnapshot: async (snapshot: ConexaSnapshot): Promise<void> => {
+    // Adiciona ou atualiza o snapshot
+    const syncDate = snapshot.syncedAt;
+    const existingIndex = store.snapshots.findIndex(snap => snap.syncedAt === syncDate);
+    
+    if (existingIndex !== -1) {
+      store.snapshots[existingIndex] = snapshot;
+    } else {
+      store.snapshots.push(snapshot);
+    }
+    
+    // Manter apenas o snapshot mais recente, limitando o armazenamento
+    if (store.snapshots.length > 5) {
+      store.snapshots.sort((a, b) => 
+        new Date(b.syncedAt).getTime() - new Date(a.syncedAt).getTime()
+      );
+      store.snapshots = store.snapshots.slice(0, 5);
+    }
+    
+    saveToStorage();
+    return Promise.resolve();
+  },
+  
+  getLastSnapshot: async (): Promise<ConexaSnapshot | null> => {
+    if (store.snapshots.length === 0) {
+      return Promise.resolve(null);
+    }
+    
+    // Ordenar snapshots por data e retornar o mais recente
+    const sortedSnapshots = [...store.snapshots].sort(
+      (a, b) => new Date(b.syncedAt).getTime() - new Date(a.syncedAt).getTime()
+    );
+    
+    return Promise.resolve(sortedSnapshots[0]);
   }
 };
