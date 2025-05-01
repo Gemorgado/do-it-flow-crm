@@ -3,7 +3,7 @@ import { SpaceBinding, Location } from "@/types";
 import { useBindSpace, useUnbindSpace } from "@/hooks/useSpaceBindings";
 import { toast } from "sonner";
 
-interface SpaceBindingFormProps {
+interface SpaceBindingActionsProps {
   space: Location | null;
   selectedClientId: string | null;
   contractId: string | null;
@@ -14,9 +14,9 @@ interface SpaceBindingFormProps {
 }
 
 /**
- * Hook to handle form submission and validation for space binding
+ * Hook to handle actions for space binding (save, unbind)
  */
-export function useSpaceBindingForm({
+export function useSpaceBindingActions({
   space,
   selectedClientId,
   contractId,
@@ -24,7 +24,7 @@ export function useSpaceBindingForm({
   startDate,
   endDate,
   onClose
-}: SpaceBindingFormProps) {
+}: SpaceBindingActionsProps) {
   const bindSpace = useBindSpace();
   const unbindSpace = useUnbindSpace();
   

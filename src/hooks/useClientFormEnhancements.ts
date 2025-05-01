@@ -28,7 +28,7 @@ export function useClientFormEnhancements() {
   }));
 
   // Get available spaces based on selected plan type
-  const getAvailableSpaces = (planType: ServiceType | undefined): Location[] => {
+  const getAvailableSpaces = (planType: ServiceType): Location[] => {
     if (!planType) return [];
 
     // Filter spaces based on plan type

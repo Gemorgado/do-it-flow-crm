@@ -1,19 +1,28 @@
 
 import { useState, useEffect } from "react";
 import { useClientActiveContract } from "@/hooks/useClients";
+import { SpaceBinding } from "@/types";
 
 /**
- * Hook to handle client selection and manage contract details
+ * Hook to manage contract details for space binding
  */
-export function useClientContractSelection(initialClientId: string | null = null) {
-  const [selectedClientId, setSelectedClientId] = useState<string | null>(initialClientId);
-  const [searchQuery, setSearchQuery] = useState("");
-  
+export function useContractDetails(
+  selectedClientId: string | null,
+  existingBinding: SpaceBinding | null
+) {
   // Contract details state
-  const [unitPrice, setUnitPrice] = useState<number | null>(null);
-  const [startDate, setStartDate] = useState<string | null>(null);
-  const [endDate, setEndDate] = useState<string | null>(null);
-  const [contractId, setContractId] = useState<string | null>(null);
+  const [unitPrice, setUnitPrice] = useState<number | null>(
+    existingBinding?.unitPrice || null
+  );
+  const [startDate, setStartDate] = useState<string | null>(
+    existingBinding?.startDate || null
+  );
+  const [endDate, setEndDate] = useState<string | null>(
+    existingBinding?.endDate || null
+  );
+  const [contractId, setContractId] = useState<string | null>(
+    existingBinding?.contractId || null
+  );
   
   // Get client's active contract
   const { data: activeContract, isLoading: isLoadingContract } = useClientActiveContract(selectedClientId);
@@ -21,10 +30,13 @@ export function useClientContractSelection(initialClientId: string | null = null
   // Update contract details when active contract changes
   useEffect(() => {
     if (!activeContract) {
-      setContractId(null);
-      setUnitPrice(null);
-      setStartDate(null);
-      setEndDate(null);
+      // Don't reset if we have an existing binding
+      if (!existingBinding) {
+        setContractId(null);
+        setUnitPrice(null);
+        setStartDate(null);
+        setEndDate(null);
+      }
       return;
     }
     
@@ -33,13 +45,9 @@ export function useClientContractSelection(initialClientId: string | null = null
     setUnitPrice(activeContract.value);
     setStartDate(activeContract.contractStart);
     setEndDate(activeContract.contractEnd);
-  }, [activeContract]);
+  }, [activeContract, existingBinding]);
   
   return {
-    selectedClientId,
-    setSelectedClientId,
-    searchQuery,
-    setSearchQuery,
     contractId,
     setContractId,
     unitPrice,

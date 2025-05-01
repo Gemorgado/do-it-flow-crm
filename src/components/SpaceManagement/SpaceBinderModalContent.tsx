@@ -28,6 +28,7 @@ interface SpaceBinderModalContentProps {
   handleUnbind: () => void;
   bindSpace: UseMutationResult<any, Error, SpaceBinding>;
   unbindSpace: UseMutationResult<any, Error, string>;
+  canSave: boolean;
 }
 
 export function SpaceBinderModalContent({
@@ -47,7 +48,8 @@ export function SpaceBinderModalContent({
   handleSave,
   handleUnbind,
   bindSpace,
-  unbindSpace
+  unbindSpace,
+  canSave
 }: SpaceBinderModalContentProps) {
   const { data: clientsList = [] } = useClients();
   
@@ -56,9 +58,6 @@ export function SpaceBinderModalContent({
     client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     (client.company && client.company.toLowerCase().includes(searchQuery.toLowerCase()))
   );
-  
-  // Whether we can save - requires client and contract
-  const canSave = !!selectedClientId && !!contractId && !isLoadingContract;
 
   return (
     <div className="space-y-4">

@@ -6,7 +6,7 @@ import { ClientFormValues, clientFormSchema, defaultValues } from "./schemas";
 import { useClientFormEnhancements } from "@/hooks/useClientFormEnhancements";
 import { persistence } from "@/integrations/persistence";
 import { ServiceType } from "@/constants/serviceOptions";
-import { Location } from "@/types";
+import { Location, SpaceBinding } from "@/types";
 import { toast } from "@/hooks/use-toast";
 import { v4 as uuidv4 } from "uuid";
 import { format } from "date-fns";
@@ -30,7 +30,7 @@ export function useClientForm({ onSuccess, initialData }: UseClientFormProps) {
   // Update available spaces when plan changes
   useEffect(() => {
     if (watchPlan === 'sala_privativa' || watchPlan === 'estacao_fixa') {
-      const spaces = getAvailableSpaces(watchPlan as ServiceType);
+      const spaces = getAvailableSpaces(watchPlan);
       setAvailableSpaces(spaces);
     } else {
       setAvailableSpaces([]);
@@ -63,17 +63,17 @@ export function useClientForm({ onSuccess, initialData }: UseClientFormProps) {
       if (data.selectedSpaceId && (data.plan === 'sala_privativa' || data.plan === 'estacao_fixa')) {
         try {
           // Create a binding between client and space
-          await persistence.bindSpace({
+          const binding: SpaceBinding = {
             spaceId: data.selectedSpaceId,
             clientId: formattedData.id,
             contractId: uuidv4(),
             boundAt: new Date().toISOString(),
             unitPrice: data.contractValue || null,
             startDate: data.contractStart ? format(data.contractStart, 'yyyy-MM-dd') : null,
-            endDate: data.contractEnd ? format(data.contractEnd, 'yyyy-MM-dd') : null,
-            notes: `Bound via client creation form on ${new Date().toLocaleDateString()}`
-          });
+            endDate: data.contractEnd ? format(data.contractEnd, 'yyyy-MM-dd') : null
+          };
           
+          await persistence.bindSpace(binding);
           console.log("Space binding created successfully");
         } catch (error) {
           console.error("Error binding space to client:", error);
