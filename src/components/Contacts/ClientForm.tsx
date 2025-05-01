@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller } from "react-hook-form";
 import * as z from "zod";
@@ -35,6 +35,9 @@ import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 import { v4 as uuidv4 } from "uuid";
+import { useClientFormEnhancements } from "@/hooks/useClientFormEnhancements";
+import { Location } from "@/types";
+import { persistence } from "@/integrations/persistence";
 
 const clientFormSchema = z.object({
   id: z.string().optional(),
@@ -55,6 +58,7 @@ const clientFormSchema = z.object({
   contractValue: z.number().min(0).optional(),
   dueDay: z.number().int().min(1).max(31).optional(),
   privateRoom: z.string().optional(),
+  selectedSpaceId: z.string().optional(),
   billingEmails: z.string().optional(),
   lastReadjustDate: z.date().optional(),
   readjustIndex: z.string().optional(),
@@ -89,12 +93,27 @@ interface ClientFormProps {
 }
 
 export function ClientForm({ onSuccess, onCancel, initialData }: ClientFormProps) {
+  const { planOptions, getAvailableSpaces } = useClientFormEnhancements();
+  const [availableSpaces, setAvailableSpaces] = useState<Location[]>([]);
+
   const form = useForm<ClientFormValues>({
     resolver: zodResolver(clientFormSchema),
     defaultValues: initialData || defaultValues,
   });
 
-  const handleSubmit = (data: ClientFormValues) => {
+  const watchPlan = form.watch("plan");
+  
+  // Update available spaces when plan changes
+  useEffect(() => {
+    if (watchPlan === 'sala_privativa' || watchPlan === 'estacao_fixa') {
+      const spaces = getAvailableSpaces(watchPlan as ServiceType);
+      setAvailableSpaces(spaces);
+    } else {
+      setAvailableSpaces([]);
+    }
+  }, [watchPlan, getAvailableSpaces]);
+
+  const handleSubmit = async (data: ClientFormValues) => {
     try {
       // Process the billingEmails string to array
       const billingEmailsArray = data.billingEmails 
@@ -116,7 +135,28 @@ export function ClientForm({ onSuccess, onCancel, initialData }: ClientFormProps
         services: initialData?.services || []
       };
 
-      // In a real application, this would make an API call
+      // Handle space binding if a space was selected
+      if (data.selectedSpaceId && (data.plan === 'sala_privativa' || data.plan === 'estacao_fixa')) {
+        try {
+          // Create a binding between client and space
+          await persistence.bindSpace({
+            id: uuidv4(),
+            spaceId: data.selectedSpaceId,
+            clientId: formattedData.id,
+            startDate: data.contractStart ? format(data.contractStart, 'yyyy-MM-dd') : new Date().toISOString().split('T')[0],
+            endDate: data.contractEnd ? format(data.contractEnd, 'yyyy-MM-dd') : undefined,
+            status: 'active',
+            notes: `Bound via client creation form on ${new Date().toLocaleDateString()}`
+          });
+          
+          console.log("Space binding created successfully");
+        } catch (error) {
+          console.error("Error binding space to client:", error);
+          // Continue with client creation even if binding fails
+        }
+      }
+
+      // In a real application, this would make an API call to save the client
       console.log("Client form submitted:", formattedData);
       
       // Show success message
@@ -185,10 +225,11 @@ export function ClientForm({ onSuccess, onCancel, initialData }: ClientFormProps
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="sala_privativa">Sala Privativa</SelectItem>
-                    <SelectItem value="estacao">Estação</SelectItem>
-                    <SelectItem value="endereco_fiscal">Endereço Fiscal</SelectItem>
-                    <SelectItem value="sala_reuniao">Sala de Reunião</SelectItem>
+                    {planOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -226,6 +267,49 @@ export function ClientForm({ onSuccess, onCancel, initialData }: ClientFormProps
             )}
           />
         </div>
+
+        {/* Space selection when plan is sala_privativa or estacao_fixa */}
+        {(watchPlan === 'sala_privativa' || watchPlan === 'estacao_fixa') && (
+          <FormField
+            control={form.control}
+            name="selectedSpaceId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {watchPlan === 'sala_privativa' ? 'Selecione uma sala' : 'Selecione uma estação'}
+                </FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder={
+                        availableSpaces.length > 0 
+                          ? "Selecione um espaço" 
+                          : "Nenhum espaço disponível"
+                      } />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {availableSpaces.length > 0 ? (
+                      availableSpaces.map((space) => (
+                        <SelectItem key={space.id} value={space.id}>
+                          {space.name || space.id}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem value="none" disabled>
+                        Nenhum espaço disponível
+                      </SelectItem>
+                    )}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
