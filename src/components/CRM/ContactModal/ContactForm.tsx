@@ -19,16 +19,18 @@ interface ContactFormProps {
 export function ContactForm({ onSubmit, isSubmitting }: ContactFormProps) {
   const { 
     form, 
-    handleSubmit, 
     handlePhoneChange, 
     handleIdNumberChange 
   } = useContactForm({ 
-    onSuccess: () => {} // We're using the parent's onSubmit instead
+    onSuccess: () => {} // We'll use the parent's onSubmit instead
   });
 
-  // We'll use the form from the hook but the submission handler from props
-  // to maintain compatibility with the existing code
-  const handleFormSubmit = form.handleSubmit(onSubmit);
+  // Use the form from the hook but the submission handler from props
+  // to ensure data is saved correctly
+  const handleFormSubmit = form.handleSubmit(async (data) => {
+    console.log("ContactForm - Form submitted with data:", data);
+    await onSubmit(data);
+  });
   
   return (
     <Form {...form}>
@@ -54,7 +56,7 @@ export function ContactForm({ onSubmit, isSubmitting }: ContactFormProps) {
             disabled={isSubmitting}
             style={{ backgroundColor: "white", color: "#333", opacity: 1 }}
           >
-            Cancel
+            Cancelar
           </Button>
           <Button 
             type="submit" 
@@ -63,7 +65,7 @@ export function ContactForm({ onSubmit, isSubmitting }: ContactFormProps) {
           >
             {isSubmitting ? (
               <>
-                <span className="opacity-0">Save</span>
+                <span className="opacity-0">Salvar</span>
                 <span className="absolute inset-0 flex items-center justify-center">
                   <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -71,7 +73,7 @@ export function ContactForm({ onSubmit, isSubmitting }: ContactFormProps) {
                   </svg>
                 </span>
               </>
-            ) : "Save"}
+            ) : "Salvar"}
           </Button>
         </DialogFooter>
       </form>

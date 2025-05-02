@@ -4,6 +4,8 @@ import { useContactModal } from "../hooks/useModalContext";
 import { ContactModalValues } from "@/schemas/contactFormSchemas";
 import { ModalWrapper } from "./ModalWrapper";
 import { ContactForm } from "./ContactForm";
+import { toast } from "sonner";
+import { contactPersistence } from "@/integrations/persistence/contactPersistence";
 
 /**
  * Modal for creating new contacts
@@ -15,17 +17,27 @@ export function ContactModal() {
   const handleSubmit = async (data: ContactModalValues) => {
     setIsSubmitting(true);
     try {
-      // The actual submission logic has been moved to the useContactForm hook
-      // We're just calling the form's submit handler here, which in turn calls the hook's submit handler
-      await new Promise(resolve => setTimeout(resolve, 500)); // Adding a small delay for UX
+      console.log("ContactModal - Submitting contact data:", data);
+      // Persist the contact data directly from here
+      await contactPersistence.createContact(data);
+      
+      toast.success("Contato criado com sucesso", {
+        description: "O contato foi adicionado ao sistema"
+      });
+      
       close();
+    } catch (error) {
+      console.error("Erro ao criar contato:", error);
+      toast.error("Erro ao criar contato", {
+        description: "Ocorreu um erro ao processar sua solicitação."
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <ModalWrapper isOpen={isOpen} onClose={close} title="New Contact">
+    <ModalWrapper isOpen={isOpen} onClose={close} title="Novo Contato">
       <ContactForm onSubmit={handleSubmit} isSubmitting={isSubmitting} />
     </ModalWrapper>
   );

@@ -4,8 +4,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { ContactModalValues, contactModalSchema } from "@/schemas/contactFormSchemas";
-import { toast } from "sonner";
-import { contactPersistence } from "@/integrations/persistence/contactPersistence";
 
 interface UseContactFormProps {
   onSuccess?: () => void;
@@ -66,36 +64,9 @@ export function useContactForm({ onSuccess }: UseContactFormProps = {}) {
     form.setValue("idNumber", formattedValue);
   };
 
-  // Form submission handler
-  const handleSubmit = async (data: ContactModalValues) => {
-    console.log("Submitting form data:", data);
-    
-    try {
-      setIsSubmitting(true);
-      // Use the local persistence system
-      await contactPersistence.createContact(data);
-      
-      toast.success("Contact created successfully", {
-        description: "The contact has been added to the system"
-      });
-      
-      if (onSuccess) {
-        onSuccess();
-      }
-    } catch (error) {
-      console.error("Error in onSubmit:", error);
-      toast.error("Error creating contact", {
-        description: "An error occurred while processing your request."
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   return {
     form,
     isSubmitting,
-    handleSubmit: form.handleSubmit(handleSubmit),
     handlePhoneChange,
     handleIdNumberChange,
   };
