@@ -11,10 +11,10 @@ export function ResetAllData() {
   const [isResetting, setIsResetting] = useState(false);
 
   const handleReset = async () => {
-    if (confirm("Tem certeza que deseja zerar TODOS os dados fictícios da plataforma? Esta ação não pode ser desfeita.")) {
-      setIsResetting(true);
-      
-      try {
+    try {
+      if (window.confirm("Tem certeza que deseja zerar TODOS os dados fictícios da plataforma? Esta ação não pode ser desfeita.")) {
+        setIsResetting(true);
+        
         // Reset all demo data
         await resetAllDemoData();
         
@@ -33,17 +33,16 @@ export function ResetAllData() {
         setTimeout(() => {
           window.location.reload();
         }, 1500);
-        
-      } catch (error) {
-        console.error("Erro ao limpar dados:", error);
-        toast({
-          title: "Erro ao limpar dados",
-          description: "Ocorreu um erro ao limpar os dados de demonstração.",
-          variant: "destructive"
-        });
-      } finally {
-        setIsResetting(false);
       }
+    } catch (error) {
+      console.error("Erro ao limpar dados:", error);
+      toast({
+        title: "Erro ao limpar dados",
+        description: "Ocorreu um erro ao limpar os dados de demonstração.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsResetting(false);
     }
   };
 

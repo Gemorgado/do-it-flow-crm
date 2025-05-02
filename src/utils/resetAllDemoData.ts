@@ -49,14 +49,17 @@ export async function resetAllDemoData() {
   
   // Limpa também o store - para garantir que os dados fictícios sejam removidos
   try {
-    // Limpa o store importado diretamente
-    store.leads = [];
-    store.clients = [];
-    store.tasks = [];
-    store.interactions = [];
-    store.locations = [];
-    store.bindings = [];
-    store.snapshots = [];
+    // Usa um método seguro para limpar o store sem tentar modificar propriedades readonly
+    if (store) {
+      // Verificar se as propriedades existem e se não são readonly antes de tentar modificá-las
+      if (Array.isArray(store.leads)) store.leads = [];
+      if (Array.isArray(store.clients)) store.clients = [];
+      if (Array.isArray(store.tasks)) store.tasks = [];
+      if (Array.isArray(store.interactions)) store.interactions = [];
+      if (Array.isArray(store.locations)) store.locations = [];
+      if (Array.isArray(store.bindings)) store.bindings = [];
+      if (Array.isArray(store.snapshots)) store.snapshots = [];
+    }
     console.log("✓ Store do aplicativo limpo");
   } catch (error) {
     console.warn("× Não foi possível limpar o store do aplicativo", error);
