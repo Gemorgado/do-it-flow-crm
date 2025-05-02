@@ -5,15 +5,15 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCreateReservation } from "@/hooks/useReservations";
 import { formatISO, parseISO } from "date-fns";
 import { toast } from "@/hooks/use-toast";
-import { Resource } from "@/constants/resources";
-import { RESOURCES } from "@/constants/resources";
+import { Resource, RESOURCES } from "@/constants/resources";
 import { getResourceColor } from "./util";
 import { useClients } from "@/hooks/useClients";
 import { Combobox, ComboboxOption } from "@/components/ui/combobox";
+import * as SelectPrimitive from "@radix-ui/react-select";
+import { Check, ChevronDown } from "lucide-react";
 
 interface NewReservationDialogProps {
   isOpen: boolean;
@@ -25,23 +25,24 @@ interface NewReservationDialogProps {
 }
 
 export function NewReservationDialog({ isOpen, onClose, defaultValues }: NewReservationDialogProps) {
-  const [selectedResource, setSelectedResource] = useState<Resource>("meet1");
-  const { data: clients = [] } = useClients();
   const [selectedClient, setSelectedClient] = useState<ComboboxOption | null>(null);
+  const { data: clients = [] } = useClients();
 
   const form = useForm({
     defaultValues: {
       title: "",
+      resource: "meet1" as Resource, // Default resource
       start: defaultValues?.start ? parseISO(defaultValues.start).toISOString().slice(0, 16) : "",
       end: defaultValues?.end ? parseISO(defaultValues.end).toISOString().slice(0, 16) : ""
     },
   });
 
   const createReservation = useCreateReservation();
+  const selectedResource = form.watch("resource");
 
   const handleSubmit = async (values: any) => {
     try {
-      const isAuditorium = selectedResource === "auditorio";
+      const isAuditorium = values.resource === "auditorio";
       
       // If it's the auditorium, we need to validate the time range
       if (isAuditorium) {
@@ -75,7 +76,7 @@ export function NewReservationDialog({ isOpen, onClose, defaultValues }: NewRese
       }
 
       await createReservation.mutateAsync({
-        resource: selectedResource,
+        resource: values.resource,
         title: values.title,
         start: values.start,
         end: values.end,
@@ -121,44 +122,72 @@ export function NewReservationDialog({ isOpen, onClose, defaultValues }: NewRese
               )}
             />
             
-            <div className="grid grid-cols-1 gap-4">
-              <FormItem>
-                <FormLabel>Recurso</FormLabel>
-                <Select
-                  value={selectedResource}
-                  onValueChange={(value: Resource) => setSelectedResource(value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione um recurso" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {RESOURCES.map((resource) => (
-                      <SelectItem
-                        key={resource.id}
-                        value={resource.id}
-                        className="flex items-center"
+            <FormField
+              control={form.control}
+              name="resource"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Recurso</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <SelectPrimitive.Root
+                        value={field.value}
+                        onValueChange={field.onChange}
                       >
-                        <div className="flex items-center">
-                          <div
-                            className="w-3 h-3 rounded-full mr-2"
-                            style={{ backgroundColor: getResourceColor(resource.id) }}
-                          ></div>
-                          {resource.label}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </FormItem>
-            </div>
+                        <SelectPrimitive.Trigger
+                          className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          <SelectPrimitive.Value>
+                            {RESOURCES.find(r => r.id === field.value)?.label || "Selecione um recurso"}
+                          </SelectPrimitive.Value>
+                          <SelectPrimitive.Icon>
+                            <ChevronDown className="h-4 w-4 opacity-50" />
+                          </SelectPrimitive.Icon>
+                        </SelectPrimitive.Trigger>
+                        
+                        <SelectPrimitive.Portal>
+                          <SelectPrimitive.Content
+                            className="z-50 overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md animate-in fade-in-80"
+                            position="popper" 
+                            sideOffset={5}
+                          >
+                            <SelectPrimitive.Viewport className="p-1">
+                              {RESOURCES.map(resource => (
+                                <SelectPrimitive.Item
+                                  key={resource.id}
+                                  value={resource.id}
+                                  className="relative flex h-9 cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                >
+                                  <div className="flex items-center">
+                                    <div
+                                      className="w-3 h-3 rounded-full mr-2"
+                                      style={{ backgroundColor: getResourceColor(resource.id) }}
+                                    ></div>
+                                    <SelectPrimitive.ItemText>{resource.label}</SelectPrimitive.ItemText>
+                                  </div>
+                                  <SelectPrimitive.ItemIndicator className="absolute right-2">
+                                    <Check className="h-4 w-4" />
+                                  </SelectPrimitive.ItemIndicator>
+                                </SelectPrimitive.Item>
+                              ))}
+                            </SelectPrimitive.Viewport>
+                          </SelectPrimitive.Content>
+                        </SelectPrimitive.Portal>
+                      </SelectPrimitive.Root>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             
             <div className="grid grid-cols-1 gap-4">
               <FormItem>
                 <FormLabel>Cliente</FormLabel>
                 <Combobox
-                  options={clients}
+                  options={clients.map(client => ({ id: client.id, name: client.name }))}
                   selected={selectedClient}
-                  onSelect={(client: ComboboxOption) => setSelectedClient(client)}
+                  onSelect={(client) => setSelectedClient(client)}
                   getOptionLabel={(client) => client.name}
                   placeholder="Selecione o cliente"
                   searchPlaceholder="Buscar cliente..."
