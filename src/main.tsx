@@ -27,15 +27,18 @@ if (import.meta.env.DEV) {
   import('@radix-ui/react-select').then((radix) => {
     if (radix) {
       const OrigItem = radix.Item;
-      // Use a safer approach to replace the component
-      if (OrigItem) {
-        radix.Item = function(props) {
-          if (!props?.value || props.value === '') {
-            console.error('🛑 <Select.Item> sem value:', props.children);
-            // Removed debugger statement
-          }
-          return OrigItem(props);
-        };
+      // Instead of replacing the component directly, monkey patch it safely
+      if (OrigItem && typeof OrigItem === 'object') {
+        // This preserves the original component reference and its properties
+        const originalRender = OrigItem.render;
+        if (originalRender) {
+          OrigItem.render = function(props: any) {
+            if (!props?.value || props.value === '') {
+              console.error('🛑 <Select.Item> sem value:', props.children);
+            }
+            return originalRender.call(this, props);
+          };
+        }
       }
     }
   }).catch(e => console.error("Error setting up radix safeguard:", e));
