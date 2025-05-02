@@ -1,6 +1,6 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { renderHook, act } from '@/test/utils'; // Use our custom utils
 import { useAuth } from '../AuthProvider';
 import { MemoryRouter } from 'react-router-dom';
 import { AuthProvider } from '../AuthProvider';

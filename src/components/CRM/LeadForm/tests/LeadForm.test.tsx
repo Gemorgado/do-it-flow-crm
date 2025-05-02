@@ -1,6 +1,6 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@/test/utils'; // Use our custom utils
 import userEvent from '@testing-library/user-event';
 import { LeadForm } from '../LeadForm';
 import { leadPersistence } from '@/integrations/persistence/leadPersistence';
@@ -80,7 +80,6 @@ describe('LeadForm Component', () => {
   });
 
   // This is a more complex test that would require more setup
-  // In a real scenario, you'd want to test form submission
   it('should attempt to submit the form with valid data', async () => {
     render(
       <LeadForm 
@@ -99,7 +98,6 @@ describe('LeadForm Component', () => {
     await userEvent.click(submitButton);
     
     // In a real test, you'd want to wait for form submission and validation
-    // This is a simplified version
     await waitFor(() => {
       expect(leadPersistence.createLead).toHaveBeenCalled();
     });

@@ -27,6 +27,14 @@ const localStorageMock = (function() {
 Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 Object.defineProperty(window, 'sessionStorage', { value: localStorageMock });
 
+// Add fbq to window for Meta Pixel tests
+interface Window {
+  fbq: any;
+}
+
+// Mock global functions
+window.fbq = vi.fn((...args) => {});
+
 // Mock console methods if needed
 const originalConsoleError = console.error;
 console.error = (...args) => {
@@ -41,4 +49,5 @@ console.error = (...args) => {
 beforeEach(() => {
   window.localStorage.clear();
   window.sessionStorage.clear();
+  vi.clearAllMocks();
 });

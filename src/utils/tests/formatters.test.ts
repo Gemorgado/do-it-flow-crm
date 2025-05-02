@@ -1,6 +1,13 @@
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { trackMetaPixelEvent } from '../metaPixelUtils';
+
+// Declare types for window.fbq
+declare global {
+  interface Window {
+    fbq: any;
+  }
+}
 
 // Mock window.fbq
 let fbqCalls: any[] = [];
@@ -11,7 +18,7 @@ window.fbq = vi.fn((...args) => {
 describe('MetaPixel Utils', () => {
   beforeEach(() => {
     fbqCalls = [];
-    window.fbq.mockClear();
+    vi.clearAllMocks();
   });
 
   it('should call fbq with the correct parameters', () => {
