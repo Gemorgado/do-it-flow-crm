@@ -43,7 +43,11 @@ export function NewReservationDialog({ isOpen, onClose, defaultValues }: NewRese
   const createReservation = useCreateReservation();
   const selectedResource = form.watch("resource");
 
+  console.log("Current form values:", form.getValues());
+  console.log("Selected resource:", selectedResource);
+
   const handleSubmit = async (values: any) => {
+    console.log("Form submitted with values:", values);
     try {
       // Validate form data using the validation service
       const validationError = validateReservationForm({
@@ -84,7 +88,15 @@ export function NewReservationDialog({ isOpen, onClose, defaultValues }: NewRese
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[500px] z-50">
+      <DialogContent 
+        className="sm:max-w-[500px] z-50" 
+        style={{ 
+          backgroundColor: 'white',
+          opacity: 1,
+          zIndex: 110,
+          boxShadow: '0 15px 50px rgba(0, 0, 0, 0.25)'
+        }}
+      >
         <DialogHeader>
           <DialogTitle>Nova Reserva</DialogTitle>
         </DialogHeader>
@@ -98,7 +110,12 @@ export function NewReservationDialog({ isOpen, onClose, defaultValues }: NewRese
                 <FormItem>
                   <FormLabel>Título da Reserva</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ex: Reunião com Cliente" required {...field} />
+                    <Input 
+                      placeholder="Ex: Reunião com Cliente" 
+                      required 
+                      {...field} 
+                      style={{backgroundColor: 'white'}}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -114,12 +131,26 @@ export function NewReservationDialog({ isOpen, onClose, defaultValues }: NewRese
             {selectedResource === "auditorio" && <AuditoriumWarning />}
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={onClose}>
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={onClose}
+                style={{
+                  backgroundColor: 'white',
+                  color: '#333',
+                  opacity: 1
+                }}
+              >
                 Cancelar
               </Button>
               <Button 
                 type="submit" 
                 disabled={createReservation.isPending || !form.formState.isValid}
+                style={{
+                  backgroundColor: 'hsl(var(--primary))',
+                  color: 'white',
+                  opacity: 1
+                }}
               >
                 {createReservation.isPending ? "Salvando..." : "Salvar Reserva"}
               </Button>

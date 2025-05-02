@@ -20,28 +20,52 @@ export function ResourceSelect({ form }: ResourceSelectProps) {
           <FormLabel>Recurso</FormLabel>
           <Select.Root 
             value={field.value} 
-            onValueChange={(value) => field.onChange(value)}
+            onValueChange={(value) => {
+              field.onChange(value);
+              console.log("Resource selected:", value);
+            }}
             disabled={field.disabled}
           >
             <FormControl>
-              <Select.Trigger className="w-full flex items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+              <Select.Trigger 
+                className="w-full flex items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                style={{backgroundColor: 'white'}}
+              >
                 <Select.Value placeholder="Selecione um recurso" />
-                <Select.Icon asChild><ChevronDown size={16} /></Select.Icon>
+                <Select.Icon asChild>
+                  <ChevronDown size={16} />
+                </Select.Icon>
               </Select.Trigger>
             </FormControl>
             
             <Select.Portal>
               <Select.Content 
-                className="select-content z-[150]" 
+                className="select-content overflow-hidden bg-white rounded-md shadow-lg z-[200]" 
                 position="popper" 
                 sideOffset={4}
+                style={{
+                  backgroundColor: 'white',
+                  minWidth: '220px',
+                  zIndex: 200,
+                  opacity: 1,
+                  visibility: 'visible'
+                }}
               >
-                <Select.Viewport>
+                <Select.Viewport 
+                  style={{
+                    backgroundColor: 'white',
+                    padding: '4px'
+                  }}
+                >
                   {RESOURCES.map(resource => (
                     <Select.Item 
                       key={resource.id} 
                       value={resource.id} 
                       className="flex items-center gap-2 px-3 py-1.5 rounded hover:bg-zinc-100 cursor-pointer"
+                      style={{
+                        backgroundColor: 'white',
+                        opacity: 1
+                      }}
                     >
                       <Select.ItemIndicator className="absolute left-2 flex items-center justify-center">
                         <Check size={12} />
