@@ -140,22 +140,7 @@ export function OccupancyReport({ dateRange }: OccupancyReportProps) {
   // Fixed chart configuration with proper colors and styling
   const barChartConfig = {
     Salas: { color: "#4f46e5" },      // Fixed color for rooms
-    Estações: { color: "#06b6d4" },    // Fixed color for workstations
-    options: {
-      plotOptions: {
-        bar: {
-          borderRadius: 4,          // Round corners to avoid black blocks
-          columnWidth: '40%',       // Maintain spacing
-        },
-      },
-      grid: { 
-        strokeDashArray: 3 
-      },
-      tooltip: {
-        theme: 'light',
-        fillSeriesColor: false,
-      },
-    }
+    Estações: { color: "#06b6d4" }     // Fixed color for workstations
   };
 
   // Check if there's any data to show
@@ -179,7 +164,7 @@ export function OccupancyReport({ dateRange }: OccupancyReportProps) {
             <Trash2
               className="w-4 h-4 cursor-pointer text-zinc-500 hover:text-zinc-800"
               onClick={handleResetTrend}
-              title="Zerar histórico da taxa de ocupação"
+              aria-label="Zerar histórico da taxa de ocupação"
             />
           </div>
         }
