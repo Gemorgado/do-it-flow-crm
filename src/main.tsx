@@ -23,24 +23,37 @@ if (import.meta.env.DEV) {
     }
   }).catch(e => console.error("Error setting up cmdk safeguard:", e));
   
-  // Warning code for Select.Item
+  // Warning code for Select.Item - With safer TypeScript approach
   import('@radix-ui/react-select').then((radix) => {
-    if (radix && radix.Item) {
-      const OrigItem = radix.Item;
-      // Instead of replacing the component directly, monkey patch it safely
-      if (OrigItem && typeof OrigItem === 'object') {
-        // This preserves the original component reference and its properties
-        const originalRender = OrigItem.render;
-        if (originalRender && typeof originalRender === 'function') {
-          // Using non-null assertion since we've already checked above
-          OrigItem!.render = function(props: any) {
-            if (!props?.value || props.value === '') {
-              console.error('🛑 <Select.Item> sem value:', props.children);
-            }
-            return originalRender.call(this, props);
-          };
+    try {
+      // Use type assertion to help TypeScript understand our intentions
+      const SelectModule = radix as any;
+      
+      // Check if Item exists and can be modified
+      if (SelectModule && SelectModule.Item) {
+        const OrigItem = SelectModule.Item;
+        
+        // Create a wrapped version of the component that adds our validation
+        const WrappedItem = React.forwardRef((props: any, ref: any) => {
+          // Log warning for items without value
+          if (!props?.value || props.value === '') {
+            console.error('🛑 <Select.Item> sem value:', props.children);
+          }
+          
+          // Render the original component with all props
+          return React.createElement(OrigItem, { ...props, ref });
+        });
+        
+        // Copy over any static properties from the original component
+        if (OrigItem) {
+          Object.assign(WrappedItem, OrigItem);
         }
+        
+        // Replace the original Item with our wrapped version
+        SelectModule.Item = WrappedItem;
       }
+    } catch (error) {
+      console.error("Error setting up radix select safeguard:", error);
     }
   }).catch(e => console.error("Error setting up radix safeguard:", e));
 }
