@@ -77,7 +77,7 @@ export default function LoginPage() {
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-2">
             <img 
-              src="/do-it-logo.png" 
+              src="./do-it-logo.png" 
               alt="Do It Hub Logo" 
               className="h-10" 
               onError={(e) => {
