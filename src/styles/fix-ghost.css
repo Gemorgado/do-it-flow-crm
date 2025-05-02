@@ -1,3 +1,4 @@
+
 /* Fix for ghost mode - ensure everything has proper opacity */
 body, #root, #__next, .app, div, p, span, h1, h2, h3, h4, h5, h6, 
 button, a, input, select, textarea, label, li, ul, ol {
@@ -16,9 +17,24 @@ input[type="button"],
 [data-state="closed"],
 [data-state="open"] {
   opacity: 1 !important;
-  color: #000000 !important;
-  background-color: rgb(67, 56, 202) !important;
   filter: none !important;
+}
+
+/* Special styles for navbar and sidebar buttons */
+[data-variant="navbar"],
+[data-variant="sidebar"],
+[data-variant="ghost"],
+header button,
+.SidebarMenuButton button {
+  background-color: transparent !important;
+  color: #000000 !important;
+}
+
+/* Fix for regular buttons */
+button[data-variant="default"],
+form button[type="submit"] {
+  background-color: rgb(67, 56, 202) !important;
+  color: #000000 !important;
 }
 
 /* Fix for Radix UI components and dialogs */
@@ -111,7 +127,9 @@ button[data-variant="destructive"] {
 button[data-variant="outline"],
 button[data-variant="secondary"],
 button[data-variant="ghost"],
-button[data-variant="link"] {
+button[data-variant="link"],
+button[data-variant="navbar"],
+button[data-variant="sidebar"] {
   opacity: 1 !important;
   visibility: visible !important;
   color: #000000 !important;

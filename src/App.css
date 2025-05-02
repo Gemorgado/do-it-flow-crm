@@ -66,9 +66,18 @@ label {
 button, [role="button"], .button {
   opacity: 1 !important;
   color: #000000 !important;
-  background-color: rgb(67, 56, 202) !important;
 }
 
+/* Special styles for header and sidebar buttons */
+header button, 
+.sidebar button,
+[data-variant="navbar"],
+[data-variant="sidebar"],
+[data-variant="ghost"] {
+  background-color: transparent !important;
+}
+
+/* Default button style */
 button:not([data-variant]), 
 button[data-variant="default"] {
   background-color: rgb(67, 56, 202) !important;

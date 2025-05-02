@@ -19,12 +19,15 @@ const buttonVariants = cva(
           "bg-secondary text-[#000000] hover:bg-secondary/80 opacity-100",
         ghost: "text-[#000000] hover:bg-accent hover:text-accent-foreground opacity-100",
         link: "text-primary underline-offset-4 hover:underline text-[#000000] opacity-100",
+        navbar: "bg-transparent text-[#000000] hover:bg-accent/20 opacity-100",
+        sidebar: "bg-transparent text-[#000000] hover:bg-sidebar-accent/20 opacity-100",
       },
       size: {
         default: "h-10 px-4 py-2",
         sm: "h-9 rounded-md px-3",
         lg: "h-11 rounded-md px-8",
         icon: "h-10 w-10",
+        "icon-sm": "h-8 w-8",
       },
     },
     defaultVariants: {
@@ -43,11 +46,21 @@ export interface ButtonProps
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, style, ...props }, ref) => {
     const Comp = asChild ? Slot : "button"
+    
+    // Apply special styling for navbar and sidebar buttons
+    const customStyle = { ...style };
+    if (variant === 'navbar' || variant === 'sidebar' || variant === 'ghost') {
+      customStyle.backgroundColor = 'transparent';
+    } else if (variant === 'default') {
+      customStyle.backgroundColor = "rgb(67, 56, 202)";
+      customStyle.color = "#000000";
+    }
+    
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
-        style={{ opacity: 1, backgroundColor: "rgb(67, 56, 202)", color: "#000000", ...style }}
+        style={{ opacity: 1, ...customStyle }}
         data-variant={variant}
         {...props}
       />

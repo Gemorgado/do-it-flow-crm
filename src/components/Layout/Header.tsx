@@ -43,15 +43,15 @@ export function Header() {
       
       <div className="flex items-center gap-2">
         <Button
-          variant="ghost"
-          size="icon"
+          variant="navbar"
+          size="icon-sm"
           className="text-gray-500 hover:text-doIt-primary"
         >
           <Bell className="h-5 w-5" />
         </Button>
         <Button
-          variant="ghost"
-          size="icon"
+          variant="navbar"
+          size="icon-sm"
           className="text-gray-500 hover:text-doIt-primary"
           onClick={() => navigate("/settings")}
         >
@@ -61,8 +61,8 @@ export function Header() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
-              variant="ghost"
-              size="icon"
+              variant="navbar"
+              size="icon-sm"
               className="text-gray-500 hover:text-doIt-primary"
             >
               <User className="h-5 w-5" />
