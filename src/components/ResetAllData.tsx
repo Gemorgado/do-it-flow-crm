@@ -15,10 +15,14 @@ export function ResetAllData() {
         await resetAllDemoData();
         toast({
           title: "Dados limpos",
-          description: "Todos os dados fictícios foram removidos da plataforma com sucesso",
+          description: "Todos os dados fictícios foram removidos da plataforma com sucesso. A página será recarregada para mostrar um estado limpo.",
+          duration: 5000,
         });
         // Força um refresh completo da página para garantir que todos os componentes sejam recarregados
-        window.location.reload();
+        // e nenhum dado em memória fique retido
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
       } catch (error) {
         console.error("Erro ao limpar dados:", error);
         toast({

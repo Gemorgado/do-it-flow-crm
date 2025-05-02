@@ -23,7 +23,9 @@ export async function resetAllDemoData() {
     // Espaços e integrações
     "conexa_snapshot", "spaceBindings", "space_bindings", "import_templates",
     // Growth e dados de marketing
-    "growth_data", "campaigns", "marketing_data", 
+    "growth_data", "campaigns", "marketing_data", "leads_time_data",
+    // Dashboard e relatórios
+    "dashboard_data", "dashboard_stats", "reports_data", "charts_data",
     // Store do DoitFlow
     "doitflow_leads", "doitflow_clients", "doitflow_tasks", "doitflow_interactions",
     "doitflow_locations", "doitflow_bindings", "doitflow_snapshots",
@@ -49,7 +51,16 @@ export async function resetAllDemoData() {
   // await api.delete("/admin/demo-data");   // habilite quando existir
 
   /* 4. Cache React-Query: limpa tudo ------------------------- */
+  // Limpa o cache do React Query incluindo queries específicas
   queryClient.clear();
+  
+  // Invalida explicitamente as queries que podem estar carregando dados de dashboard e relatórios
+  queryClient.invalidateQueries({ queryKey: ['dashboardStats'] });
+  queryClient.invalidateQueries({ queryKey: ['charts'] });
+  queryClient.invalidateQueries({ queryKey: ['reports'] });
+  queryClient.invalidateQueries({ queryKey: ['growth'] });
+  queryClient.invalidateQueries({ queryKey: ['marketing'] });
+  
   console.log("✓ Cache React Query limpo");
   
   // Limpa também o store - para garantir que os dados fictícios sejam removidos
