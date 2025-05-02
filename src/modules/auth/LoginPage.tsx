@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -142,7 +141,7 @@ export default function LoginPage() {
               
               <FormField control={form.control} name="rememberMe" render={({
               field
-            }) => <FormItem className="flex flex-row items-center space-x-2 space-y-0" style={{
+            }) => <FormItem className="flex flex-row items-center space-x-2 space-y-0 pb-3" style={{
               opacity: 1
             }}>
                     <FormControl>
