@@ -36,7 +36,10 @@ export function OccupancyReport({ dateRange }: OccupancyReportProps) {
       />
 
       {/* Tabela detalhada de ocupação por tipo */}
-      <OccupancyDetailsTable occupancyDetails={occupancyDetails} />
+      <OccupancyDetailsTable 
+        occupancyDetails={occupancyDetails} 
+        itemsPerPage={3} 
+      />
     </div>
   );
 }
