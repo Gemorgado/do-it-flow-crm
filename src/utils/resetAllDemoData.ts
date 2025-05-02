@@ -22,6 +22,8 @@ export async function resetAllDemoData() {
     "customers", "clients_data", "crm_data", "contracts_data",
     // Espaços e integrações
     "conexa_snapshot", "spaceBindings", "space_bindings", "import_templates",
+    // Integrations
+    "integrations",
     // Growth e dados de marketing
     "growth_data", "campaigns", "marketing_data", "leads_time_data",
     // Dashboard e relatórios
@@ -60,6 +62,7 @@ export async function resetAllDemoData() {
   queryClient.invalidateQueries({ queryKey: ['reports'] });
   queryClient.invalidateQueries({ queryKey: ['growth'] });
   queryClient.invalidateQueries({ queryKey: ['marketing'] });
+  queryClient.invalidateQueries({ queryKey: ['integrations'] });
   
   console.log("✓ Cache React Query limpo");
   

@@ -2,14 +2,30 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, MessageSquare, Calendar, Facebook, Code, FileCode } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { MetaPixelIntegration } from '@/components/Integrations/MetaPixelIntegration';
 import { ConexaIntegration } from '@/components/Integrations/ConexaIntegration';
 import { WebhookCard } from '@/components/Integrations/WebhookCard';
+import { useIntegrations } from '@/hooks/useIntegrations';
+import { IntegrationCard } from '@/components/Integrations/IntegrationCard';
+import { EmptyState } from '@/components/Integrations/EmptyState';
+import { Integration } from '@/types/integration';
 
 export default function Integrations() {
+  const integrations = useIntegrations();
+  
+  const active = integrations.filter(i => i.status === 'connected');
+  const available = integrations.filter(i => i.status === 'disconnected');
+  
+  const pixelIntegrations = integrations.filter(i => i.category === 'pixel');
+  const erpIntegrations = integrations.filter(i => i.category === 'erp');
+  const webhookIntegrations = integrations.filter(i => i.category === 'webhook');
+  
+  const hasActivePixel = pixelIntegrations.some(i => i.status === 'connected');
+  const hasActiveErp = erpIntegrations.some(i => i.status === 'connected');
+  
   return (
     <div className="animate-fade-in">
       <div className="flex flex-col md:flex-row justify-between mb-6 gap-4">
@@ -25,100 +41,80 @@ export default function Integrations() {
         </Button>
       </div>
       
-      <Tabs defaultValue="active" className="mt-6">
+      <Tabs defaultValue="ativas" className="mt-6">
         <TabsList>
-          <TabsTrigger value="active">Ativas</TabsTrigger>
-          <TabsTrigger value="available">Disponíveis</TabsTrigger>
+          <TabsTrigger value="ativas">Ativas</TabsTrigger>
+          <TabsTrigger value="disponiveis">Disponíveis</TabsTrigger>
           <TabsTrigger value="pixels">Pixel de Rastreamento</TabsTrigger>
           <TabsTrigger value="erp">Sistemas ERP</TabsTrigger>
           <TabsTrigger value="webhooks">Webhooks</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="active" className="mt-4">
+        <TabsContent value="ativas" className="mt-4">
+          {active.length === 0 && <EmptyState msg="Nenhuma integração conectada" />}
+          
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="border rounded-lg p-5 bg-doIt-light">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 bg-green-500 rounded-md flex items-center justify-center text-white">
-                  <MessageSquare className="h-5 w-5" />
-                </div>
-                <h4 className="font-medium text-lg">WhatsApp Business</h4>
-              </div>
-              <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200 mb-3">Conectado</Badge>
-              <p className="text-sm text-gray-600 mb-4">Envie e receba mensagens diretamente pelo CRM.</p>
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-500">Conectado em: 15/04/2025</span>
-                <Button variant="ghost" size="sm" className="text-xs">Configurar</Button>
-              </div>
-            </div>
-            
-            <div className="border rounded-lg p-5 bg-doIt-light">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 bg-blue-500 rounded-md flex items-center justify-center text-white">
-                  <Facebook className="h-5 w-5" />
-                </div>
-                <h4 className="font-medium text-lg">Meta Pixel</h4>
-              </div>
-              <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200 mb-3">Conectado</Badge>
-              <p className="text-sm text-gray-600 mb-4">Acompanhe conversões e eventos do seu site.</p>
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-500">Conectado em: 20/04/2025</span>
-                <Button variant="ghost" size="sm" className="text-xs">Configurar</Button>
-              </div>
-            </div>
+            {active.map(integration => (
+              <IntegrationCard key={integration.id} data={integration} />
+            ))}
           </div>
         </TabsContent>
         
-        <TabsContent value="available" className="mt-4">
+        <TabsContent value="disponiveis" className="mt-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="border rounded-lg p-5">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 bg-blue-500 rounded-md flex items-center justify-center text-white">
-                  <Code className="h-5 w-5" />
-                </div>
-                <h4 className="font-medium text-lg">Google Tag Manager</h4>
-              </div>
-              <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-200 mb-3">Disponível</Badge>
-              <p className="text-sm text-gray-600 mb-4">Rastreie a origem dos leads e campanhas.</p>
-              <Button size="sm" className="w-full">Conectar</Button>
-            </div>
-
-            <div className="border rounded-lg p-5">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 bg-indigo-500 rounded-md flex items-center justify-center text-white">
-                  <Calendar className="h-5 w-5" />
-                </div>
-                <h4 className="font-medium text-lg">Assinatura Digital</h4>
-              </div>
-              <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-200 mb-3">Disponível</Badge>
-              <p className="text-sm text-gray-600 mb-4">Integre com DocuSign para contratos digitais.</p>
-              <Button size="sm" className="w-full">Conectar</Button>
-            </div>
-
-            <div className="border rounded-lg p-5">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 bg-purple-500 rounded-md flex items-center justify-center text-white">
-                  <FileCode className="h-5 w-5" />
-                </div>
-                <h4 className="font-medium text-lg">Zapier</h4>
-              </div>
-              <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-200 mb-3">Disponível</Badge>
-              <p className="text-sm text-gray-600 mb-4">Integre com milhares de aplicativos.</p>
-              <Button size="sm" className="w-full">Conectar</Button>
-            </div>
+            {available.map(integration => (
+              <IntegrationCard key={integration.id} data={integration} />
+            ))}
           </div>
         </TabsContent>
         
         <TabsContent value="pixels" className="mt-4">
           <Card className="p-6">
             <h3 className="text-lg font-medium mb-4">Configurações do Meta Pixel</h3>
-            <MetaPixelIntegration />
+            {hasActivePixel ? (
+              <MetaPixelIntegration />
+            ) : (
+              <div className="py-6">
+                <EmptyState msg="Nenhuma integração de Pixel conectada" />
+                <div className="flex justify-center mt-4">
+                  <Button 
+                    onClick={() => {
+                      const metaPixel = pixelIntegrations.find(i => i.id === 'meta_pixel');
+                      if (metaPixel) {
+                        window.location.href = "#disponiveis";
+                      }
+                    }}
+                  >
+                    Conectar Pixel
+                  </Button>
+                </div>
+              </div>
+            )}
           </Card>
         </TabsContent>
         
         <TabsContent value="erp" className="mt-4">
           <Card className="p-6">
             <h3 className="text-lg font-medium mb-4">Conexa ERP</h3>
-            <ConexaIntegration />
+            {hasActiveErp ? (
+              <ConexaIntegration />
+            ) : (
+              <div className="py-6">
+                <EmptyState msg="Nenhuma integração ERP conectada" />
+                <div className="flex justify-center mt-4">
+                  <Button 
+                    onClick={() => {
+                      const conexa = erpIntegrations.find(i => i.id === 'conexa_erp');
+                      if (conexa) {
+                        window.location.href = "#disponiveis";
+                      }
+                    }}
+                  >
+                    Conectar Conexa ERP
+                  </Button>
+                </div>
+              </div>
+            )}
           </Card>
         </TabsContent>
         
