@@ -2,6 +2,7 @@
 import { queryClient } from "@/lib/queryClient";
 import { toast } from "@/hooks/use-toast";
 import { resetPipelineDemo } from "./resetPipelineDemo";
+import { resetMetricDemo } from "./resetMetricDemo";
 import { store } from "@/integrations/persistence/store";
 
 /**
@@ -12,6 +13,10 @@ export async function resetAllDemoData() {
   /* 1. Pipeline demo data - chama função específica ---------- */
   // Usa a função já existente para manter compatibilidade
   await resetPipelineDemo();
+
+  /* 1.1 Metrics demo data - chama função específica --------- */
+  // Limpa todas as métricas
+  resetMetricDemo();
 
   /* 2. Chaves conhecidas no LocalStorage / IndexedDB --------- */
   const storagesToRemove = [
@@ -68,7 +73,7 @@ export async function resetAllDemoData() {
   
   // Limpa também o store - para garantir que os dados fictícios sejam removidos
   try {
-    // Limpa o store importado diretamente em vez de acessar via window
+    // Limpa o store importado diretamente
     store.leads = [];
     store.clients = [];
     store.tasks = [];

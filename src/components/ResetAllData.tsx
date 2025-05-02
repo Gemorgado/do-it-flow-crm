@@ -1,59 +1,57 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Trash2, AlertTriangle } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { resetAllDemoData } from "@/utils/resetAllDemoData";
+import { resetMetricDemo } from "@/utils/resetMetricDemo";
 import { toast } from "@/hooks/use-toast";
 
 export function ResetAllData() {
   const [isResetting, setIsResetting] = useState(false);
-  
-  const handleResetAllData = async () => {
-    if (confirm("⚠️ ATENÇÃO: Esta ação irá apagar TODOS os dados fictícios da plataforma (Dashboard, Growth, Relatórios, Pipeline, etc). Esta ação é irreversível. Deseja continuar?")) {
+
+  const handleReset = async () => {
+    if (window.confirm("Deseja limpar todos os dados de demonstração? Esta ação não pode ser desfeita.")) {
       setIsResetting(true);
+      
       try {
+        // Reset all demo data
         await resetAllDemoData();
+        
+        // Reset metric data specifically
+        resetMetricDemo();
+        
         toast({
-          title: "Dados limpos",
-          description: "Todos os dados fictícios foram removidos da plataforma com sucesso. A página será recarregada para mostrar um estado limpo.",
-          duration: 5000,
+          title: "Dados limpos com sucesso",
+          description: "A página será recarregada para aplicar as alterações."
         });
-        // Força um refresh completo da página para garantir que todos os componentes sejam recarregados
-        // e nenhum dado em memória fique retido
+
+        // Reload page to ensure everything is reset
         setTimeout(() => {
           window.location.reload();
         }, 1500);
+        
       } catch (error) {
         console.error("Erro ao limpar dados:", error);
         toast({
           title: "Erro ao limpar dados",
-          description: "Não foi possível limpar os dados fictícios. Tente novamente.",
-          variant: "destructive",
+          description: "Ocorreu um erro ao limpar os dados de demonstração.",
+          variant: "destructive"
         });
       } finally {
         setIsResetting(false);
       }
     }
   };
-  
+
   return (
     <Button
-      variant="destructive"
-      onClick={handleResetAllData}
+      variant="ghost"
+      size="icon"
+      onClick={handleReset}
       disabled={isResetting}
-      className="flex items-center gap-2"
+      title="Limpar todos os dados de demonstração"
     >
-      {isResetting ? (
-        <>
-          <AlertTriangle className="h-4 w-4" />
-          Limpando...
-        </>
-      ) : (
-        <>
-          <Trash2 className="h-4 w-4" />
-          Limpar Dados
-        </>
-      )}
+      <Trash2 className="h-4 w-4" />
     </Button>
   );
 }
