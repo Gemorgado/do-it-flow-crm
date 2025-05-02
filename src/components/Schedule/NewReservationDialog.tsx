@@ -11,6 +11,7 @@ import { DateTimeFields } from "./DateTimeFields";
 import { AuditoriumWarning } from "./AuditoriumWarning";
 import { useReservationForm } from "@/hooks/useReservationForm";
 import { ComboboxOption } from "@/components/ui/combobox";
+import { validateReservationForm, showValidationError } from "@/services/reservationValidation";
 
 interface NewReservationDialogProps {
   isOpen: boolean;
@@ -28,36 +29,16 @@ export function NewReservationDialog({ isOpen, onClose, defaultValues }: NewRese
 
   const handleSubmit = async (values: any) => {
     try {
-      const isAuditorium = values.resource === "auditorio";
-      
-      // If it's the auditorium, we need to validate the time range
-      if (isAuditorium) {
-        const startDate = new Date(values.start);
-        const endDate = new Date(values.end);
-        const startHour = startDate.getHours();
-        const endHour = endDate.getHours();
-        
-        // Check if full day or half day schedule
-        const isFullDay = startHour === 8 && endHour === 19;
-        const isMorning = startHour === 8 && endHour === 13;
-        const isAfternoon = startHour === 13 && endHour === 19;
-        
-        if (!isFullDay && !isMorning && !isAfternoon) {
-          toast({
-            title: "Horário inválido",
-            description: "Auditório só pode ser reservado em meio-período (8h-13h ou 13h-19h) ou período completo (8h-19h)",
-            variant: "destructive"
-          });
-          return;
-        }
-      }
-      
-      if (!selectedClient) {
-        toast({
-          title: "Cliente não selecionado",
-          description: "Por favor, selecione um cliente para a reserva",
-          variant: "destructive"
-        });
+      // Validate form data using the validation service
+      const validationError = validateReservationForm({
+        resource: values.resource,
+        start: values.start,
+        end: values.end,
+        selectedClient
+      });
+
+      if (validationError) {
+        showValidationError(validationError);
         return;
       }
 
@@ -66,7 +47,7 @@ export function NewReservationDialog({ isOpen, onClose, defaultValues }: NewRese
         title: values.title,
         start: values.start,
         end: values.end,
-        customerId: selectedClient.id,
+        customerId: selectedClient!.id,
         createdBy: "current-user" // In a real app, get from authentication context
       });
       

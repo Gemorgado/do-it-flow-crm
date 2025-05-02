@@ -5,7 +5,7 @@ import { useState } from "react";
 import { ComboboxOption } from "@/components/ui/combobox";
 import { parseISO } from "date-fns";
 
-interface ReservationFormValues {
+export interface ReservationFormValues {
   title: string;
   resource: Resource;
   start: string;
