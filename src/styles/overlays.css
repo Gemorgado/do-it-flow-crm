@@ -32,7 +32,11 @@
 }
 
 /* Remove transparência acidental */
-.radix-select-content[style*="opacity"] {
+.radix-select-content[style*="opacity"],
+[data-radix-select-content][style*="opacity"],
+[data-radix-menu-content][style*="opacity"],
+[data-radix-dropdown-menu-content][style*="opacity"],
+[data-radix-popover-content][style*="opacity"] {
   opacity: 1 !important;
 }
 
@@ -44,7 +48,10 @@
 /* Fix para dropdowns e tooltips translúcidos */
 .open-panel, 
 .radix-select-content, 
-.chartjs-tooltip {
+.chartjs-tooltip,
+.dropdown-menu-content,
+.select-content,
+.popover-content {
   backdrop-filter: none !important;
   background: rgba(255, 255, 255, 0.98) !important;
   border: 1px solid rgba(0, 0, 0, 0.05) !important;
@@ -100,9 +107,31 @@ button.text-white {
 .PopoverContent,
 [role="listbox"],
 [cmdk-list],
-.ComboboxContent {
+.ComboboxContent,
+.DropdownMenuContent {
   background-color: white !important;
   color: #333 !important;
   border: 1px solid #ddd !important;
   z-index: 150 !important;
+}
+
+/* Fix for specifically for login buttons */
+.form button,
+.card button,
+button[type="submit"] {
+  opacity: 1 !important;
+  color: white !important; 
+}
+
+/* Ensure buttons in modals have good visibility */
+[data-radix-dialog-content] button,
+[data-radix-popper-content] button,
+[role="dialog"] button {
+  opacity: 1 !important;
+}
+
+/* Fix for ghost style on dropdowns, popups, etc */
+[data-state="open"],
+[data-state="closed"] {
+  opacity: 1 !important;
 }

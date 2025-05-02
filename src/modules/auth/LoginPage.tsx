@@ -106,6 +106,7 @@ export default function LoginPage() {
                         aria-label="Email"
                         className="bg-white text-gray-800"
                         {...field}
+                        style={{opacity: 1}}
                       />
                     </FormControl>
                     <FormMessage className="text-red-600" />
@@ -127,6 +128,7 @@ export default function LoginPage() {
                         autoComplete="current-password"
                         className="bg-white text-gray-800"
                         {...field}
+                        style={{opacity: 1}}
                       />
                     </FormControl>
                     <FormMessage className="text-red-600" />
@@ -144,6 +146,7 @@ export default function LoginPage() {
                         id="rememberMe"
                         checked={field.value}
                         onCheckedChange={field.onChange}
+                        style={{opacity: 1}}
                       />
                     </FormControl>
                     <FormLabel htmlFor="rememberMe" className="text-sm font-normal cursor-pointer text-gray-700">
@@ -157,6 +160,7 @@ export default function LoginPage() {
                 type="submit" 
                 className="w-full bg-indigo-600 hover:bg-indigo-700 text-white" 
                 disabled={isSubmitting}
+                style={{opacity: 1}}
               >
                 {isSubmitting ? (
                   <>

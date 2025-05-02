@@ -46,13 +46,32 @@
 /* Fix for contrast issues */
 h1, h2, h3, h4, h5, h6, p, span, div {
   color: inherit;
+  opacity: 1 !important;
 }
 
 input, select, textarea {
   color: #333;
   background-color: white;
+  opacity: 1 !important;
 }
 
 label {
   color: #555;
+  opacity: 1 !important;
+}
+
+/* Fix for buttons */
+button {
+  opacity: 1 !important;
+}
+
+button:not([data-variant]), 
+button[data-variant="default"] {
+  background-color: hsl(var(--primary)) !important;
+  color: white !important;
+}
+
+/* Fix for login screen elements */
+.form-label, .form-control, .form-message {
+  opacity: 1 !important;
 }
