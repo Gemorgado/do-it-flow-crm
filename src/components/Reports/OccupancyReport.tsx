@@ -4,7 +4,7 @@ import { ChartCard } from "@/components/Dashboard/ChartCard";
 import { CRMMetricsCard } from "@/components/Dashboard/CRMMetricsCard";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { BarChart } from "@/components/ui/chart";
-import { FileChartColumnIncreasing } from "lucide-react";
+import { FileChartColumnIncreasing, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { 
   locations, 
@@ -13,6 +13,8 @@ import {
   meetingRooms
 } from "@/data/locations";
 import { Location } from "@/types";
+import { toast } from "@/hooks/use-toast";
+import { resetOccupancyTrend } from "@/utils/resetOccupancyTrend";
 
 interface OccupancyReportProps {
   dateRange: DateRange;
@@ -66,15 +68,32 @@ export function OccupancyReport({ dateRange }: OccupancyReportProps) {
     { label: "Estações Disponíveis", value: occupancyData.availableWorkstations.toString(), tooltipText: "Número de estações sem contratos ativos" },
   ];
 
-  // Calculate occupancy history (mock data based on current occupancy rates)
-  const occupancyOverTimeData = [
-    { name: "Jan", "Salas": Math.max(60, occupancyData.roomOccupancyRate - 20), "Estações": Math.max(50, occupancyData.workstationOccupancyRate - 20) },
-    { name: "Fev", "Salas": Math.max(65, occupancyData.roomOccupancyRate - 15), "Estações": Math.max(55, occupancyData.workstationOccupancyRate - 15) },
-    { name: "Mar", "Salas": Math.max(70, occupancyData.roomOccupancyRate - 10), "Estações": Math.max(60, occupancyData.workstationOccupancyRate - 10) },
-    { name: "Abr", "Salas": Math.max(75, occupancyData.roomOccupancyRate - 5), "Estações": Math.max(65, occupancyData.workstationOccupancyRate - 5) },
-    { name: "Mai", "Salas": occupancyData.roomOccupancyRate, "Estações": occupancyData.workstationOccupancyRate },
-    { name: "Jun", "Salas": Math.min(100, occupancyData.roomOccupancyRate + 5), "Estações": Math.min(100, occupancyData.workstationOccupancyRate + 5) },
-  ];
+  // Check if local storage has occupancy trend data
+  const storedTrendData = localStorage.getItem('occupancy_trend');
+  let occupancyOverTimeData = [];
+  
+  if (storedTrendData) {
+    try {
+      occupancyOverTimeData = JSON.parse(storedTrendData);
+    } catch (e) {
+      console.error("Error parsing stored trend data:", e);
+    }
+  }
+  
+  // If no data in storage, generate based on current occupancy rates
+  if (!occupancyOverTimeData || occupancyOverTimeData.length === 0) {
+    occupancyOverTimeData = [
+      { name: "Jan", "Salas": Math.max(60, occupancyData.roomOccupancyRate - 20), "Estações": Math.max(50, occupancyData.workstationOccupancyRate - 20) },
+      { name: "Fev", "Salas": Math.max(65, occupancyData.roomOccupancyRate - 15), "Estações": Math.max(55, occupancyData.workstationOccupancyRate - 15) },
+      { name: "Mar", "Salas": Math.max(70, occupancyData.roomOccupancyRate - 10), "Estações": Math.max(60, occupancyData.workstationOccupancyRate - 10) },
+      { name: "Abr", "Salas": Math.max(75, occupancyData.roomOccupancyRate - 5), "Estações": Math.max(65, occupancyData.workstationOccupancyRate - 5) },
+      { name: "Mai", "Salas": occupancyData.roomOccupancyRate, "Estações": occupancyData.workstationOccupancyRate },
+      { name: "Jun", "Salas": Math.min(100, occupancyData.roomOccupancyRate + 5), "Estações": Math.min(100, occupancyData.workstationOccupancyRate + 5) },
+    ];
+    
+    // Store the generated data for future use
+    localStorage.setItem('occupancy_trend', JSON.stringify(occupancyOverTimeData));
+  }
 
   // Generate detailed occupancy table data
   const generateOccupancyDetails = () => {
@@ -105,10 +124,42 @@ export function OccupancyReport({ dateRange }: OccupancyReportProps) {
 
   const occupancyDetails = generateOccupancyDetails();
 
-  const barChartConfig = {
-    Salas: { color: "#4f46e5" },
-    Estações: { color: "#06b6d4" },
+  // Handle reset of occupancy trend data
+  const handleResetTrend = () => {
+    if (window.confirm('Zerar histórico da taxa de ocupação?')) {
+      resetOccupancyTrend();
+      toast({ 
+        title: 'Histórico zerado ✅',
+        description: 'Os dados da evolução de ocupação foram resetados'
+      });
+      // Reload the page to show empty state
+      window.location.reload();
+    }
   };
+
+  // Fixed chart configuration with proper colors and styling
+  const barChartConfig = {
+    Salas: { color: "#4f46e5" },      // Fixed color for rooms
+    Estações: { color: "#06b6d4" },    // Fixed color for workstations
+    options: {
+      plotOptions: {
+        bar: {
+          borderRadius: 4,          // Round corners to avoid black blocks
+          columnWidth: '40%',       // Maintain spacing
+        },
+      },
+      grid: { 
+        strokeDashArray: 3 
+      },
+      tooltip: {
+        theme: 'light',
+        fillSeriesColor: false,
+      },
+    }
+  };
+
+  // Check if there's any data to show
+  const hasData = occupancyOverTimeData && occupancyOverTimeData.length > 0;
 
   return (
     <div className="space-y-6">
@@ -122,13 +173,31 @@ export function OccupancyReport({ dateRange }: OccupancyReportProps) {
       <ChartCard 
         title="Evolução da Taxa de Ocupação" 
         description="Porcentagem de ocupação ao longo dos últimos 6 meses"
-        action={<FileChartColumnIncreasing className="h-4 w-4 text-muted-foreground" />}
+        action={
+          <div className="flex items-center gap-2">
+            <FileChartColumnIncreasing className="h-4 w-4 text-muted-foreground" />
+            <Trash2
+              className="w-4 h-4 cursor-pointer text-zinc-500 hover:text-zinc-800"
+              onClick={handleResetTrend}
+              title="Zerar histórico da taxa de ocupação"
+            />
+          </div>
+        }
       >
         <div className="p-6">
-          <BarChart 
-            data={occupancyOverTimeData} 
-            config={barChartConfig}
-          />
+          {hasData ? (
+            <BarChart 
+              data={occupancyOverTimeData} 
+              config={barChartConfig}
+            />
+          ) : (
+            <div className="flex flex-col items-center justify-center h-64 text-center">
+              <p className="text-muted-foreground">Sem dados de ocupação disponíveis</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                Os dados serão exibidos quando houver informações de ocupação.
+              </p>
+            </div>
+          )}
         </div>
       </ChartCard>
 

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { resetAllDemoData } from "@/utils/resetAllDemoData";
 import { resetMetricDemo } from "@/utils/resetMetricDemo";
+import { resetOccupancyTrend } from "@/utils/resetOccupancyTrend";
 import { toast } from "@/hooks/use-toast";
 
 export function ResetAllData() {
@@ -19,6 +20,9 @@ export function ResetAllData() {
         
         // Reset metric data specifically
         resetMetricDemo();
+        
+        // Reset occupancy trend data
+        resetOccupancyTrend();
         
         toast({
           title: "Dados limpos com sucesso",

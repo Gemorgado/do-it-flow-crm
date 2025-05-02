@@ -1,6 +1,7 @@
 
 import { queryClient } from "@/lib/queryClient";
 import { toast } from "@/hooks/use-toast";
+import { resetOccupancyTrend } from "./resetOccupancyTrend";
 
 /**
  * Reset all dashboard, growth and report metrics.
@@ -15,7 +16,9 @@ export function resetMetricDemo() {
     "growth_metrics", "growth_data", "marketing_data", "leads_time_data", 
     "campaigns", "campaign_metrics",
     // Report metrics
-    "report_metrics", "occupancy_metrics", "contract_metrics", "revenue_metrics"
+    "report_metrics", "occupancy_metrics", "contract_metrics", "revenue_metrics",
+    // Occupancy trend data
+    "occupancy_trend"
   ];
 
   // Remove todos os itens de storage relacionados a métricas
@@ -33,6 +36,10 @@ export function resetMetricDemo() {
   queryClient.invalidateQueries({ queryKey: ["growth_metrics"] });
   queryClient.invalidateQueries({ queryKey: ["reports"] });
   queryClient.invalidateQueries({ queryKey: ["charts"] });
+  queryClient.invalidateQueries({ queryKey: ["occupancy_trend"] });
+  
+  // Also reset occupancy trend data specifically
+  resetOccupancyTrend();
   
   // Para garantir, limpa todo o cache
   queryClient.clear();
