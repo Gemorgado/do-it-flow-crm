@@ -13,7 +13,7 @@ import { Resource } from "@/constants/resources";
 import { RESOURCES } from "@/constants/resources";
 import { getResourceColor } from "./util";
 import { useClients } from "@/hooks/useClients";
-import { Combobox } from "@/components/ui/combobox";
+import { Combobox, ComboboxOption } from "@/components/ui/combobox";
 
 interface NewReservationDialogProps {
   isOpen: boolean;
@@ -27,7 +27,7 @@ interface NewReservationDialogProps {
 export function NewReservationDialog({ isOpen, onClose, defaultValues }: NewReservationDialogProps) {
   const [selectedResource, setSelectedResource] = useState<Resource>("meet1");
   const { data: clients = [] } = useClients();
-  const [selectedClient, setSelectedClient] = useState<{ id: string; name: string } | null>(null);
+  const [selectedClient, setSelectedClient] = useState<ComboboxOption | null>(null);
 
   const form = useForm({
     defaultValues: {
@@ -158,7 +158,7 @@ export function NewReservationDialog({ isOpen, onClose, defaultValues }: NewRese
                 <Combobox
                   options={clients}
                   selected={selectedClient}
-                  onSelect={setSelectedClient}
+                  onSelect={(client: ComboboxOption) => setSelectedClient(client)}
                   getOptionLabel={(client) => client.name}
                   placeholder="Selecione o cliente"
                   searchPlaceholder="Buscar cliente..."

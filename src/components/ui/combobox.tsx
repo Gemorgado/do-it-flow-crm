@@ -18,6 +18,7 @@ import {
 
 export interface ComboboxOption {
   id: string
+  name: string
   [key: string]: any
 }
 

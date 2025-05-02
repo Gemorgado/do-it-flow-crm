@@ -10,3 +10,6 @@ export interface Reservation {
   customerId?: string;     // opcional: link com cliente
   createdBy: string;       // usuário
 }
+
+// Re-export Resource type for components that import from here
+export { Resource };

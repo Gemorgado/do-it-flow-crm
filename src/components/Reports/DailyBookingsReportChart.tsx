@@ -4,7 +4,7 @@ import { useReservations } from "@/hooks/useReservations";
 import { BarChart } from "@/components/ui/chart";
 import { DateRange } from "react-day-picker";
 import { eachDayOfInterval, format, parseISO, subDays } from "date-fns";
-import { Resource } from "@/constants/resources";
+import { Resource } from "@/types/schedule";
 import { getResourceColor, getResourceLabel } from "@/components/Schedule/util";
 
 interface DailyBookingsReportChartProps {
@@ -57,17 +57,15 @@ export function DailyBookingsReportChart({ dateRange }: DailyBookingsReportChart
   
   const resources: Resource[] = ['meet1', 'meet2', 'meet3', 'meet4', 'auditorio'];
   
-  const chartData = [
-    {
-      labels: labels,
-      datasets: resources.map(resource => ({
-        label: getResourceLabel(resource),
-        data: labels.map(label => countsPerDay[label][resource]),
-        backgroundColor: getResourceColor(resource),
-        borderColor: getResourceColor(resource),
-      }))
-    }
-  ];
+  const chartData = {
+    labels: labels,
+    datasets: resources.map(resource => ({
+      label: getResourceLabel(resource),
+      data: labels.map(label => countsPerDay[label][resource]),
+      backgroundColor: getResourceColor(resource),
+      borderColor: getResourceColor(resource),
+    }))
+  };
   
   return (
     <Card className="w-full h-full">
@@ -77,7 +75,7 @@ export function DailyBookingsReportChart({ dateRange }: DailyBookingsReportChart
       <CardContent>
         <div className="h-[400px]">
           <BarChart 
-            data={chartData} 
+            data={[chartData]} 
             config={{
               meet1: { color: getResourceColor('meet1') },
               meet2: { color: getResourceColor('meet2') },

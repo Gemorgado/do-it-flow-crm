@@ -39,6 +39,10 @@ export function ReservationStats() {
     }
   });
   
+  // Calculate totals
+  const totalReservations = Object.values(resourceCounts).reduce((sum, count) => sum + count, 0);
+  const totalWeeklyReservations = Object.values(weeklyResourceCounts).reduce((sum, count) => sum + count, 0);
+  
   return (
     <Card className="w-full">
       <CardHeader>
@@ -63,9 +67,7 @@ export function ReservationStats() {
               ))}
               <div className="flex justify-between items-center border-t pt-2 mt-2">
                 <span className="font-medium">Total Geral</span>
-                <span className="font-medium">
-                  {Object.values(resourceCounts).reduce((sum, count) => sum + count, 0)}
-                </span>
+                <span className="font-medium">{totalReservations}</span>
               </div>
             </div>
           </div>
@@ -90,9 +92,7 @@ export function ReservationStats() {
               ))}
               <div className="flex justify-between items-center border-t pt-2 mt-2">
                 <span className="font-medium">Total Semanal</span>
-                <span className="font-medium">
-                  {Object.values(weeklyResourceCounts).reduce((sum, count) => sum + count, 0)}
-                </span>
+                <span className="font-medium">{totalWeeklyReservations}</span>
               </div>
             </div>
           </div>

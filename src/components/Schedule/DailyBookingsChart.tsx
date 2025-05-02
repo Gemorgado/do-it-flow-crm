@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useReservations } from "@/hooks/useReservations";
 import { BarChart } from "@/components/ui/chart";
 import { eachDayOfInterval, format, parseISO, subDays } from "date-fns";
-import { Resource } from "@/constants/resources";
+import { Resource } from "@/types/schedule";
 import { getResourceColor, getResourceLabel } from "./util";
 
 export function DailyBookingsChart() {
@@ -41,17 +41,15 @@ export function DailyBookingsChart() {
   const resources: Resource[] = ['meet1', 'meet2', 'meet3', 'meet4', 'auditorio'];
   
   // Fix: Convert to the format expected by the BarChart component
-  const chartData = [
-    {
-      labels: labels,
-      datasets: resources.map(resource => ({
-        label: getResourceLabel(resource),
-        data: labels.map(label => countsPerDay[label][resource]),
-        backgroundColor: getResourceColor(resource),
-        borderColor: getResourceColor(resource),
-      }))
-    }
-  ];
+  const chartData = {
+    labels: labels,
+    datasets: resources.map(resource => ({
+      label: getResourceLabel(resource),
+      data: labels.map(label => countsPerDay[label][resource]),
+      backgroundColor: getResourceColor(resource),
+      borderColor: getResourceColor(resource),
+    }))
+  };
   
   return (
     <Card className="w-full">
@@ -61,7 +59,7 @@ export function DailyBookingsChart() {
       <CardContent>
         <div className="h-[400px]">
           <BarChart 
-            data={chartData} 
+            data={[chartData]} 
             config={{
               meet1: { color: getResourceColor('meet1') },
               meet2: { color: getResourceColor('meet2') },
