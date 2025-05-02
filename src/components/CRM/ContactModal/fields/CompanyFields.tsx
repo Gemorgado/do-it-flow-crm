@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { formatDocument } from "@/utils/documentUtils";
+import { cn } from "@/lib/utils";
+import { AlertCircle } from "lucide-react";
 
 interface CompanyFieldsProps {
   form: UseFormReturn<ContactModalValues>;
@@ -27,13 +29,24 @@ export function CompanyFields({ form }: CompanyFieldsProps) {
       <FormField
         control={form.control}
         name="companyOrPerson"
-        render={({ field }) => (
+        render={({ field, fieldState }) => (
           <FormItem>
-            <FormLabel>Company/Person*</FormLabel>
+            <div className="flex items-center justify-between">
+              <FormLabel>Company/Person*</FormLabel>
+              {fieldState.error && (
+                <span className="text-xs text-destructive flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" />
+                  {fieldState.error.message}
+                </span>
+              )}
+            </div>
             <FormControl>
               <Input 
                 placeholder="Company or person name" 
                 {...field} 
+                className={cn(
+                  fieldState.error && "border-destructive focus-visible:ring-destructive"
+                )}
                 style={{ backgroundColor: "white", color: "#333" }}
               />
             </FormControl>
@@ -45,14 +58,25 @@ export function CompanyFields({ form }: CompanyFieldsProps) {
       <FormField
         control={form.control}
         name="idNumber"
-        render={({ field }) => (
+        render={({ field, fieldState }) => (
           <FormItem>
-            <FormLabel>CNPJ/CPF</FormLabel>
+            <div className="flex items-center justify-between">
+              <FormLabel>CNPJ/CPF</FormLabel>
+              {fieldState.error && (
+                <span className="text-xs text-destructive flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" />
+                  {fieldState.error.message}
+                </span>
+              )}
+            </div>
             <FormControl>
               <Input 
                 placeholder="00.000.000/0000-00 or 000.000.000-00" 
                 {...field}
                 onChange={handleIdNumberChange}
+                className={cn(
+                  fieldState.error && "border-destructive focus-visible:ring-destructive"
+                )}
                 style={{ backgroundColor: "white", color: "#333" }}
               />
             </FormControl>

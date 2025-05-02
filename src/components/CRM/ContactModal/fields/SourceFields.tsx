@@ -17,26 +17,43 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
+import { AlertCircle } from "lucide-react";
 
 interface SourceFieldsProps {
   form: UseFormReturn<ContactModalValues>;
 }
 
 export function SourceFields({ form }: SourceFieldsProps) {
+  const sourceCategory = form.watch("sourceCategory");
+
   return (
     <>
       <FormField
         control={form.control}
         name="sourceCategory"
-        render={({ field }) => (
+        render={({ field, fieldState }) => (
           <FormItem>
-            <FormLabel>Source*</FormLabel>
+            <div className="flex items-center justify-between">
+              <FormLabel>Source*</FormLabel>
+              {fieldState.error && (
+                <span className="text-xs text-destructive flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" />
+                  {fieldState.error.message}
+                </span>
+              )}
+            </div>
             <Select 
               onValueChange={field.onChange} 
               defaultValue={field.value}
             >
               <FormControl>
-                <SelectTrigger style={{ backgroundColor: "white", color: "#333" }}>
+                <SelectTrigger 
+                  className={cn(
+                    fieldState.error && "border-destructive focus-visible:ring-destructive"
+                  )}
+                  style={{ backgroundColor: "white", color: "#333" }}
+                >
                   <SelectValue placeholder="Select a source" />
                 </SelectTrigger>
               </FormControl>
@@ -59,13 +76,36 @@ export function SourceFields({ form }: SourceFieldsProps) {
       <FormField
         control={form.control}
         name="sourceDetail"
-        render={({ field }) => (
+        render={({ field, fieldState }) => (
           <FormItem>
-            <FormLabel>Source Details</FormLabel>
+            <div className="flex items-center justify-between">
+              <FormLabel>
+                {sourceCategory === "indicacao" 
+                  ? "Who recommended" 
+                  : sourceCategory === "rede_social" 
+                    ? "Which social network" 
+                    : "Source details"}
+              </FormLabel>
+              {fieldState.error && (
+                <span className="text-xs text-destructive flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" />
+                  {fieldState.error.message}
+                </span>
+              )}
+            </div>
             <FormControl>
               <Input 
-                placeholder="Ex: Instagram, John's indication" 
+                placeholder={
+                  sourceCategory === "indicacao" 
+                    ? "Name of person who recommended" 
+                    : sourceCategory === "rede_social" 
+                      ? "Ex: Instagram, Facebook" 
+                      : "Ex: Website, Google"
+                } 
                 {...field} 
+                className={cn(
+                  fieldState.error && "border-destructive focus-visible:ring-destructive"
+                )}
                 style={{ backgroundColor: "white", color: "#333" }}
               />
             </FormControl>

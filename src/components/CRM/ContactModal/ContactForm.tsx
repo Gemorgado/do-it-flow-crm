@@ -11,6 +11,7 @@ import { BasicInfoFields } from "./fields/BasicInfoFields";
 import { CompanyFields } from "./fields/CompanyFields";
 import { DateAndServiceFields } from "./fields/DateAndServiceFields";
 import { SourceFields } from "./fields/SourceFields";
+import { FormErrorSummary } from "./FormErrorSummary";
 
 interface ContactFormProps {
   onSubmit: (data: ContactModalValues) => Promise<void>;
@@ -31,6 +32,7 @@ export function ContactForm({ onSubmit, isSubmitting }: ContactFormProps) {
       sourceCategory: "outro",
       sourceDetail: "",
     },
+    mode: "onBlur", // Validate fields when they lose focus
   });
 
   const handleFormSubmit = form.handleSubmit(onSubmit);
@@ -42,6 +44,8 @@ export function ContactForm({ onSubmit, isSubmitting }: ContactFormProps) {
         <CompanyFields form={form} />
         <DateAndServiceFields form={form} />
         <SourceFields form={form} />
+        
+        <FormErrorSummary />
         
         <DialogFooter>
           <Button 

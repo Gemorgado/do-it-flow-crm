@@ -20,6 +20,7 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { AlertCircle } from "lucide-react";
 
 interface DateAndServiceFieldsProps {
   form: UseFormReturn<ContactModalValues>;
@@ -31,9 +32,17 @@ export function DateAndServiceFields({ form }: DateAndServiceFieldsProps) {
       <FormField
         control={form.control}
         name="entryDate"
-        render={({ field }) => (
+        render={({ field, fieldState }) => (
           <FormItem className="flex flex-col">
-            <FormLabel>Entry Date*</FormLabel>
+            <div className="flex items-center justify-between">
+              <FormLabel>Entry Date*</FormLabel>
+              {fieldState.error && (
+                <span className="text-xs text-destructive flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" />
+                  {fieldState.error.message}
+                </span>
+              )}
+            </div>
             <Popover>
               <PopoverTrigger asChild>
                 <FormControl>
@@ -41,7 +50,8 @@ export function DateAndServiceFields({ form }: DateAndServiceFieldsProps) {
                     variant={"outline"}
                     className={cn(
                       "w-full pl-3 text-left font-normal",
-                      !field.value && "text-muted-foreground"
+                      !field.value && "text-muted-foreground",
+                      fieldState.error && "border-destructive focus-visible:ring-destructive"
                     )}
                     style={{ backgroundColor: "white", color: "#333" }}
                   >
@@ -81,13 +91,24 @@ export function DateAndServiceFields({ form }: DateAndServiceFieldsProps) {
       <FormField
         control={form.control}
         name="interestService"
-        render={({ field }) => (
+        render={({ field, fieldState }) => (
           <FormItem>
-            <FormLabel>Service of Interest</FormLabel>
+            <div className="flex items-center justify-between">
+              <FormLabel>Service of Interest</FormLabel>
+              {fieldState.error && (
+                <span className="text-xs text-destructive flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" />
+                  {fieldState.error.message}
+                </span>
+              )}
+            </div>
             <FormControl>
               <Input 
                 placeholder="Describe the service" 
                 {...field} 
+                className={cn(
+                  fieldState.error && "border-destructive focus-visible:ring-destructive"
+                )}
                 style={{ backgroundColor: "white", color: "#333" }}
               />
             </FormControl>
