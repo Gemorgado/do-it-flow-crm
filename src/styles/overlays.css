@@ -77,3 +77,32 @@ form textarea {
 button.text-white {
   color: white !important;
 }
+
+/* Fix for Select and Combobox overlay transparency */
+.select-content,
+.combobox-menu,
+[data-radix-select-content],
+[data-radix-popper-content] {
+  backdrop-filter: none !important;
+  background-color: rgb(255 255 255 / 1) !important;  /* opaco */
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  box-shadow: 0 6px 24px rgb(0 0 0 / .12) !important;
+  z-index: 140 !important;                      /* acima do modal */
+}
+
+/* Fix specifically for the client dropdown in the reservation form */
+[data-radix-popper-content] {
+  opacity: 1 !important;
+  background-color: white !important;
+}
+
+/* Ensure all popover menus are visible */
+.PopoverContent,
+[role="listbox"],
+[cmdk-list],
+.ComboboxContent {
+  background-color: white !important;
+  color: #333 !important;
+  border: 1px solid #ddd !important;
+  z-index: 150 !important;
+}

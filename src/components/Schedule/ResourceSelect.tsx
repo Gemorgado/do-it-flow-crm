@@ -3,14 +3,8 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/comp
 import { RESOURCES } from "@/constants/resources";
 import { getResourceColor } from "./util";
 import { UseFormReturn } from "react-hook-form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Check } from "lucide-react";
+import * as Select from '@radix-ui/react-select';
+import { ChevronDown, Check } from 'lucide-react';
 
 interface ResourceSelectProps {
   form: UseFormReturn<any>;
@@ -24,30 +18,47 @@ export function ResourceSelect({ form }: ResourceSelectProps) {
       render={({ field }) => (
         <FormItem>
           <FormLabel>Recurso</FormLabel>
-          <Select
-            value={field.value}
-            onValueChange={field.onChange}
+          <Select.Root 
+            value={field.value} 
+            onValueChange={(value) => field.onChange(value)}
             disabled={field.disabled}
           >
             <FormControl>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Selecione um recurso" />
-              </SelectTrigger>
+              <Select.Trigger className="w-full flex items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                <Select.Value placeholder="Selecione um recurso" />
+                <Select.Icon asChild><ChevronDown size={16} /></Select.Icon>
+              </Select.Trigger>
             </FormControl>
-            <SelectContent sideOffset={4} className="z-[100]">
-              {RESOURCES.map(resource => (
-                <SelectItem key={resource.id} value={resource.id} className="flex items-center gap-2">
-                  <div className="flex items-center">
-                    <div
-                      className="w-3 h-3 rounded-full mr-2"
-                      style={{ backgroundColor: getResourceColor(resource.id) }}
-                    />
-                    {resource.label}
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            
+            <Select.Portal>
+              <Select.Content 
+                className="select-content z-[150]" 
+                position="popper" 
+                sideOffset={4}
+              >
+                <Select.Viewport>
+                  {RESOURCES.map(resource => (
+                    <Select.Item 
+                      key={resource.id} 
+                      value={resource.id} 
+                      className="flex items-center gap-2 px-3 py-1.5 rounded hover:bg-zinc-100 cursor-pointer"
+                    >
+                      <Select.ItemIndicator className="absolute left-2 flex items-center justify-center">
+                        <Check size={12} />
+                      </Select.ItemIndicator>
+                      <div className="flex items-center pl-4">
+                        <div
+                          className="w-3 h-3 rounded-full mr-2"
+                          style={{ backgroundColor: getResourceColor(resource.id) }}
+                        />
+                        {resource.label}
+                      </div>
+                    </Select.Item>
+                  ))}
+                </Select.Viewport>
+              </Select.Content>
+            </Select.Portal>
+          </Select.Root>
           <FormMessage />
         </FormItem>
       )}
