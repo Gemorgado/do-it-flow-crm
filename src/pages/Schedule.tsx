@@ -1,40 +1,47 @@
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar, DoorClosed } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MeetingRoomCalendar } from "@/components/Schedule/MeetingRoomCalendar";
+import { DailyBookingsChart } from "@/components/Schedule/DailyBookingsChart";
+import { ReservationStats } from "@/components/Schedule/ReservationStats";
 
 export default function Schedule() {
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("calendar");
 
   return (
     <div className="container mx-auto py-6 animate-fade-in">
-      <h1 className="text-2xl font-bold mb-6">Agendamentos</h1>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="p-6 bg-white rounded-lg border shadow-sm">
-          <div className="flex items-center gap-2 mb-4">
-            <Calendar className="h-5 w-5 text-doIt-primary" />
-            <h2 className="text-lg font-semibold">Agendamentos Gerais</h2>
-          </div>
-          <p className="text-gray-500 mb-4">Gerencie seus agendamentos com clientes e prospects.</p>
-          <Button variant="outline" className="w-full">
-            Ver Agendamentos
-          </Button>
-        </div>
-        
-        <div className="p-6 bg-white rounded-lg border shadow-sm">
-          <div className="flex items-center gap-2 mb-4">
-            <DoorClosed className="h-5 w-5 text-doIt-primary" />
-            <h2 className="text-lg font-semibold">Salas de Reunião e Auditório</h2>
-          </div>
-          <p className="text-gray-500 mb-4">
-            Gerencie reservas e disponibilidade das salas de reunião e auditório.
-          </p>
-          <Button className="w-full" onClick={() => navigate("/salas-reuniao")}>
-            Gerenciar Salas
-          </Button>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+        <div>
+          <h1 className="text-2xl font-bold">Agendamentos</h1>
+          <p className="text-gray-500">Gerencie reservas de salas de reunião e auditório</p>
         </div>
       </div>
+      
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="mb-4">
+          <TabsTrigger value="calendar">Calendário</TabsTrigger>
+          <TabsTrigger value="statistics">Estatísticas</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="calendar">
+          <MeetingRoomCalendar />
+        </TabsContent>
+        
+        <TabsContent value="statistics">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2">
+              <DailyBookingsChart />
+            </div>
+            <div>
+              <ReservationStats />
+            </div>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

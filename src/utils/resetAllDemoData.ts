@@ -18,7 +18,7 @@ export async function resetAllDemoData() {
     // CRM
     'leads', 'clients', 'contracts', 'proposals', 'pipeline_stages',
     // espaços e ocupação
-    'spaceBindings', 'occupancy_trend',
+    'spaceBindings', 'occupancy_trend', 'reservations',
     // integrações
     'integrations',
     // snapshots Conexa / importador
@@ -99,6 +99,7 @@ export async function resetAllDemoData() {
     queryClient.invalidateQueries({ queryKey: ['marketing'] });
     queryClient.invalidateQueries({ queryKey: ['integrations'] });
     queryClient.invalidateQueries({ queryKey: ['occupancy_trend'] });
+    queryClient.invalidateQueries({ queryKey: ['reservations'] });
     console.log("✓ Cache React Query limpo");
   } catch (e) {
     console.warn("× Erro ao limpar cache do React Query:", e);
