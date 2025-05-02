@@ -6,7 +6,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { useMediaQuery } from "@/hooks/use-mobile";
 import { LeadFormValues } from "@/types/crm";
 import { useLeadModal } from "./hooks/useModalContext";
 import { LeadForm } from "./LeadForm";
@@ -19,6 +20,7 @@ export function LeadModal() {
   const { isOpen, close, options } = useLeadModal();
   const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const isMobile = useMediaQuery("(max-width: 640px)");
 
   const handleSubmit = (data: LeadFormValues & { stageId?: string }) => {
     setIsSubmitting(true);
@@ -35,19 +37,43 @@ export function LeadModal() {
     }, 1000);
   };
 
+  // Use Sheet em dispositivos móveis e Dialog em desktop
+  if (isMobile) {
+    return (
+      <Sheet open={isOpen} onOpenChange={close}>
+        <SheetContent className="pt-6 px-0 overflow-y-auto">
+          <SheetHeader className="px-4">
+            <SheetTitle>Novo Lead</SheetTitle>
+          </SheetHeader>
+
+          <div className="px-4 py-2 overflow-y-auto max-h-[80vh]">
+            <LeadForm 
+              onSubmit={handleSubmit} 
+              onCancel={close} 
+              presetStage={options?.presetStage} 
+              isSubmitting={isSubmitting}
+            />
+          </div>
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={close}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Novo Lead</DialogTitle>
         </DialogHeader>
 
-        <LeadForm 
-          onSubmit={handleSubmit} 
-          onCancel={close} 
-          presetStage={options?.presetStage} 
-          isSubmitting={isSubmitting}
-        />
+        <div className="py-2 overflow-y-auto">
+          <LeadForm 
+            onSubmit={handleSubmit} 
+            onCancel={close} 
+            presetStage={options?.presetStage} 
+            isSubmitting={isSubmitting}
+          />
+        </div>
       </DialogContent>
     </Dialog>
   );
