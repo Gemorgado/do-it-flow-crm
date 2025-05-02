@@ -22,6 +22,11 @@ export function OccupancyDetailsTable({
 }: OccupancyDetailsTableProps) {
   const [currentPage, setCurrentPage] = useState(1);
   
+  // Reset to page 1 when filters change
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [occupancyDetails]);
+  
   // Calculate pagination values
   const totalItems = occupancyDetails.length;
   const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
@@ -59,15 +64,23 @@ export function OccupancyDetailsTable({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {currentItems.map((item) => (
-              <TableRow key={item.type}>
-                <TableCell>{item.type}</TableCell>
-                <TableCell className="text-right">{item.total}</TableCell>
-                <TableCell className="text-right">{item.occupied}</TableCell>
-                <TableCell className="text-right">{item.available}</TableCell>
-                <TableCell className="text-right font-medium">{item.occupancyRate}</TableCell>
+            {currentItems.length > 0 ? (
+              currentItems.map((item) => (
+                <TableRow key={item.type}>
+                  <TableCell>{item.type}</TableCell>
+                  <TableCell className="text-right">{item.total}</TableCell>
+                  <TableCell className="text-right">{item.occupied}</TableCell>
+                  <TableCell className="text-right">{item.available}</TableCell>
+                  <TableCell className="text-right font-medium">{item.occupancyRate}</TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={5} className="h-24 text-center">
+                  Nenhum resultado encontrado com os filtros selecionados.
+                </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </div>
