@@ -42,16 +42,25 @@ export const SourceFields = () => {
             </div>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
               <FormControl>
-                <SelectTrigger className={cn(
-                  fieldState.error && "border-destructive focus-visible:ring-destructive"
-                )}>
+                <SelectTrigger 
+                  className={cn(
+                    fieldState.error && "border-destructive focus-visible:ring-destructive"
+                  )}
+                  style={{ backgroundColor: "white", color: "#333" }}
+                >
                   <SelectValue placeholder="Selecione a origem" />
                 </SelectTrigger>
               </FormControl>
-              <SelectContent>
-                <SelectItem value="indicacao">Indicação</SelectItem>
-                <SelectItem value="rede_social">Rede Social</SelectItem>
-                <SelectItem value="outro">Outro</SelectItem>
+              <SelectContent style={{ 
+                backgroundColor: "white", 
+                zIndex: 200, 
+                color: "#333", 
+                opacity: 1,
+                visibility: "visible"
+              }}>
+                <SelectItem value="indicacao" style={{ backgroundColor: "white", color: "#333" }}>Indicação</SelectItem>
+                <SelectItem value="rede_social" style={{ backgroundColor: "white", color: "#333" }}>Rede Social</SelectItem>
+                <SelectItem value="outro" style={{ backgroundColor: "white", color: "#333" }}>Outro</SelectItem>
               </SelectContent>
             </Select>
             <FormMessage />
@@ -92,6 +101,7 @@ export const SourceFields = () => {
                 className={cn(
                   fieldState.error && "border-destructive focus-visible:ring-destructive"
                 )}
+                style={{ backgroundColor: "white", color: "#333" }}
               />
             </FormControl>
             <FormMessage />

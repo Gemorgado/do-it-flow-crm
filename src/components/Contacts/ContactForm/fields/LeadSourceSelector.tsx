@@ -42,21 +42,30 @@ export function LeadSourceSelector({ control }: LeadSourceSelectorProps) {
             defaultValue={field.value}
           >
             <FormControl>
-              <SelectTrigger className={cn(
-                fieldState.error && "border-destructive focus-visible:ring-destructive"
-              )}>
+              <SelectTrigger 
+                className={cn(
+                  fieldState.error && "border-destructive focus-visible:ring-destructive"
+                )}
+                style={{ backgroundColor: "white", color: "#333" }}
+              >
                 <SelectValue placeholder="Selecione uma origem" />
               </SelectTrigger>
             </FormControl>
-            <SelectContent>
-              <SelectItem value="site_organico">Site (Orgânico)</SelectItem>
-              <SelectItem value="google_ads">Google Ads</SelectItem>
-              <SelectItem value="meta_ads">Meta Ads</SelectItem>
-              <SelectItem value="instagram">Instagram</SelectItem>
-              <SelectItem value="indicacao">Indicação</SelectItem>
-              <SelectItem value="visita_presencial">Visita Presencial</SelectItem>
-              <SelectItem value="eventos">Eventos</SelectItem>
-              <SelectItem value="outros">Outros</SelectItem>
+            <SelectContent style={{ 
+              backgroundColor: "white", 
+              zIndex: 200, 
+              color: "#333", 
+              opacity: 1,
+              visibility: "visible"
+            }}>
+              <SelectItem value="site_organico" style={{ backgroundColor: "white", color: "#333" }}>Site (Orgânico)</SelectItem>
+              <SelectItem value="google_ads" style={{ backgroundColor: "white", color: "#333" }}>Google Ads</SelectItem>
+              <SelectItem value="meta_ads" style={{ backgroundColor: "white", color: "#333" }}>Meta Ads</SelectItem>
+              <SelectItem value="instagram" style={{ backgroundColor: "white", color: "#333" }}>Instagram</SelectItem>
+              <SelectItem value="indicacao" style={{ backgroundColor: "white", color: "#333" }}>Indicação</SelectItem>
+              <SelectItem value="visita_presencial" style={{ backgroundColor: "white", color: "#333" }}>Visita Presencial</SelectItem>
+              <SelectItem value="eventos" style={{ backgroundColor: "white", color: "#333" }}>Eventos</SelectItem>
+              <SelectItem value="outros" style={{ backgroundColor: "white", color: "#333" }}>Outros</SelectItem>
             </SelectContent>
           </Select>
           <FormMessage />

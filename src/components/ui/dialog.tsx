@@ -20,16 +20,16 @@ const DialogOverlay = React.forwardRef<
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      "radix-dialog-overlay",
+      "radix-dialog-overlay fixed inset-0 z-50 bg-black/80 backdrop-blur-sm",
       className
     )}
     style={{
-      opacity: 1,
       position: 'fixed',
       inset: 0,
       backgroundColor: 'rgba(0, 0, 0, 0.6)',
       backdropFilter: 'blur(4px)',
-      zIndex: 100
+      zIndex: 100,
+      opacity: 1
     }}
     {...props}
   />
@@ -45,14 +45,15 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "radix-dialog-content fixed left-[50%] top-[50%] grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border p-6 duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg",
+        "radix-dialog-content fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border p-6 duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg",
         className
       )}
       style={{
         backgroundColor: 'white',
         opacity: 1,
-        zIndex: 110,
-        boxShadow: '0 15px 50px rgba(0, 0, 0, 0.25)'
+        zIndex: 150,
+        boxShadow: '0 15px 50px rgba(0, 0, 0, 0.25)',
+        visibility: 'visible'
       }}
       {...props}
     >
