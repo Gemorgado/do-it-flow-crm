@@ -9,3 +9,19 @@
 @layer components {
   /* Add custom component styles here */
 }
+
+/* Fix for CMDK z-index and positioning */
+[cmdk-root] {
+  position: relative;
+  z-index: 50;
+}
+
+[cmdk-list] {
+  max-height: 300px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+[cmdk-item] {
+  cursor: pointer;
+}

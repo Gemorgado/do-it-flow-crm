@@ -70,6 +70,15 @@ export function Combobox({
     [onSearch, onQueryChange]
   );
 
+  // Add a ref to handle the Command component children
+  const commandRef = React.useRef<HTMLDivElement>(null);
+  
+  // Use an effect to properly handle potential null refs from cmdk
+  React.useEffect(() => {
+    // This helps debug the issue with cmdk
+    console.log("Command ref current:", commandRef.current);
+  }, [open]);
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -85,7 +94,7 @@ export function Combobox({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-        <Command>
+        <Command ref={commandRef}>
           <CommandInput 
             placeholder={searchPlaceholder}
             value={query}
