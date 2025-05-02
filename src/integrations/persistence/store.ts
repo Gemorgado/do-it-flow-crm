@@ -1,5 +1,5 @@
 
-import type { Client, Interaction, Lead, Location, SpaceBinding, Task } from "@/types";
+import type { Client, Contact, Interaction, Lead, Location, SpaceBinding, Task } from "@/types";
 import type { ConexaSnapshot } from "../conexa/types";
 import { locations as mockLocations } from "@/data/locations";
 
@@ -7,6 +7,7 @@ import { locations as mockLocations } from "@/data/locations";
 export const store = {
   leads: [] as Lead[],
   clients: [] as Client[],
+  contacts: [] as Contact[],
   tasks: [] as Task[],
   interactions: [] as Interaction[],
   locations: [] as Location[],
@@ -22,6 +23,9 @@ export const loadFromStorage = () => {
 
     const clientsData = localStorage.getItem('doitflow_clients');
     if (clientsData) store.clients = JSON.parse(clientsData);
+
+    const contactsData = localStorage.getItem('doitflow_contacts');
+    if (contactsData) store.contacts = JSON.parse(contactsData);
 
     const tasksData = localStorage.getItem('doitflow_tasks');
     if (tasksData) store.tasks = JSON.parse(tasksData);
@@ -57,6 +61,7 @@ export const saveToStorage = () => {
   try {
     localStorage.setItem('doitflow_leads', JSON.stringify(store.leads));
     localStorage.setItem('doitflow_clients', JSON.stringify(store.clients));
+    localStorage.setItem('doitflow_contacts', JSON.stringify(store.contacts));
     localStorage.setItem('doitflow_tasks', JSON.stringify(store.tasks));
     localStorage.setItem('doitflow_interactions', JSON.stringify(store.interactions));
     localStorage.setItem('doitflow_locations', JSON.stringify(store.locations));

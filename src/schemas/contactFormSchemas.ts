@@ -115,7 +115,9 @@ export const contactModalSchema = z.object({
   idNumber: z.string().optional(),
   entryDate: z.string(),
   interestService: z.string().optional(),
-  sourceCategory: z.enum(["indicação", "rede social", "outro"]),
+  sourceCategory: z.enum(["indicacao", "rede_social", "outro"], {
+    errorMap: () => ({ message: "Selecione uma categoria de origem válida" }),
+  }),
   sourceDetail: z.string().optional(),
 });
 

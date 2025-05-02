@@ -37,17 +37,17 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { ContactModalValues, contactModalSchema } from "@/schemas/contactFormSchemas";
-import { useCreateContact } from "@/api/crm";
-import { formatDocument } from "@/utils/documentUtils";
 import { useContactModal } from "./hooks/useModalContext";
+import { formatDocument } from "@/utils/documentUtils";
 import { toast } from "sonner";
+import { contactPersistence } from "@/integrations/persistence/contactPersistence";
 
 /**
  * Modal para criação de novos contatos
  */
 export function ContactModal() {
   const { isOpen, close } = useContactModal();
-  const { mutate, isPending } = useCreateContact();
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const form = useForm<ContactModalValues>({
     resolver: zodResolver(contactModalSchema),
@@ -64,34 +64,27 @@ export function ContactModal() {
     },
   });
 
-  const onSubmit = (data: ContactModalValues) => {
+  const onSubmit = async (data: ContactModalValues) => {
     console.log("Submitting form data:", data);
     
-    // Simulação de sucesso para teste
-    // Como a API está retornando 404, vamos simular um sucesso
     try {
-      // Simulando sucesso
+      setIsSubmitting(true);
+      // Usar o sistema de persistência local em vez da API
+      await contactPersistence.createContact(data);
+      
       toast.success("Contato criado com sucesso", {
         description: "O contato foi adicionado ao sistema"
       });
       
       close();
       form.reset();
-      
-      // Manter apenas para debug
-      mutate(data, {
-        onSuccess: () => {
-          console.log("Mutation success");
-          close();
-          form.reset();
-        },
-        onError: (error: Error) => {
-          console.error("Mutation error:", error);
-          // Já estamos simulando sucesso, então não precisamos mostrar erro
-        }
-      });
     } catch (error) {
       console.error("Error in onSubmit:", error);
+      toast.error("Erro ao criar contato", {
+        description: "Ocorreu um erro ao processar sua solicitação."
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -342,16 +335,27 @@ export function ContactModal() {
                 type="button" 
                 variant="outline" 
                 onClick={close}
+                disabled={isSubmitting}
                 style={{ backgroundColor: "white", color: "#333", opacity: 1 }}
               >
                 Cancelar
               </Button>
               <Button 
                 type="submit" 
-                disabled={isPending}
+                disabled={isSubmitting}
                 style={{ backgroundColor: "hsl(var(--primary))", color: "white", opacity: 1 }}
               >
-                {isPending ? "Salvando..." : "Salvar"}
+                {isSubmitting ? (
+                  <>
+                    <span className="opacity-0">Salvar</span>
+                    <span className="absolute inset-0 flex items-center justify-center">
+                      <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                    </span>
+                  </>
+                ) : "Salvar"}
               </Button>
             </DialogFooter>
           </form>

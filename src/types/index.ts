@@ -52,6 +52,22 @@ export interface Client {
   assignedTo?: string;
 }
 
+// Interface para contatos
+export interface Contact {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  company?: string;
+  idNumber?: string;
+  entryDate: string;
+  interestService?: string;
+  sourceCategory: "indicacao" | "rede_social" | "outro";
+  sourceDetail?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // Import and re-export ServiceType from our dedicated file
 import { ServiceType } from "./service";
 export type { ServiceType };
