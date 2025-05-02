@@ -3,6 +3,7 @@ import { queryClient } from "@/lib/queryClient";
 import { toast } from "@/hooks/use-toast";
 import { resetPipelineDemo } from "./resetPipelineDemo";
 import { resetMetricDemo } from "./resetMetricDemo";
+import { resetOccupancyTrend } from "./resetOccupancyTrend";
 import { store } from "@/integrations/persistence/store";
 
 /**
@@ -10,15 +11,64 @@ import { store } from "@/integrations/persistence/store";
  * chama endpoint backend para limpar coleção/DB.
  */
 export async function resetAllDemoData() {
-  /* 1. Pipeline demo data - chama função específica ---------- */
+  /* 1. Limpar chaves específicas do localStorage ------------- */
+  const DEMO_KEYS = [
+    // métricas
+    'dashboard_metrics', 'growth_metrics', 'report_metrics',
+    // CRM
+    'leads', 'clients', 'contracts', 'proposals', 'pipeline_stages',
+    // espaços e ocupação
+    'spaceBindings', 'occupancy_trend',
+    // integrações
+    'integrations',
+    // snapshots Conexa / importador
+    'conexa_snapshot', 'import_templates',
+    // cache de consultas
+    'query-cache',
+    // outras coleções
+    'tasks', 'messages', 'notifications', 'schedules',
+    // configurações de UI
+    'ui-state', 'filters'
+  ];
+  
+  // Remover cada chave individualmente
+  DEMO_KEYS.forEach(key => {
+    try {
+      localStorage.removeItem(key);
+    } catch (err) {
+      console.warn(`Falha ao remover chave '${key}':`, err);
+    }
+  });
+  
+  console.log("✓ Chaves específicas de localStorage removidas");
+
+  /* 2. Pipeline demo data - chama função específica ---------- */
   // Usa a função já existente para manter compatibilidade
-  await resetPipelineDemo();
+  try {
+    await resetPipelineDemo();
+    console.log("✓ Pipeline demo data resetado");
+  } catch (e) {
+    console.warn("× Erro ao resetar pipeline demo:", e);
+  }
 
-  /* 1.1 Metrics demo data - chama função específica --------- */
+  /* 3. Metrics demo data - chama função específica --------- */
   // Limpa todas as métricas
-  resetMetricDemo();
+  try {
+    resetMetricDemo();
+    console.log("✓ Metrics demo data resetado");
+  } catch (e) {
+    console.warn("× Erro ao resetar métricas demo:", e);
+  }
 
-  /* 2. Chaves conhecidas no LocalStorage / IndexedDB --------- */
+  /* 4. Occupancy trend data - chama função específica ------- */
+  try {
+    resetOccupancyTrend();
+    console.log("✓ Occupancy trend resetado");
+  } catch (e) {
+    console.warn("× Erro ao resetar occupancy trend:", e);
+  }
+
+  /* 5. Chaves conhecidas no LocalStorage / IndexedDB --------- */
   // Limpa absolutamente TODAS as chaves de localStorage
   // para garantir total remoção de dados
   try {
@@ -29,24 +79,32 @@ export async function resetAllDemoData() {
   }
   
   // Limpa também session storage para completude
-  sessionStorage.clear();
-  console.log("✓ Session storage limpo");
+  try {
+    sessionStorage.clear();
+    console.log("✓ Session storage limpo");
+  } catch (e) {
+    console.warn("× Erro ao limpar session storage:", e);
+  }
 
-  /* 3. Cache React-Query: limpa tudo ------------------------- */
-  // Limpa o cache do React Query incluindo queries específicas
-  queryClient.clear();
+  /* 6. Cache React-Query: limpa tudo ------------------------- */
+  try {
+    // Limpa o cache do React Query incluindo queries específicas
+    queryClient.clear();
+    
+    // Invalida explicitamente as queries que podem estar carregando dados de dashboard e relatórios
+    queryClient.invalidateQueries({ queryKey: ['dashboardStats'] });
+    queryClient.invalidateQueries({ queryKey: ['charts'] });
+    queryClient.invalidateQueries({ queryKey: ['reports'] });
+    queryClient.invalidateQueries({ queryKey: ['growth'] });
+    queryClient.invalidateQueries({ queryKey: ['marketing'] });
+    queryClient.invalidateQueries({ queryKey: ['integrations'] });
+    queryClient.invalidateQueries({ queryKey: ['occupancy_trend'] });
+    console.log("✓ Cache React Query limpo");
+  } catch (e) {
+    console.warn("× Erro ao limpar cache do React Query:", e);
+  }
   
-  // Invalida explicitamente as queries que podem estar carregando dados de dashboard e relatórios
-  queryClient.invalidateQueries({ queryKey: ['dashboardStats'] });
-  queryClient.invalidateQueries({ queryKey: ['charts'] });
-  queryClient.invalidateQueries({ queryKey: ['reports'] });
-  queryClient.invalidateQueries({ queryKey: ['growth'] });
-  queryClient.invalidateQueries({ queryKey: ['marketing'] });
-  queryClient.invalidateQueries({ queryKey: ['integrations'] });
-  queryClient.invalidateQueries({ queryKey: ['occupancy_trend'] });
-  
-  console.log("✓ Cache React Query limpo");
-  
+  /* 7. Store da aplicação ------------------------------------ */
   // Limpa também o store - para garantir que os dados fictícios sejam removidos
   try {
     // Usa um método seguro para limpar o store sem tentar modificar propriedades readonly

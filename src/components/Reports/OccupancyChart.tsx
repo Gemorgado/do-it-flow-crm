@@ -23,6 +23,16 @@ export function OccupancyChart({
     Estações: { color: "#06b6d4" }     // Fixed color for workstations
   };
 
+  const handleResetClick = () => {
+    if (window.confirm("Deseja realmente zerar o histórico da taxa de ocupação?")) {
+      onResetTrend();
+      toast({
+        title: "Histórico zerado",
+        description: "Os dados de ocupação foram removidos com sucesso."
+      });
+    }
+  };
+
   return (
     <ChartCard 
       title="Evolução da Taxa de Ocupação" 
@@ -32,7 +42,7 @@ export function OccupancyChart({
           <FileChartColumnIncreasing className="h-4 w-4 text-muted-foreground" />
           <Trash2
             className="w-4 h-4 cursor-pointer text-zinc-500 hover:text-zinc-800"
-            onClick={onResetTrend}
+            onClick={handleResetClick}
             aria-label="Zerar histórico da taxa de ocupação"
           />
         </div>
