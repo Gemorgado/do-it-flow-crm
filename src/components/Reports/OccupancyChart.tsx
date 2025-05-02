@@ -4,6 +4,7 @@ import { ChartCard } from "@/components/Dashboard/ChartCard";
 import { FileChartColumnIncreasing, Trash2 } from "lucide-react";
 import { BarChart } from "@/components/ui/chart";
 import { OccupancyTrendItem } from "@/hooks/useOccupancyTrend";
+import { toast } from "@/hooks/use-toast";
 
 interface OccupancyChartProps {
   occupancyOverTimeData: OccupancyTrendItem[];
