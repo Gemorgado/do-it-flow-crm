@@ -40,15 +40,18 @@ export function DailyBookingsChart() {
   
   const resources: Resource[] = ['meet1', 'meet2', 'meet3', 'meet4', 'auditorio'];
   
-  const chartData = {
-    labels: labels,
-    datasets: resources.map(resource => ({
-      label: getResourceLabel(resource),
-      data: labels.map(label => countsPerDay[label][resource]),
-      backgroundColor: getResourceColor(resource),
-      borderColor: getResourceColor(resource),
-    }))
-  };
+  // Fix: Convert to the format expected by the BarChart component
+  const chartData = [
+    {
+      labels: labels,
+      datasets: resources.map(resource => ({
+        label: getResourceLabel(resource),
+        data: labels.map(label => countsPerDay[label][resource]),
+        backgroundColor: getResourceColor(resource),
+        borderColor: getResourceColor(resource),
+      }))
+    }
+  ];
   
   return (
     <Card className="w-full">

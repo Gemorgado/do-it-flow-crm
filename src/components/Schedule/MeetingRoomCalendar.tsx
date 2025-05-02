@@ -63,7 +63,6 @@ export function MeetingRoomCalendar() {
             }}
             slotMinTime="08:00:00"
             slotMaxTime="19:00:00"
-            allDaySlot={false}
             slotDuration="00:30:00"
             events={calendarEvents}
             selectMirror
