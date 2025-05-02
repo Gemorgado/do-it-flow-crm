@@ -65,12 +65,14 @@ label {
 /* Fix for buttons */
 button, [role="button"], .button {
   opacity: 1 !important;
+  color: #000000 !important;
+  background-color: rgb(67, 56, 202) !important;
 }
 
 button:not([data-variant]), 
 button[data-variant="default"] {
-  background-color: hsl(var(--primary)) !important;
-  color: white !important;
+  background-color: rgb(67, 56, 202) !important;
+  color: #000000 !important;
   opacity: 1 !important;
 }
 
@@ -79,6 +81,7 @@ button[data-variant="link"],
 button[data-variant="outline"] {
   background-color: transparent !important;
   opacity: 1 !important;
+  color: #000000 !important;
 }
 
 /* Fix for login screen elements */
@@ -110,6 +113,7 @@ form button[type="submit"],
 .card button[type="submit"],
 .bg-indigo-600 {
   opacity: 1 !important;
-  color: white !important;
+  color: #000000 !important;
+  background-color: rgb(67, 56, 202) !important;
   visibility: visible !important;
 }

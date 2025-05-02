@@ -146,10 +146,16 @@ export default function LoginPage() {
                     </FormLabel>
                   </FormItem>} />
               
-              <Button type="submit" disabled={isSubmitting} style={{
-              opacity: 1,
-              color: "white !important"
-            }} className="w-full bg-indigo-600 hover:bg-indigo-700 text-slate-950">
+              <Button 
+                type="submit" 
+                disabled={isSubmitting} 
+                style={{
+                  opacity: 1,
+                  backgroundColor: "rgb(67, 56, 202)",
+                  color: "#000000"
+                }} 
+                className="w-full text-[#000000] bg-[rgb(67,56,202)] hover:bg-[rgb(67,56,202)/90]"
+              >
                 {isSubmitting ? <>
                     <Loader className="mr-2 h-4 w-4 animate-spin" /> Entrando...
                   </> : "Entrar"}

@@ -10,15 +10,15 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90 opacity-100",
+        default: "bg-[rgb(67,56,202)] text-[#000000] hover:bg-[rgb(67,56,202)/90] opacity-100",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90 opacity-100",
+          "bg-destructive text-[#000000] hover:bg-destructive/90 opacity-100",
         outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground opacity-100",
+          "border border-input bg-background text-[#000000] hover:bg-accent hover:text-accent-foreground opacity-100",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80 opacity-100",
-        ghost: "hover:bg-accent hover:text-accent-foreground opacity-100",
-        link: "text-primary underline-offset-4 hover:underline opacity-100",
+          "bg-secondary text-[#000000] hover:bg-secondary/80 opacity-100",
+        ghost: "text-[#000000] hover:bg-accent hover:text-accent-foreground opacity-100",
+        link: "text-primary underline-offset-4 hover:underline text-[#000000] opacity-100",
       },
       size: {
         default: "h-10 px-4 py-2",
@@ -47,7 +47,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
-        style={{ opacity: 1, ...style }}
+        style={{ opacity: 1, backgroundColor: "rgb(67, 56, 202)", color: "#000000", ...style }}
         data-variant={variant}
         {...props}
       />

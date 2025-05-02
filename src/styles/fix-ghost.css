@@ -1,4 +1,3 @@
-
 /* Fix for ghost mode - ensure everything has proper opacity */
 body, #root, #__next, .app, div, p, span, h1, h2, h3, h4, h5, h6, 
 button, a, input, select, textarea, label, li, ul, ol {
@@ -17,7 +16,8 @@ input[type="button"],
 [data-state="closed"],
 [data-state="open"] {
   opacity: 1 !important;
-  color: inherit !important;
+  color: #000000 !important;
+  background-color: rgb(67, 56, 202) !important;
   filter: none !important;
 }
 
@@ -93,18 +93,27 @@ button[type="submit"] {
 .w-full.max-w-sm button,
 .bg-indigo-600 {
   opacity: 1 !important;
-  color: white !important;
+  color: #000000 !important;
+  background-color: rgb(67, 56, 202) !important;
   filter: none !important;
   visibility: visible !important;
 }
 
 /* Fix for Shadcn button variants */
 button[data-variant="default"],
-button[data-variant="destructive"],
+button[data-variant="destructive"] {
+  opacity: 1 !important;
+  visibility: visible !important;
+  color: #000000 !important;
+  background-color: rgb(67, 56, 202) !important;
+}
+
 button[data-variant="outline"],
 button[data-variant="secondary"],
 button[data-variant="ghost"],
 button[data-variant="link"] {
   opacity: 1 !important;
   visibility: visible !important;
+  color: #000000 !important;
+  background-color: transparent !important;
 }
