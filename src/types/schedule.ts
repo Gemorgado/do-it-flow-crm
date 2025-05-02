@@ -1,9 +1,9 @@
 
-import { Resource } from "@/constants/resources";
+import { Resource as ImportedResource } from "@/constants/resources";
 
 export interface Reservation {
   id: string;
-  resource: Resource;
+  resource: ImportedResource;
   title: string;           // ex.: "Reunião Acme"
   start: string;           // ISO (yyyy-mm-ddTHH:MM)
   end: string;             // ISO
@@ -12,4 +12,4 @@ export interface Reservation {
 }
 
 // Re-export Resource type for components that import from here
-export { Resource };
+export type { ImportedResource as Resource };
