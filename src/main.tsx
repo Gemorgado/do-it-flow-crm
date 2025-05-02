@@ -31,7 +31,7 @@ if (import.meta.env.DEV) {
       if (OrigItem && typeof OrigItem === 'object') {
         // This preserves the original component reference and its properties
         const originalRender = OrigItem.render;
-        if (originalRender) {
+        if (originalRender && typeof originalRender === 'function') {
           OrigItem.render = function(props: any) {
             if (!props?.value || props.value === '') {
               console.error('🛑 <Select.Item> sem value:', props.children);
