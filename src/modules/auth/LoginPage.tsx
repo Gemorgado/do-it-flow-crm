@@ -73,7 +73,7 @@ export default function LoginPage() {
   
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-50 to-zinc-100 dark:from-zinc-900 dark:to-zinc-800">
-      <Card className="w-full max-w-sm shadow-lg">
+      <Card className="w-full max-w-sm shadow-lg border border-gray-200">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-2">
             <img 
@@ -86,7 +86,7 @@ export default function LoginPage() {
               }}
             />
           </div>
-          <CardTitle className="text-2xl font-bold">Do It Hub</CardTitle>
+          <CardTitle className="text-2xl font-bold text-gray-800">Do It Hub</CardTitle>
         </CardHeader>
         
         <CardContent>
@@ -97,17 +97,18 @@ export default function LoginPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel className="text-gray-700">Email</FormLabel>
                     <FormControl>
                       <Input
                         type="email"
                         placeholder="seu@email.com"
                         autoComplete="email"
                         aria-label="Email"
+                        className="bg-white text-gray-800"
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-red-600" />
                   </FormItem>
                 )}
               />
@@ -117,17 +118,18 @@ export default function LoginPage() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Senha</FormLabel>
+                    <FormLabel className="text-gray-700">Senha</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
                         placeholder="******"
                         aria-label="Senha"
                         autoComplete="current-password"
+                        className="bg-white text-gray-800"
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-red-600" />
                   </FormItem>
                 )}
               />
@@ -144,14 +146,18 @@ export default function LoginPage() {
                         onCheckedChange={field.onChange}
                       />
                     </FormControl>
-                    <FormLabel htmlFor="rememberMe" className="text-sm font-normal cursor-pointer">
+                    <FormLabel htmlFor="rememberMe" className="text-sm font-normal cursor-pointer text-gray-700">
                       Lembrar-me
                     </FormLabel>
                   </FormItem>
                 )}
               />
               
-              <Button type="submit" className="w-full" disabled={isSubmitting}>
+              <Button 
+                type="submit" 
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white" 
+                disabled={isSubmitting}
+              >
                 {isSubmitting ? (
                   <>
                     <Loader className="mr-2 h-4 w-4 animate-spin" /> Entrando...
@@ -164,8 +170,8 @@ export default function LoginPage() {
           </Form>
         </CardContent>
         
-        <CardFooter className="justify-center text-sm text-muted-foreground">
-          <p>Use admin@doitflow.com / 123456 para teste</p>
+        <CardFooter className="justify-center text-sm">
+          <p className="text-gray-600">Use admin@doitflow.com / 123456 para teste</p>
         </CardFooter>
       </Card>
     </div>

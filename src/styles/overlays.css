@@ -17,7 +17,7 @@
 .radix-alert-content,
 .radix-drawer-content {
   background: var(--overlay-bg, #ffffff) !important; /* fallback */
-  color: inherit !important;
+  color: #333 !important;
   border-radius: 0.75rem !important;
   box-shadow: 0 15px 50px rgba(0, 0, 0, 0.25) !important;
   z-index: 110 !important;
@@ -49,4 +49,31 @@
   background: rgba(255, 255, 255, 0.98) !important;
   border: 1px solid rgba(0, 0, 0, 0.05) !important;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08) !important;
+  color: #333 !important;
+}
+
+/* Ensure combobox and select components have proper contrast */
+.Select-content,
+.Combobox-content,
+.Popover-content,
+.RadixSelect-content {
+  color: #333 !important;
+  background-color: white !important;
+  border: 1px solid #ddd !important;
+}
+
+/* Ensure proper contrast for form elements */
+form label {
+  color: #555 !important;
+}
+
+form input, 
+form select, 
+form textarea {
+  color: #333 !important;
+  background-color: white !important;
+}
+
+button.text-white {
+  color: white !important;
 }

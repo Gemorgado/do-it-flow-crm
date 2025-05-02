@@ -60,3 +60,37 @@
   background-color: var(--highlighted-bg);
   color: var(--highlighted-color);
 }
+
+/* Fix for form controls legibility */
+.form-label, 
+label, 
+.form-text,
+.card-title,
+.card-header,
+.card-content,
+.form-message {
+  color: #333 !important;
+}
+
+.text-muted-foreground {
+  color: #666 !important;
+}
+
+/* Ensure login page has proper contrast */
+button {
+  color: white;
+  background-color: hsl(var(--primary)) !important;
+}
+
+button[variant="outline"],
+button[data-variant="outline"] {
+  color: #333;
+  background-color: transparent !important;
+  border: 1px solid #ddd;
+}
+
+button[variant="ghost"],
+button[data-variant="ghost"] {
+  color: #333;
+  background-color: transparent !important;
+}

@@ -1,3 +1,4 @@
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -35,8 +36,23 @@
 
 .card {
   padding: 2em;
+  background-color: white;
 }
 
 .read-the-docs {
-  color: #888;
+  color: #555;
+}
+
+/* Fix for contrast issues */
+h1, h2, h3, h4, h5, h6, p, span, div {
+  color: inherit;
+}
+
+input, select, textarea {
+  color: #333;
+  background-color: white;
+}
+
+label {
+  color: #555;
 }
