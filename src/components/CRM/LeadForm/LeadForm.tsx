@@ -45,8 +45,8 @@ export function LeadForm({
         // Map source category to LeadSource type
         const sourceMap: Record<string, LeadSource> = {
           'indicacao': 'indicacao',
-          'rede_social': 'instagram',
-          'outro': 'outros'
+          'rede_social': 'instagram', // Map rede_social to instagram as a valid LeadSource
+          'outro': 'outros' // Map outro to outros
         };
         
         // Criar um novo objeto Lead com os dados do formulário
