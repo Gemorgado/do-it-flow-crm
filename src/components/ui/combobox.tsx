@@ -53,6 +53,7 @@ export function Combobox({
   onQueryChange
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
+  const commandRef = React.useRef<HTMLDivElement>(null)
   
   // Ensure options is always an array, even if it's null or undefined
   const safeOptions = React.useMemo(() => options || [], [options]);
@@ -85,7 +86,7 @@ export function Combobox({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-        <Command>
+        <Command ref={commandRef}>
           <CommandInput 
             placeholder={searchPlaceholder}
             value={query}

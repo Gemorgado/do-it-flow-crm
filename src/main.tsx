@@ -8,8 +8,19 @@ import { SnapshotProvider } from './contexts/SnapshotProvider.tsx'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClient } from './lib/queryClient.ts'
 
-// ⚠️ Remova depois de corrigir
+// ⚠️ Safeguards for libraries
 if (import.meta.env.DEV) {
+  // Fix for cmdk issues with null references
+  import('cmdk').then((cmdk: any) => {
+    const origComponentDidMount = cmdk.Command.prototype.componentDidMount;
+    cmdk.Command.prototype.componentDidMount = function() {
+      if (this.rootRef?.current) {
+        origComponentDidMount.call(this);
+      }
+    };
+  });
+  
+  // Original warning code for Select.Item
   import('@radix-ui/react-select').then((radix: any) => {
     const OrigItem = radix.Item;
     // cast para any → não reclama de $$typeof
