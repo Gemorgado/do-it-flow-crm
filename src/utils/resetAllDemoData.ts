@@ -19,45 +19,20 @@ export async function resetAllDemoData() {
   resetMetricDemo();
 
   /* 2. Chaves conhecidas no LocalStorage / IndexedDB --------- */
-  const storagesToRemove = [
-    // CRM e Pipeline
-    "leads", "clients", "contracts", "proposals", "pipeline_stages", 
-    // Mockups e variações de nomes
-    "mockClients", "mockContacts", "mockProposals", "mockLeads",
-    "customers", "clients_data", "crm_data", "contracts_data",
-    // Espaços e integrações
-    "conexa_snapshot", "spaceBindings", "space_bindings", "import_templates",
-    // Integrations
-    "integrations",
-    // Growth e dados de marketing
-    "growth_data", "campaigns", "marketing_data", "leads_time_data",
-    // Dashboard e relatórios
-    "dashboard_data", "dashboard_stats", "reports_data", "charts_data",
-    // Store do DoitFlow
-    "doitflow_leads", "doitflow_clients", "doitflow_tasks", "doitflow_interactions",
-    "doitflow_locations", "doitflow_bindings", "doitflow_snapshots",
-    // Usuários e preferências
-    "users", "user_preferences", "preferences"
-  ];
-
-  // Remove todos os itens de storage
-  storagesToRemove.forEach(key => {
-    try {
-      localStorage.removeItem(key);
-      console.log(`✓ Storage removido: ${key}`);
-    } catch (e) {
-      console.warn(`× Erro ao remover storage: ${key}`, e);
-    }
-  });
+  // Limpa absolutamente TODAS as chaves de localStorage
+  // para garantir total remoção de dados
+  try {
+    localStorage.clear();
+    console.log("✓ TODO localStorage limpo");
+  } catch (e) {
+    console.warn("× Erro ao limpar todo localStorage:", e);
+  }
   
   // Limpa também session storage para completude
   sessionStorage.clear();
   console.log("✓ Session storage limpo");
 
-  /* 3. Backend (opcional) ----------------------------------- */
-  // await api.delete("/admin/demo-data");   // habilite quando existir
-
-  /* 4. Cache React-Query: limpa tudo ------------------------- */
+  /* 3. Cache React-Query: limpa tudo ------------------------- */
   // Limpa o cache do React Query incluindo queries específicas
   queryClient.clear();
   
@@ -68,6 +43,7 @@ export async function resetAllDemoData() {
   queryClient.invalidateQueries({ queryKey: ['growth'] });
   queryClient.invalidateQueries({ queryKey: ['marketing'] });
   queryClient.invalidateQueries({ queryKey: ['integrations'] });
+  queryClient.invalidateQueries({ queryKey: ['occupancy_trend'] });
   
   console.log("✓ Cache React Query limpo");
   

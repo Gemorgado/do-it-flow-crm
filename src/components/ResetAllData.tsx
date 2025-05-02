@@ -11,14 +11,14 @@ export function ResetAllData() {
   const [isResetting, setIsResetting] = useState(false);
 
   const handleReset = async () => {
-    if (window.confirm("Deseja limpar todos os dados de demonstração? Esta ação não pode ser desfeita.")) {
+    if (confirm("Tem certeza que deseja zerar TODOS os dados fictícios da plataforma? Esta ação não pode ser desfeita.")) {
       setIsResetting(true);
       
       try {
         // Reset all demo data
         await resetAllDemoData();
         
-        // Reset metric data specifically
+        // Reset metric data specifically (garantir limpeza dupla)
         resetMetricDemo();
         
         // Reset occupancy trend data
@@ -49,13 +49,15 @@ export function ResetAllData() {
 
   return (
     <Button
-      variant="ghost"
-      size="icon"
+      variant="destructive"
+      size="sm"
       onClick={handleReset}
       disabled={isResetting}
       title="Limpar todos os dados de demonstração"
+      className="flex items-center gap-2"
     >
       <Trash2 className="h-4 w-4" />
+      {isResetting ? "Zerando..." : "Zerar dados"}
     </Button>
   );
 }
