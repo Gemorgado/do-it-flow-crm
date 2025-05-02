@@ -10,8 +10,8 @@ import { ClientSelect } from "./ClientSelect";
 import { DateTimeFields } from "./DateTimeFields";
 import { AuditoriumWarning } from "./AuditoriumWarning";
 import { useReservationForm } from "@/hooks/useReservationForm";
-import { ComboboxOption } from "@/components/ui/combobox";
 import { validateReservationForm, showValidationError } from "@/services/reservationValidation";
+import { z } from "zod";
 
 interface NewReservationDialogProps {
   isOpen: boolean;
@@ -22,8 +22,23 @@ interface NewReservationDialogProps {
   };
 }
 
+// Define validation schema
+const reservationSchema = z.object({
+  title: z.string().min(1, "Título é obrigatório"),
+  resource: z.enum(["meet1", "meet2", "meet3", "meet4", "auditorio"]),
+  start: z.string().min(1, "Data e hora inicial são obrigatórias"),
+  end: z.string().min(1, "Data e hora final são obrigatórias"),
+  clientId: z.string().min(1, "Cliente é obrigatório")
+});
+
 export function NewReservationDialog({ isOpen, onClose, defaultValues }: NewReservationDialogProps) {
-  const { form, selectedClient, setSelectedClient } = useReservationForm({ defaultValues });
+  const { form } = useReservationForm({ 
+    defaultValues: {
+      ...defaultValues,
+      clientId: ""
+    },
+    schema: reservationSchema
+  });
   const createReservation = useCreateReservation();
   const selectedResource = form.watch("resource");
 
@@ -34,7 +49,7 @@ export function NewReservationDialog({ isOpen, onClose, defaultValues }: NewRese
         resource: values.resource,
         start: values.start,
         end: values.end,
-        selectedClient
+        selectedClient: values.clientId ? { id: values.clientId, name: "" } : null
       });
 
       if (validationError) {
@@ -47,7 +62,7 @@ export function NewReservationDialog({ isOpen, onClose, defaultValues }: NewRese
         title: values.title,
         start: values.start,
         end: values.end,
-        customerId: selectedClient!.id,
+        customerId: values.clientId,
         createdBy: "current-user" // In a real app, get from authentication context
       });
       
@@ -66,13 +81,9 @@ export function NewReservationDialog({ isOpen, onClose, defaultValues }: NewRese
     }
   };
 
-  const handleClientSelect = (client: ComboboxOption) => {
-    setSelectedClient(client);
-  };
-
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] z-50">
         <DialogHeader>
           <DialogTitle>Nova Reserva</DialogTitle>
         </DialogHeader>
@@ -95,12 +106,7 @@ export function NewReservationDialog({ isOpen, onClose, defaultValues }: NewRese
             
             <ResourceSelect form={form} />
             
-            <div className="grid grid-cols-1 gap-4">
-              <ClientSelect 
-                selectedClient={selectedClient} 
-                onSelectClient={handleClientSelect} 
-              />
-            </div>
+            <ClientSelect form={form} />
             
             <DateTimeFields form={form} />
             
@@ -112,7 +118,7 @@ export function NewReservationDialog({ isOpen, onClose, defaultValues }: NewRese
               </Button>
               <Button 
                 type="submit" 
-                disabled={createReservation.isPending || !selectedClient}
+                disabled={createReservation.isPending || !form.formState.isValid}
               >
                 {createReservation.isPending ? "Salvando..." : "Salvar Reserva"}
               </Button>

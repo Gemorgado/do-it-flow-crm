@@ -1,35 +1,49 @@
 
-import { FormItem, FormLabel } from "@/components/ui/form";
+import { FormItem, FormLabel, FormMessage, FormControl } from "@/components/ui/form";
 import { Combobox, ComboboxOption } from "@/components/ui/combobox";
 import { useClients } from "@/hooks/useClients";
 import { useClientActiveContract } from "@/hooks/useClients";
 import { Badge } from "@/components/ui/badge";
 import { User, BriefcaseBusiness, Phone } from "lucide-react";
+import { Controller } from "react-hook-form";
+import { UseFormReturn } from "react-hook-form";
+import { useState } from "react";
 
 interface ClientSelectProps {
-  selectedClient: ComboboxOption | null;
-  onSelectClient: (client: ComboboxOption) => void;
+  form: UseFormReturn<any>;
 }
 
-export function ClientSelect({ selectedClient, onSelectClient }: ClientSelectProps) {
+export function ClientSelect({ form }: ClientSelectProps) {
   const { data: clients = [] } = useClients();
+  const [selectedClient, setSelectedClient] = useState<ComboboxOption | null>(null);
   const { data: activeContract } = useClientActiveContract(selectedClient?.id || null);
+  const [query, setQuery] = useState("");
   
+  const handleClientSelect = (client: ComboboxOption) => {
+    setSelectedClient(client);
+    form.setValue("clientId", client.id, { shouldValidate: true });
+  };
+
   return (
     <FormItem className="space-y-3">
       <FormLabel>Cliente</FormLabel>
-      <Combobox
-        options={clients.map(client => ({ id: client.id, name: client.name }))}
-        selected={selectedClient}
-        onSelect={onSelectClient}
-        getOptionLabel={(client) => client.name}
-        placeholder="Selecione o cliente"
-        searchPlaceholder="Buscar cliente..."
-        emptyMessage="Nenhum cliente encontrado"
-      />
+      <FormControl>
+        <Combobox
+          options={clients.map(client => ({ id: client.id, name: client.name }))}
+          selected={selectedClient}
+          onSelect={handleClientSelect}
+          getOptionLabel={(client) => client.name}
+          placeholder="Selecione o cliente"
+          searchPlaceholder="Buscar cliente..."
+          emptyMessage="Nenhum cliente encontrado"
+          query={query}
+          onQueryChange={setQuery}
+        />
+      </FormControl>
+      <FormMessage />
 
-      {!selectedClient && (
-        <p className="text-xs text-orange-600 mt-1">
+      {!selectedClient && form.formState.errors.clientId && (
+        <p className="text-xs text-destructive">
           É necessário selecionar um cliente
         </p>
       )}
