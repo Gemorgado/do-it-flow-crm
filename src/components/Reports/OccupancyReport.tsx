@@ -17,7 +17,13 @@ interface OccupancyReportProps {
 }
 
 export function OccupancyReport({ dateRange }: OccupancyReportProps) {
-  const { occupancyOverTimeData, hasData } = useOccupancyTrend();
+  // Default occupancy rates for rooms and workstations
+  const roomOccupancyRate = 70; // 70% occupancy for rooms
+  const workstationOccupancyRate = 80; // 80% occupancy for workstations
+  
+  // Fix: Pass the required parameters to useOccupancyTrend
+  const { occupancyOverTimeData, hasData } = useOccupancyTrend(roomOccupancyRate, workstationOccupancyRate);
+  
   const [occupancyStatus, setOccupancyStatus] = useState<OccupancyStatus>('all');
   const { filteredOccupancyDetails } = useOccupancyReportData(occupancyStatus);
   
