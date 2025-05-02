@@ -55,25 +55,27 @@ export const contactPersistence = {
     store.contacts.push(contact);
     saveToStorage();
     
-    // Opcionalmente, criar um lead associado ao contato
-    if (contact.company) {
-      const lead: Lead = {
-        id: uuidv4(),
-        name: contact.name,
-        company: contact.company,
-        email: contact.email,
-        phone: contact.phone,
-        status: "novo",
-        source: mapSourceCategoryToLeadSource(contact.sourceCategory),
-        createdAt: now,
-        updatedAt: now,
-        stage: pipelineStages[0],
-        notes: contact.interestService || ""
-      };
-      
-      store.leads.push(lead);
-      saveToStorage();
+    // SEMPRE criar um lead associado ao contato para o pipeline
+    const lead: Lead = {
+      id: uuidv4(),
+      name: contact.name,
+      company: contact.company || "",
+      email: contact.email,
+      phone: contact.phone,
+      status: "novo",
+      source: mapSourceCategoryToLeadSource(contact.sourceCategory),
+      createdAt: now,
+      updatedAt: now,
+      stage: pipelineStages[0],
+      notes: contact.interestService || ""
+    };
+    
+    // Adicionar o novo lead ao store.leads
+    if (!store.leads) {
+      store.leads = [];
     }
+    store.leads.push(lead);
+    saveToStorage();
     
     return Promise.resolve(contact);
   },

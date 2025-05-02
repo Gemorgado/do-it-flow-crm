@@ -13,12 +13,18 @@ export const useCreateLead = () => {
   return useMutation({
     mutationFn: async (data: LeadFormValues & { stageId?: string }) => {
       try {
+        // Ensure stageId is set to "1" (New/Novo) if not provided
+        const leadData = {
+          ...data,
+          stageId: data.stageId || "1" // Default to first stage (Novo) if not specified
+        };
+        
         const response = await fetch(`/api/crm/leads`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(data),
+          body: JSON.stringify(leadData),
         });
 
         if (!response.ok) {
@@ -38,7 +44,7 @@ export const useCreateLead = () => {
       queryClient.invalidateQueries({ queryKey: ['leads'] });
       
       toast.success("Lead criado com sucesso", {
-        description: "O lead foi adicionado ao sistema"
+        description: "O lead foi adicionado ao sistema e ao pipeline"
       });
       return null;
     },
