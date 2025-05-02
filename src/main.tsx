@@ -25,7 +25,7 @@ if (import.meta.env.DEV) {
   
   // Warning code for Select.Item
   import('@radix-ui/react-select').then((radix) => {
-    if (radix) {
+    if (radix && radix.Item) {
       const OrigItem = radix.Item;
       // Instead of replacing the component directly, monkey patch it safely
       if (OrigItem && typeof OrigItem === 'object') {
