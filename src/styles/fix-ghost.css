@@ -1,0 +1,24 @@
+
+/* Fix for ghost mode - ensure everything has proper opacity */
+body, #root, #__next, .app, div, p, span, h1, h2, h3, h4, h5, h6, button, a, input, select, textarea {
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+/* Fix for selects and dropdowns */
+.select-content,
+.select-dropdown,
+.select-popup,
+[data-radix-select-content],
+[data-radix-popper-content],
+.PopoverContent,
+[role="listbox"],
+[cmdk-list],
+.ComboboxContent,
+.DropdownMenuContent,
+.radix-select-content {
+  opacity: 1 !important;
+  background-color: white !important;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12) !important;
+  z-index: 150 !important;
+}

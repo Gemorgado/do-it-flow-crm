@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 import './styles/overlays.css'
+import './styles/fix-ghost.css' // Add this import last to override any opacity issues
 import { trackMetaPixelEvent } from './utils/metaPixelUtils.ts'
 import { SnapshotProvider } from './contexts/SnapshotProvider.tsx'
 import { QueryClientProvider } from '@tanstack/react-query'
