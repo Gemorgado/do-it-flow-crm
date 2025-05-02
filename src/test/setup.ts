@@ -1,5 +1,6 @@
 
 import '@testing-library/jest-dom';
+import { vi } from 'vitest'; // Add explicit import for vi
 
 // Mock localStorage and sessionStorage
 const localStorageMock = (function() {
