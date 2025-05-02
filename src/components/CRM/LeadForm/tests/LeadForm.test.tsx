@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { LeadForm } from '../LeadForm';
 import { leadPersistence } from '@/integrations/persistence/leadPersistence';
 import { toast } from '@/hooks/use-toast';
+import { pipelineStages } from '@/data/leadsData';
 
 // Mock dependencies
 vi.mock('@/integrations/persistence/leadPersistence', () => ({
@@ -120,5 +121,67 @@ describe('LeadForm Component', () => {
     
     // Check that the form submission went through
     expect(mockOnSubmit).toHaveBeenCalled();
+  });
+
+  // Business Rule 1: Lead → Pipeline - Todo lead criado vai para a coluna "Novos Leads" do pipeline.
+  it('assigns new lead to the first pipeline stage (Novos Leads) when no preset stage is provided', async () => {
+    // Render form without preset stage
+    render(
+      <LeadForm 
+        onSubmit={mockOnSubmit} 
+        onCancel={mockOnCancel}
+        presetStage={undefined} // No preset stage
+        isSubmitting={false}
+      />
+    );
+    
+    // Fill in required fields
+    await userEvent.type(screen.getByLabelText(/Empresa ou pessoa/i), 'Test Company');
+    await userEvent.type(screen.getByLabelText(/Serviço de Interesse/i), 'Test Service');
+    
+    // Submit the form
+    const submitButton = screen.getByRole('button', { name: /Salvar/i });
+    await userEvent.click(submitButton);
+    
+    // Wait for form submission
+    await waitFor(() => {
+      expect(leadPersistence.createLead).toHaveBeenCalled();
+    });
+    
+    // Check that the lead was created with the first pipeline stage (id: "1", Novos)
+    const createdLead = leadPersistence.createLead.mock.calls[0][0];
+    expect(createdLead.stage.id).toBe("1");
+    expect(createdLead.stage.name).toBe("Novo");
+    expect(createdLead.stage.order).toBe(1);
+  });
+
+  it('uses preset stage when provided', async () => {
+    render(
+      <LeadForm 
+        onSubmit={mockOnSubmit} 
+        onCancel={mockOnCancel}
+        presetStage={mockPresetStage} // Using the mock preset stage (Qualificação)
+        isSubmitting={false}
+      />
+    );
+    
+    // Fill in required fields
+    await userEvent.type(screen.getByLabelText(/Empresa ou pessoa/i), 'Test Company');
+    await userEvent.type(screen.getByLabelText(/Serviço de Interesse/i), 'Test Service');
+    
+    // Submit the form
+    const submitButton = screen.getByRole('button', { name: /Salvar/i });
+    await userEvent.click(submitButton);
+    
+    // Wait for form submission
+    await waitFor(() => {
+      expect(leadPersistence.createLead).toHaveBeenCalled();
+    });
+    
+    // Check that the lead was created with the preset stage
+    const createdLead = leadPersistence.createLead.mock.calls[0][0];
+    expect(createdLead.stage.id).toBe(mockPresetStage.id);
+    expect(createdLead.stage.name).toBe(mockPresetStage.name);
+    expect(createdLead.stage.order).toBe(mockPresetStage.order);
   });
 });
