@@ -1,10 +1,12 @@
 
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { PipelineStage } from "@/types";
+import { LeadFormValues } from "@/types/crm";
 
 // Lead Modal Context
 interface LeadModalOptions {
   presetStage?: PipelineStage;
+  onSubmit?: (data: LeadFormValues & { stageId?: string }) => Promise<void> | void;
 }
 
 interface LeadModalContextType {

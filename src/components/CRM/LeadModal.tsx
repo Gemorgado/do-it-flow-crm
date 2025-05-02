@@ -11,30 +11,25 @@ import { useMediaQuery } from "@/hooks/use-mobile";
 import { LeadFormValues } from "@/types/crm";
 import { useLeadModal } from "./hooks/useModalContext";
 import { LeadForm } from "./LeadForm";
-import { useQueryClient } from "@tanstack/react-query";
+import { useCreateLead } from "@/api/crm";
 
 /**
  * Modal para criação de novos leads
  */
 export function LeadModal() {
   const { isOpen, close, options } = useLeadModal();
-  const queryClient = useQueryClient();
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const createLeadMutation = useCreateLead();
   const isMobile = useMediaQuery("(max-width: 640px)");
 
-  const handleSubmit = (data: LeadFormValues & { stageId?: string }) => {
-    setIsSubmitting(true);
-    
-    // Simular uma operação assíncrona
-    setTimeout(() => {
-      setIsSubmitting(false);
-      
-      // Invalidar as queries para atualizar os dados na UI
-      queryClient.invalidateQueries({ queryKey: ['leads'] });
-      
-      // Fechar o modal
+  const handleSubmit = async (data: LeadFormValues & { stageId?: string }) => {
+    try {
+      // Use the API mutation to create the lead
+      await createLeadMutation.mutateAsync(data);
+      // Close the modal on success
       close();
-    }, 1000);
+    } catch (error) {
+      console.error("Error creating lead:", error);
+    }
   };
 
   // Use Sheet em dispositivos móveis e Dialog em desktop
@@ -59,7 +54,7 @@ export function LeadModal() {
               onSubmit={handleSubmit} 
               onCancel={close} 
               presetStage={options?.presetStage} 
-              isSubmitting={isSubmitting}
+              isSubmitting={createLeadMutation.isPending}
             />
           </div>
         </SheetContent>
@@ -87,7 +82,7 @@ export function LeadModal() {
             onSubmit={handleSubmit} 
             onCancel={close} 
             presetStage={options?.presetStage} 
-            isSubmitting={isSubmitting}
+            isSubmitting={createLeadMutation.isPending}
           />
         </div>
       </DialogContent>
