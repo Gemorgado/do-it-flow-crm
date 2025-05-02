@@ -1,10 +1,18 @@
 
 import React, { useState, useEffect } from "react";
-import { FormProvider } from "react-hook-form";
+import { FormProvider, useFormContext } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Form } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  FormDescription
+} from "@/components/ui/form";
 import { LeadFormValues } from "@/types/crm";
-import { PipelineStage } from "@/types";
+import { LeadStatus, PipelineStage } from "@/types";
 import { useLeadFormLogic } from "./hooks/useLeadFormLogic";
 import { v4 as uuidv4 } from 'uuid';
 import { leadPersistence } from "@/integrations/persistence/leadPersistence";
@@ -48,7 +56,7 @@ export function LeadForm({
           company: data.companyOrPerson,
           email: data.email || 'sem-email@exemplo.com',
           phone: data.phone || '',
-          status: 'novo',
+          status: 'novo' as LeadStatus,
           source: data.sourceCategory,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
