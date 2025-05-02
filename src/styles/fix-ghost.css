@@ -6,7 +6,56 @@ button, a, input, select, textarea, label, li, ul, ol {
   filter: none !important;
 }
 
-/* Fix for selects and dropdowns */
+/* Fix specifically for buttons with !important to override any other styles */
+button, 
+.button,
+[role="button"],
+.btn,
+a[href],
+input[type="submit"],
+input[type="button"],
+[data-state="closed"],
+[data-state="open"] {
+  opacity: 1 !important;
+  color: inherit !important;
+  filter: none !important;
+}
+
+/* Fix for Radix UI components and dialogs */
+[data-radix-popper-content-wrapper],
+[data-radix-dialog-overlay],
+[data-radix-dialog-content],
+[data-radix-select-content],
+[data-radix-select-viewport],
+[data-radix-select-item],
+[cmdk-root],
+[cmdk-input],
+[cmdk-item],
+[cmdk-list] {
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+/* Fix for form elements on login page */
+.form-label, 
+.form-control, 
+.form-message,
+form input, 
+form select, 
+form textarea,
+.form-item input,
+.form-item label,
+.form button,
+.card button,
+form button,
+button[type="submit"] {
+  opacity: 1 !important;
+  color: inherit !important;
+  filter: none !important;
+  visibility: visible !important;
+}
+
+/* Fix for popups and overlays */
 .select-content,
 .select-dropdown,
 .select-popup,
@@ -25,34 +74,37 @@ button, a, input, select, textarea, label, li, ul, ol {
   background-color: white !important;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12) !important;
   z-index: 150 !important;
+  visibility: visible !important;
+  display: block !important;
 }
 
-/* Fix specifically for buttons */
-button, 
-.button,
-[role="button"],
-.btn,
-a[href],
-input[type="submit"],
-input[type="button"] {
+/* Ensure login page elements are fully visible */
+.login-form,
+.card,
+.card-header,
+.card-content,
+.card-footer {
   opacity: 1 !important;
-  color: inherit !important;
+  visibility: visible !important;
 }
 
-/* Fix specifically for login screen elements */
-.login-form button,
-form button,
-.card button,
-.form-field,
-.form-label,
-.form-item {
+/* Fix login screen specifically */
+.flex.min-h-screen button,
+.w-full.max-w-sm button,
+.bg-indigo-600 {
   opacity: 1 !important;
-  color: inherit !important;
+  color: white !important;
+  filter: none !important;
+  visibility: visible !important;
 }
 
-/* Fix for Radix UI components */
-[data-radix-popper-content-wrapper],
-[data-radix-dialog-overlay],
-[data-radix-dialog-content] {
+/* Fix for Shadcn button variants */
+button[data-variant="default"],
+button[data-variant="destructive"],
+button[data-variant="outline"],
+button[data-variant="secondary"],
+button[data-variant="ghost"],
+button[data-variant="link"] {
   opacity: 1 !important;
+  visibility: visible !important;
 }

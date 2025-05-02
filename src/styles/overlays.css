@@ -9,6 +9,7 @@
   background: rgba(0, 0, 0, 0.6) !important;
   backdrop-filter: blur(4px) !important;
   z-index: 100 !important;
+  opacity: 1 !important;
 }
 
 /* === Conteúdo (janela) === */
@@ -29,6 +30,7 @@
   @apply bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100
          rounded-lg shadow-xl ring-1 ring-zinc-200 dark:ring-zinc-700
          z-[120];
+  opacity: 1 !important;
 }
 
 /* Remove transparência acidental */
@@ -36,13 +38,15 @@
 [data-radix-select-content][style*="opacity"],
 [data-radix-menu-content][style*="opacity"],
 [data-radix-dropdown-menu-content][style*="opacity"],
-[data-radix-popover-content][style*="opacity"] {
+[data-radix-popover-content][style*="opacity"],
+[data-radix-dialog-content][style*="opacity"] {
   opacity: 1 !important;
 }
 
 /* Opcional: borda nas opções */
 .radix-select-item {
   @apply focus:bg-zinc-100 dark:focus:bg-zinc-800;
+  opacity: 1 !important;
 }
 
 /* Fix para dropdowns e tooltips translúcidos */
@@ -57,6 +61,7 @@
   border: 1px solid rgba(0, 0, 0, 0.05) !important;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08) !important;
   color: #333 !important;
+  opacity: 1 !important;
 }
 
 /* Ensure combobox and select components have proper contrast */
@@ -67,11 +72,13 @@
   color: #333 !important;
   background-color: white !important;
   border: 1px solid #ddd !important;
+  opacity: 1 !important;
 }
 
 /* Ensure proper contrast for form elements */
 form label {
   color: #555 !important;
+  opacity: 1 !important;
 }
 
 form input, 
@@ -79,10 +86,12 @@ form select,
 form textarea {
   color: #333 !important;
   background-color: white !important;
+  opacity: 1 !important;
 }
 
 button.text-white {
   color: white !important;
+  opacity: 1 !important;
 }
 
 /* Fix for Select and Combobox overlay transparency */
@@ -95,12 +104,15 @@ button.text-white {
   border: 1px solid rgba(0, 0, 0, 0.05) !important;
   box-shadow: 0 6px 24px rgb(0 0 0 / .12) !important;
   z-index: 140 !important;                      /* acima do modal */
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 /* Fix specifically for the client dropdown in the reservation form */
 [data-radix-popper-content] {
   opacity: 1 !important;
   background-color: white !important;
+  visibility: visible !important;
 }
 
 /* Ensure all popover menus are visible */
@@ -113,6 +125,8 @@ button.text-white {
   color: #333 !important;
   border: 1px solid #ddd !important;
   z-index: 150 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 /* Fix for specifically for login buttons */
@@ -121,6 +135,7 @@ button.text-white {
 button[type="submit"] {
   opacity: 1 !important;
   color: white !important; 
+  visibility: visible !important;
 }
 
 /* Ensure buttons in modals have good visibility */
@@ -128,10 +143,21 @@ button[type="submit"] {
 [data-radix-popper-content] button,
 [role="dialog"] button {
   opacity: 1 !important;
+  visibility: visible !important;
 }
 
 /* Fix for ghost style on dropdowns, popups, etc */
 [data-state="open"],
 [data-state="closed"] {
   opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Ensure popover content is fully visible */
+.popover-content {
+  opacity: 1 !important;
+  background-color: white !important;
+  visibility: visible !important;
+  display: block !important;
+  color: #333 !important;
 }

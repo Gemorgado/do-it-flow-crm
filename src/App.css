@@ -37,31 +37,33 @@
 .card {
   padding: 2em;
   background-color: white;
+  opacity: 1 !important;
 }
 
 .read-the-docs {
   color: #555;
 }
 
-/* Fix for contrast issues */
-h1, h2, h3, h4, h5, h6, p, span, div {
-  color: inherit;
+/* Fix for contrast issues - ensure all elements have proper opacity */
+h1, h2, h3, h4, h5, h6, p, span, div, button, a, input, select, textarea, label, li, ul, ol {
   opacity: 1 !important;
+  filter: none !important;
+  color: inherit;
 }
 
 input, select, textarea {
-  color: #333;
-  background-color: white;
+  color: #333 !important;
+  background-color: white !important;
   opacity: 1 !important;
 }
 
 label {
-  color: #555;
+  color: #555 !important;
   opacity: 1 !important;
 }
 
 /* Fix for buttons */
-button {
+button, [role="button"], .button {
   opacity: 1 !important;
 }
 
@@ -69,9 +71,45 @@ button:not([data-variant]),
 button[data-variant="default"] {
   background-color: hsl(var(--primary)) !important;
   color: white !important;
+  opacity: 1 !important;
+}
+
+button[data-variant="ghost"],
+button[data-variant="link"],
+button[data-variant="outline"] {
+  background-color: transparent !important;
+  opacity: 1 !important;
 }
 
 /* Fix for login screen elements */
 .form-label, .form-control, .form-message {
   opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Fix for popover components */
+.popover-content, [data-radix-popover-content] {
+  opacity: 1 !important;
+  visibility: visible !important;
+  background-color: white !important;
+  color: #333 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Fix for dialog/modal content */
+[data-radix-dialog-content],
+[role="dialog"],
+.dialog-content {
+  opacity: 1 !important;
+  visibility: visible !important;
+  background-color: white !important;
+}
+
+/* Fix for login button */
+form button[type="submit"],
+.card button[type="submit"],
+.bg-indigo-600 {
+  opacity: 1 !important;
+  color: white !important;
+  visibility: visible !important;
 }
