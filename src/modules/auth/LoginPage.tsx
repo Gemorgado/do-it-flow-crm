@@ -78,7 +78,7 @@ export default function LoginPage() {
           <div className="flex justify-center mb-2">
             <img src="/do-it-logo.png" alt="Do It Hub Logo" className="h-10" />
           </div>
-          <CardTitle className="text-2xl font-bold">Do It Hub – Acesso</CardTitle>
+          <CardTitle className="text-2xl font-bold">Do It Hub</CardTitle>
         </CardHeader>
         
         <CardContent>
