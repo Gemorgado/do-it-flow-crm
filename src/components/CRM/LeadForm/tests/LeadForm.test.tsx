@@ -1,9 +1,10 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@/test/utils'; // Use our custom utils
+import { render, screen, waitFor } from '@/test/utils';
 import userEvent from '@testing-library/user-event';
 import { LeadForm } from '../LeadForm';
 import { leadPersistence } from '@/integrations/persistence/leadPersistence';
+import { toast } from '@/hooks/use-toast';
 
 // Mock dependencies
 vi.mock('@/integrations/persistence/leadPersistence', () => ({
@@ -19,14 +20,6 @@ vi.mock('@/hooks/use-toast', () => ({
 vi.mock('uuid', () => ({
   v4: () => 'mock-uuid',
 }));
-
-// Mock hook form context
-vi.mock('react-hook-form', async () => {
-  const actual = await vi.importActual('react-hook-form');
-  return {
-    ...actual,
-  };
-});
 
 describe('LeadForm Component', () => {
   const mockOnSubmit = vi.fn();
@@ -55,12 +48,12 @@ describe('LeadForm Component', () => {
     // Check for key form elements
     expect(screen.getByText('Informações básicas')).toBeInTheDocument();
     expect(screen.getByLabelText(/Empresa ou pessoa/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Data de entrada/i)).toBeInTheDocument();
-    expect(screen.getByText('Notas adicionais')).toBeInTheDocument();
+    expect(screen.getByText('Detalhes adicionais')).toBeInTheDocument();
+    expect(screen.getByText('Origem')).toBeInTheDocument();
     
     // Check for buttons
-    expect(screen.getByText('Cancelar')).toBeInTheDocument();
-    expect(screen.getByText('Criar lead')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Cancelar/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Salvar/i })).toBeInTheDocument();
   });
 
   it('should call the cancel function when cancel button is clicked', async () => {
@@ -73,14 +66,36 @@ describe('LeadForm Component', () => {
       />
     );
     
-    const cancelButton = screen.getByText('Cancelar');
+    const cancelButton = screen.getByRole('button', { name: /Cancelar/i });
     await userEvent.click(cancelButton);
     
     expect(mockOnCancel).toHaveBeenCalledTimes(1);
   });
 
-  // This is a more complex test that would require more setup
-  it('should attempt to submit the form with valid data', async () => {
+  it('shows validation errors when submitting empty form', async () => {
+    render(
+      <LeadForm 
+        onSubmit={mockOnSubmit} 
+        onCancel={mockOnCancel}
+        presetStage={mockPresetStage}
+        isSubmitting={false}
+      />
+    );
+    
+    // Submit the empty form
+    const submitButton = screen.getByRole('button', { name: /Salvar/i });
+    await userEvent.click(submitButton);
+    
+    // Wait for validation errors to appear
+    await waitFor(() => {
+      expect(screen.getByText(/corrija os seguintes erros/i)).toBeInTheDocument();
+    });
+    
+    // Ensure the onSubmit callback wasn't called
+    expect(mockOnSubmit).not.toHaveBeenCalled();
+  });
+
+  it('submits the form with valid data', async () => {
     render(
       <LeadForm 
         onSubmit={mockOnSubmit} 
@@ -92,14 +107,18 @@ describe('LeadForm Component', () => {
     
     // Fill in required fields
     await userEvent.type(screen.getByLabelText(/Empresa ou pessoa/i), 'Test Company');
+    await userEvent.type(screen.getByLabelText(/Serviço de Interesse/i), 'Test Service');
     
     // Submit the form
-    const submitButton = screen.getByText('Criar lead');
+    const submitButton = screen.getByRole('button', { name: /Salvar/i });
     await userEvent.click(submitButton);
     
-    // In a real test, you'd want to wait for form submission and validation
+    // Wait for form submission
     await waitFor(() => {
       expect(leadPersistence.createLead).toHaveBeenCalled();
     });
+    
+    // Check that the form submission went through
+    expect(mockOnSubmit).toHaveBeenCalled();
   });
 });
