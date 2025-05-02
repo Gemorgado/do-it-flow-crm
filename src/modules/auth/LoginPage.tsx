@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -9,21 +10,26 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "./AuthProvider";
 import { Loader } from "lucide-react";
+
 interface LoginCredentials {
   email: string;
   password: string;
   rememberMe?: boolean;
 }
+
 const loginSchema = z.object({
   email: z.string().email("Email inválido").min(1, "Email é obrigatório"),
   password: z.string().min(6, "Senha precisa ter pelo menos 6 caracteres"),
   rememberMe: z.boolean().optional()
 });
+
 type LoginFormData = z.infer<typeof loginSchema>;
+
 export default function LoginPage() {
   const {
     login
   } = useAuth();
+
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -32,6 +38,7 @@ export default function LoginPage() {
       rememberMe: false
     }
   });
+  
   const {
     isSubmitting
   } = form.formState;
@@ -41,12 +48,14 @@ export default function LoginPage() {
     const savedEmail = localStorage.getItem("auth-email");
     const savedPassword = localStorage.getItem("auth-password");
     const savedRememberMe = localStorage.getItem("auth-remember-me") === "true";
+    
     if (savedEmail && savedPassword && savedRememberMe) {
       form.setValue("email", savedEmail);
       form.setValue("password", savedPassword);
       form.setValue("rememberMe", true);
     }
   }, [form]);
+
   const onSubmit = async (data: LoginFormData) => {
     try {
       // Save or remove credentials based on rememberMe
@@ -59,11 +68,13 @@ export default function LoginPage() {
         localStorage.removeItem("auth-password");
         localStorage.removeItem("auth-remember-me");
       }
+      
       await login(data as LoginCredentials);
     } catch (error) {
       console.error("Login error:", error);
     }
   };
+
   return <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-50 to-zinc-100 dark:from-zinc-900 dark:to-zinc-800">
       <Card className="w-full max-w-sm shadow-lg border border-gray-200" style={{
       opacity: 1
@@ -136,7 +147,6 @@ export default function LoginPage() {
             }}>
                     <FormControl>
                       <Checkbox 
-                        id="rememberMe" 
                         checked={field.value} 
                         onCheckedChange={field.onChange}
                         className="border-gray-400 data-[state=checked]:bg-[#1a73e8] data-[state=checked]:border-[#1a73e8]"
@@ -158,9 +168,9 @@ export default function LoginPage() {
                 style={{
                   opacity: 1,
                   backgroundColor: "rgb(67, 56, 202)",
-                  color: "#000000"
+                  color: "#ffffff"
                 }} 
-                className="w-full text-[#000000] bg-[rgb(67,56,202)] hover:bg-[rgb(67,56,202)/90]"
+                className="w-full text-white bg-[rgb(67,56,202)] hover:bg-[rgb(67,56,202)/90]"
               >
                 {isSubmitting ? <>
                     <Loader className="mr-2 h-4 w-4 animate-spin" /> Entrando...
