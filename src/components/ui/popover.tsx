@@ -25,8 +25,8 @@ const PopoverContent = React.forwardRef<
         opacity: 1, 
         backgroundColor: "white", 
         visibility: "visible", 
-        zIndex: 999, // Aumentei o z-index para garantir que fique acima de outros elementos
-        boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
+        zIndex: 999,
+        boxShadow: '0 15px 50px rgba(0, 0, 0, 0.25)',
         ...style 
       }}
       {...props}

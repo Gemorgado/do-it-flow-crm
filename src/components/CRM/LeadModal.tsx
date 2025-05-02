@@ -41,7 +41,15 @@ export function LeadModal() {
   if (isMobile) {
     return (
       <Sheet open={isOpen} onOpenChange={close}>
-        <SheetContent className="pt-6 px-0 overflow-y-auto">
+        <SheetContent 
+          className="pt-6 px-0 overflow-y-auto"
+          style={{
+            backgroundColor: "white",
+            opacity: 1,
+            zIndex: 110,
+            boxShadow: '0 15px 50px rgba(0, 0, 0, 0.25)'
+          }}
+        >
           <SheetHeader className="px-4">
             <SheetTitle>Novo Lead</SheetTitle>
           </SheetHeader>
@@ -61,7 +69,15 @@ export function LeadModal() {
 
   return (
     <Dialog open={isOpen} onOpenChange={close}>
-      <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
+      <DialogContent 
+        className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto"
+        style={{ 
+          backgroundColor: "white", 
+          opacity: 1, 
+          zIndex: 150,
+          boxShadow: '0 15px 50px rgba(0, 0, 0, 0.25)'
+        }}
+      >
         <DialogHeader>
           <DialogTitle>Novo Lead</DialogTitle>
         </DialogHeader>

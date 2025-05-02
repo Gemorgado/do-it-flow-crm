@@ -23,6 +23,14 @@ const SheetOverlay = React.forwardRef<
       "radix-sheet-overlay",
       className
     )}
+    style={{
+      position: 'fixed',
+      inset: 0,
+      backgroundColor: 'rgba(0, 0, 0, 0.7)',
+      backdropFilter: 'blur(4px)',
+      zIndex: 100,
+      opacity: 1
+    }}
     {...props}
     ref={ref}
   />
@@ -30,7 +38,7 @@ const SheetOverlay = React.forwardRef<
 SheetOverlay.displayName = SheetPrimitive.Overlay.displayName
 
 const sheetVariants = cva(
-  "radix-sheet-content fixed z-[110] gap-4 p-6 shadow-lg transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
+  "radix-sheet-content fixed z-[110] gap-4 p-6 shadow-lg transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500 bg-white",
   {
     variants: {
       side: {
@@ -61,6 +69,13 @@ const SheetContent = React.forwardRef<
     <SheetPrimitive.Content
       ref={ref}
       className={cn(sheetVariants({ side }), className)}
+      style={{
+        backgroundColor: 'white',
+        opacity: 1,
+        zIndex: 110,
+        boxShadow: '0 15px 50px rgba(0, 0, 0, 0.25)',
+        visibility: 'visible'
+      }}
       {...props}
     >
       {children}

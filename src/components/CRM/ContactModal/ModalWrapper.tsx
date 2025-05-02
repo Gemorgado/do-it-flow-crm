@@ -22,7 +22,8 @@ export function ModalWrapper({ isOpen, onClose, title, children }: ModalWrapperP
         style={{ 
           backgroundColor: "white", 
           opacity: 1, 
-          zIndex: 150
+          zIndex: 150,
+          boxShadow: '0 15px 50px rgba(0, 0, 0, 0.25)'
         }}
       >
         <DialogHeader>

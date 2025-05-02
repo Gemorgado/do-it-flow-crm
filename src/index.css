@@ -5,6 +5,7 @@
 
 @import './styles/modal.css';
 @import './styles/overlays.css';
+@import './styles/modal-fixes.css';
 
 @layer base {
   /* Ensure base elements have full opacity */
@@ -121,8 +122,6 @@ label,
 
 /* Ensure login page has proper contrast */
 button {
-  color: white !important;
-  background-color: hsl(var(--primary)) !important;
   opacity: 1 !important;
 }
 
