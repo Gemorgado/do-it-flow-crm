@@ -76,11 +76,9 @@ export default function LoginPage() {
       <Card className="w-full max-w-sm shadow-lg">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-2">
-            <div className="bg-doIt-primary rounded-md p-2">
-              <span className="text-white font-bold text-xl">D</span>
-            </div>
+            <img src="/do-it-logo.png" alt="Do It Hub Logo" className="h-10" />
           </div>
-          <CardTitle className="text-2xl font-bold">Do It Flow – Acesso</CardTitle>
+          <CardTitle className="text-2xl font-bold">Do It Hub – Acesso</CardTitle>
         </CardHeader>
         
         <CardContent>

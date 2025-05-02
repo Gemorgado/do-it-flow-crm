@@ -1,3 +1,4 @@
+
 import {
   Sidebar as SidebarContainer,
   SidebarContent,
@@ -91,10 +92,8 @@ export function Sidebar() {
     <SidebarContainer>
       <SidebarHeader className="flex items-center justify-center p-4">
         <div className="flex items-center space-x-2">
-          <div className="bg-doIt-primary rounded-md p-1">
-            <span className="text-white font-bold text-lg">D</span>
-          </div>
-          <span className="font-semibold text-xl">Do It Flow</span>
+          <img src="/do-it-logo.png" alt="Logo" className="h-8 w-8" />
+          <span className="font-semibold text-xl">Do It Hub</span>
         </div>
       </SidebarHeader>
       
