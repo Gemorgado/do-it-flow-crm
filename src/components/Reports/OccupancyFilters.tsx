@@ -48,7 +48,7 @@ export function OccupancyFilters({
                 <SelectItem value="all">Todos</SelectItem>
                 <SelectItem value="high">Alta Ocupação (≥70%)</SelectItem>
                 <SelectItem value="medium">Média Ocupação (40-69%)</SelectItem>
-                <SelectItem value="low">Baixa Ocupação (<40%)</SelectItem>
+                <SelectItem value="low">Baixa Ocupação (&lt;40%)</SelectItem>
               </SelectContent>
             </Select>
           </div>
