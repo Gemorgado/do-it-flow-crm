@@ -10,17 +10,17 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-[rgb(67,56,202)] text-[#000000] hover:bg-[rgb(67,56,202)/90] opacity-100",
+        default: "bg-transparent text-[#000000] hover:bg-accent/10 opacity-100",
         destructive:
-          "bg-destructive text-[#000000] hover:bg-destructive/90 opacity-100",
+          "bg-transparent text-[#000000] hover:bg-destructive/10 opacity-100",
         outline:
-          "border border-input bg-background text-[#000000] hover:bg-accent hover:text-accent-foreground opacity-100",
+          "border border-input bg-transparent text-[#000000] hover:bg-accent/10 hover:text-accent-foreground opacity-100",
         secondary:
-          "bg-secondary text-[#000000] hover:bg-secondary/80 opacity-100",
-        ghost: "text-[#000000] hover:bg-accent hover:text-accent-foreground opacity-100",
-        link: "text-primary underline-offset-4 hover:underline text-[#000000] opacity-100",
-        navbar: "bg-transparent text-[#000000] hover:bg-accent/20 opacity-100",
-        sidebar: "bg-transparent text-[#000000] hover:bg-sidebar-accent/20 opacity-100",
+          "bg-transparent text-[#000000] hover:bg-secondary/10 opacity-100",
+        ghost: "bg-transparent text-[#000000] hover:bg-accent/10 hover:text-accent-foreground opacity-100",
+        link: "bg-transparent text-[#000000] underline-offset-4 hover:underline opacity-100",
+        navbar: "bg-transparent text-[#000000] hover:bg-accent/10 opacity-100",
+        sidebar: "bg-transparent text-[#000000] hover:bg-sidebar-accent/10 opacity-100",
       },
       size: {
         default: "h-10 px-4 py-2",
@@ -47,14 +47,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, style, ...props }, ref) => {
     const Comp = asChild ? Slot : "button"
     
-    // Apply special styling for navbar and sidebar buttons
-    const customStyle = { ...style };
-    if (variant === 'navbar' || variant === 'sidebar' || variant === 'ghost') {
-      customStyle.backgroundColor = 'transparent';
-    } else if (variant === 'default') {
-      customStyle.backgroundColor = "rgb(67, 56, 202)";
-      customStyle.color = "#000000";
-    }
+    // Apply transparent background for all buttons
+    const customStyle = { 
+      ...style,
+      backgroundColor: 'transparent'
+    };
     
     return (
       <Comp

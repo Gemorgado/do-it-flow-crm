@@ -18,22 +18,22 @@ input[type="button"],
 [data-state="open"] {
   opacity: 1 !important;
   filter: none !important;
+  background-color: transparent !important;
 }
 
-/* Special styles for navbar and sidebar buttons */
+/* Make all button variants transparent */
+[data-variant="default"],
+[data-variant="destructive"],
+[data-variant="outline"],
+[data-variant="secondary"],
+[data-variant="ghost"],
+[data-variant="link"],
 [data-variant="navbar"],
 [data-variant="sidebar"],
-[data-variant="ghost"],
 header button,
-.SidebarMenuButton button {
-  background-color: transparent !important;
-  color: #000000 !important;
-}
-
-/* Fix for regular buttons */
-button[data-variant="default"],
+.SidebarMenuButton button,
 form button[type="submit"] {
-  background-color: rgb(67, 56, 202) !important;
+  background-color: transparent !important;
   color: #000000 !important;
 }
 
@@ -104,26 +104,21 @@ button[type="submit"] {
   visibility: visible !important;
 }
 
-/* Fix login screen specifically */
+/* Fix login screen specifically - make all buttons transparent */
 .flex.min-h-screen button,
 .w-full.max-w-sm button,
 .bg-indigo-600 {
   opacity: 1 !important;
   color: #000000 !important;
-  background-color: rgb(67, 56, 202) !important;
+  background-color: transparent !important;
   filter: none !important;
   visibility: visible !important;
+  border: 1px solid #ddd;
 }
 
-/* Fix for Shadcn button variants */
+/* Fix for Shadcn button variants - make all transparent */
 button[data-variant="default"],
-button[data-variant="destructive"] {
-  opacity: 1 !important;
-  visibility: visible !important;
-  color: #000000 !important;
-  background-color: rgb(67, 56, 202) !important;
-}
-
+button[data-variant="destructive"],
 button[data-variant="outline"],
 button[data-variant="secondary"],
 button[data-variant="ghost"],

@@ -62,32 +62,28 @@ label {
   opacity: 1 !important;
 }
 
-/* Fix for buttons */
+/* Fix for buttons - make all buttons transparent */
 button, [role="button"], .button {
   opacity: 1 !important;
   color: #000000 !important;
-}
-
-/* Special styles for header and sidebar buttons */
-header button, 
-.sidebar button,
-[data-variant="navbar"],
-[data-variant="sidebar"],
-[data-variant="ghost"] {
   background-color: transparent !important;
 }
 
-/* Default button style */
+/* Default button styling */
 button:not([data-variant]), 
 button[data-variant="default"] {
-  background-color: rgb(67, 56, 202) !important;
+  background-color: transparent !important;
   color: #000000 !important;
   opacity: 1 !important;
 }
 
 button[data-variant="ghost"],
 button[data-variant="link"],
-button[data-variant="outline"] {
+button[data-variant="outline"],
+button[data-variant="navbar"],
+button[data-variant="sidebar"],
+button[data-variant="secondary"],
+button[data-variant="destructive"] {
   background-color: transparent !important;
   opacity: 1 !important;
   color: #000000 !important;
@@ -123,6 +119,7 @@ form button[type="submit"],
 .bg-indigo-600 {
   opacity: 1 !important;
   color: #000000 !important;
-  background-color: rgb(67, 56, 202) !important;
+  background-color: transparent !important;
   visibility: visible !important;
+  border: 1px solid #ddd;
 }
