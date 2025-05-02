@@ -5,9 +5,8 @@ import { useClients } from "@/hooks/useClients";
 import { useClientActiveContract } from "@/hooks/useClients";
 import { Badge } from "@/components/ui/badge";
 import { User, BriefcaseBusiness, Phone } from "lucide-react";
-import { Controller } from "react-hook-form";
 import { UseFormReturn } from "react-hook-form";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface ClientSelectProps {
   form: UseFormReturn<any>;
@@ -19,6 +18,17 @@ export function ClientSelect({ form }: ClientSelectProps) {
   const { data: activeContract } = useClientActiveContract(selectedClient?.id || null);
   const [query, setQuery] = useState("");
   
+  // Initialize selectedClient from form value on mount
+  useEffect(() => {
+    const clientId = form.getValues().clientId;
+    if (clientId && clients.length > 0) {
+      const client = clients.find(c => c.id === clientId);
+      if (client) {
+        setSelectedClient({ id: client.id, name: client.name });
+      }
+    }
+  }, [clients, form]);
+
   const handleClientSelect = (client: ComboboxOption) => {
     setSelectedClient(client);
     form.setValue("clientId", client.id, { shouldValidate: true });
@@ -38,15 +48,10 @@ export function ClientSelect({ form }: ClientSelectProps) {
           emptyMessage="Nenhum cliente encontrado"
           query={query}
           onQueryChange={setQuery}
+          disabled={form.formState.isSubmitting}
         />
       </FormControl>
       <FormMessage />
-
-      {!selectedClient && form.formState.errors.clientId && (
-        <p className="text-xs text-destructive">
-          É necessário selecionar um cliente
-        </p>
-      )}
 
       {selectedClient && (
         <div className="mt-2 p-3 bg-zinc-50 rounded-md border border-zinc-200">
@@ -81,6 +86,13 @@ export function ClientSelect({ form }: ClientSelectProps) {
             )}
           </div>
         </div>
+      )}
+
+      {/* Show error message if client not selected */}
+      {form.formState.errors.clientId && (
+        <p className="text-xs text-destructive">
+          É necessário selecionar um cliente
+        </p>
       )}
     </FormItem>
   );

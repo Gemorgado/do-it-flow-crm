@@ -39,6 +39,7 @@ export function NewReservationDialog({ isOpen, onClose, defaultValues }: NewRese
     },
     schema: reservationSchema
   });
+  
   const createReservation = useCreateReservation();
   const selectedResource = form.watch("resource");
 
