@@ -20,3 +20,11 @@ export function useMediaQuery(query: string): boolean {
 
   return matches;
 }
+
+// Standard mobile breakpoint for the application
+const MOBILE_BREAKPOINT = 640;
+
+// Hook to detect if the current viewport is mobile sized
+export function useIsMobile(): boolean {
+  return useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}px)`);
+}
