@@ -22,7 +22,8 @@ export default function Contacts() {
     showOnlyActive,
     setShowOnlyActive,
     filteredLeads,
-    filteredClients
+    filteredClients,
+    isLoading
   } = useContactsData();
   
   const leadModal = useLeadModal();
@@ -75,6 +76,7 @@ export default function Contacts() {
         setShowOnlyActive={setShowOnlyActive}
         onNewClient={handleNewClient}
         onEditClient={handleEditClient}
+        isLoading={isLoading}
       />
 
       <ClientModal 

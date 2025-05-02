@@ -2,12 +2,14 @@
 import React from "react";
 import { Lead } from "@/types";
 import { LeadRow } from "./LeadRow";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface LeadsTableProps {
   leads: Lead[];
+  isLoading?: boolean;
 }
 
-export function LeadsTable({ leads }: LeadsTableProps) {
+export function LeadsTable({ leads, isLoading = false }: LeadsTableProps) {
   return (
     <div className="bg-white rounded-md border shadow">
       <div className="overflow-x-auto">
@@ -24,16 +26,25 @@ export function LeadsTable({ leads }: LeadsTableProps) {
             </tr>
           </thead>
           <tbody>
-            {leads.map((lead) => (
-              <LeadRow key={lead.id} lead={lead} />
-            ))}
+            {isLoading ? (
+              Array.from({ length: 3 }).map((_, index) => (
+                <tr key={index} className="border-b">
+                  <td colSpan={7} className="p-3">
+                    <Skeleton className="h-10 w-full" />
+                  </td>
+                </tr>
+              ))
+            ) : (
+              leads.map((lead) => <LeadRow key={lead.id} lead={lead} />)
+            )}
           </tbody>
         </table>
       </div>
       
-      {leads.length === 0 && (
+      {!isLoading && leads.length === 0 && (
         <div className="p-8 text-center">
           <p className="text-gray-500">Nenhum lead encontrado</p>
+          <p className="text-sm text-gray-400 mt-2">Crie novos leads usando o botão 'Novo Contato'</p>
         </div>
       )}
     </div>

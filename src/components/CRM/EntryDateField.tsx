@@ -66,10 +66,11 @@ export const EntryDateField = ({ control, name, label = "Data de Entrada*" }: En
               className="w-auto p-0" 
               align="start"
               style={{ 
-                zIndex: 200, 
+                zIndex: 999, 
                 backgroundColor: 'white', 
                 visibility: 'visible',
-                opacity: 1
+                opacity: 1,
+                position: 'relative'
               }}
             >
               <Calendar

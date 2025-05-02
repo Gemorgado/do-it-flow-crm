@@ -58,7 +58,7 @@ function Calendar({
       }}
       style={{
         backgroundColor: 'white',
-        zIndex: 200,
+        zIndex: 999, // Aumentei o z-index para garantir que fique acima de outros elementos
         opacity: 1,
         visibility: 'visible',
         pointerEvents: 'auto'

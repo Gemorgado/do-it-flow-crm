@@ -22,6 +22,9 @@ export function useLeadFormLogic({ onSubmit, presetStageId }: UseLeadFormLogicPr
       sourceCategory: "outro",
       sourceDetail: "",
       stageId: presetStageId || pipelineStages[0].id,
+      email: "",
+      phone: "",
+      notes: "",
     },
     mode: "onBlur", // Validate on blur for better UX
   });

@@ -2,6 +2,8 @@
 import { useState, useEffect } from "react";
 import { Client } from "@/types/client";
 import { useCustomers } from "@/hooks/conexaData";
+import { leadPersistence } from "@/integrations/persistence/leadPersistence";
+import { Lead } from "@/types";
 
 export function useContactsData() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -9,29 +11,30 @@ export function useContactsData() {
   const [clientModalOpen, setClientModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [showOnlyActive, setShowOnlyActive] = useState(true);
-  const [leads, setLeads] = useState([]);
+  const [leads, setLeads] = useState<Lead[]>([]);
   const [isResetting, setIsResetting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   
   // Get imported customers from Conexa snapshot
   const conexaCustomers = useCustomers();
   
-  // Load leads from localStorage or fallback to empty array
+  // Load leads from persistence
   useEffect(() => {
-    // Try to get leads from localStorage
-    const storedLeads = localStorage.getItem('leads');
-    
-    if (storedLeads) {
+    async function loadLeads() {
       try {
-        setLeads(JSON.parse(storedLeads));
+        setIsLoading(true);
+        const storedLeads = await leadPersistence.listLeads();
+        setLeads(storedLeads);
       } catch (e) {
-        console.error("Failed to parse leads from localStorage:", e);
+        console.error("Failed to load leads:", e);
         setLeads([]);
+      } finally {
+        setIsLoading(false);
       }
-    } else {
-      // If leads are not in localStorage, set empty array
-      setLeads([]);
     }
-  }, []);
+    
+    loadLeads();
+  }, [activeTab]);
   
   // Convert Conexa customers to Client type for display
   const clients: Client[] = conexaCustomers.map(customer => ({
@@ -78,6 +81,7 @@ export function useContactsData() {
     setLeads,
     isResetting,
     setIsResetting,
+    isLoading,
     filteredLeads,
     filteredClients
   };

@@ -54,6 +54,11 @@ export const leadFormSchema = z.object({
   stageId: z.string().min(1, {
     message: "É necessário selecionar um estágio"
   }).optional(),
+  email: z.string().email({
+    message: "Por favor insira um e-mail válido.",
+  }).optional(),
+  phone: z.string().optional(),
+  notes: z.string().optional(),
 });
 
 // Schema for client forms

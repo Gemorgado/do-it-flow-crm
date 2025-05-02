@@ -17,6 +17,7 @@ interface ContactsTabsProps {
   setShowOnlyActive: (value: boolean) => void;
   onNewClient: () => void;
   onEditClient: (client: Client) => void;
+  isLoading?: boolean;
 }
 
 export function ContactsTabs({
@@ -27,7 +28,8 @@ export function ContactsTabs({
   showOnlyActive,
   setShowOnlyActive,
   onNewClient,
-  onEditClient
+  onEditClient,
+  isLoading = false
 }: ContactsTabsProps) {
   return (
     <Tabs 
@@ -64,7 +66,7 @@ export function ContactsTabs({
       </div>
       
       <TabsContent value="leads" className="mt-0">
-        <LeadsTable leads={filteredLeads} />
+        <LeadsTable leads={filteredLeads} isLoading={isLoading} />
       </TabsContent>
       
       <TabsContent value="clients" className="mt-0">
