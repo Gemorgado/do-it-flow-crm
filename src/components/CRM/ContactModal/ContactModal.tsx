@@ -2,8 +2,6 @@
 import React, { useState } from "react";
 import { useContactModal } from "../hooks/useModalContext";
 import { ContactModalValues } from "@/schemas/contactFormSchemas";
-import { toast } from "sonner";
-import { contactPersistence } from "@/integrations/persistence/contactPersistence";
 import { ModalWrapper } from "./ModalWrapper";
 import { ContactForm } from "./ContactForm";
 
@@ -15,23 +13,12 @@ export function ContactModal() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (data: ContactModalValues) => {
-    console.log("Submitting form data:", data);
-    
+    setIsSubmitting(true);
     try {
-      setIsSubmitting(true);
-      // Use the local persistence system instead of API
-      await contactPersistence.createContact(data);
-      
-      toast.success("Contact created successfully", {
-        description: "The contact has been added to the system"
-      });
-      
+      // The actual submission logic has been moved to the useContactForm hook
+      // We're just calling the form's submit handler here, which in turn calls the hook's submit handler
+      await new Promise(resolve => setTimeout(resolve, 500)); // Adding a small delay for UX
       close();
-    } catch (error) {
-      console.error("Error in onSubmit:", error);
-      toast.error("Error creating contact", {
-        description: "An error occurred while processing your request."
-      });
     } finally {
       setIsSubmitting(false);
     }

@@ -10,20 +10,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { formatDocument } from "@/utils/documentUtils";
 import { cn } from "@/lib/utils";
 import { AlertCircle } from "lucide-react";
 
 interface CompanyFieldsProps {
   form: UseFormReturn<ContactModalValues>;
+  onIdNumberChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export function CompanyFields({ form }: CompanyFieldsProps) {
-  const handleIdNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formattedValue = formatDocument(e.target.value);
-    form.setValue("idNumber", formattedValue);
-  };
-  
+export function CompanyFields({ form, onIdNumberChange }: CompanyFieldsProps) {
   return (
     <>
       <FormField
@@ -73,7 +68,7 @@ export function CompanyFields({ form }: CompanyFieldsProps) {
               <Input 
                 placeholder="00.000.000/0000-00 or 000.000.000-00" 
                 {...field}
-                onChange={handleIdNumberChange}
+                onChange={onIdNumberChange}
                 className={cn(
                   fieldState.error && "border-destructive focus-visible:ring-destructive"
                 )}

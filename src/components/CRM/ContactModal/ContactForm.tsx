@@ -1,9 +1,5 @@
 
 import React from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { format } from "date-fns";
-import { ContactModalValues, contactModalSchema } from "@/schemas/contactFormSchemas";
 import { DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
@@ -12,6 +8,8 @@ import { CompanyFields } from "./fields/CompanyFields";
 import { DateAndServiceFields } from "./fields/DateAndServiceFields";
 import { SourceFields } from "./fields/SourceFields";
 import { FormErrorSummary } from "./FormErrorSummary";
+import { useContactForm } from "./hooks";
+import { ContactModalValues } from "@/schemas/contactFormSchemas";
 
 interface ContactFormProps {
   onSubmit: (data: ContactModalValues) => Promise<void>;
@@ -19,29 +17,30 @@ interface ContactFormProps {
 }
 
 export function ContactForm({ onSubmit, isSubmitting }: ContactFormProps) {
-  const form = useForm<ContactModalValues>({
-    resolver: zodResolver(contactModalSchema),
-    defaultValues: {
-      contactName: "",
-      email: "",
-      phone: "",
-      companyOrPerson: "",
-      idNumber: "",
-      entryDate: format(new Date(), "yyyy-MM-dd"),
-      interestService: "",
-      sourceCategory: "outro",
-      sourceDetail: "",
-    },
-    mode: "onBlur", // Validate fields when they lose focus
+  const { 
+    form, 
+    handleSubmit, 
+    handlePhoneChange, 
+    handleIdNumberChange 
+  } = useContactForm({ 
+    onSuccess: () => {} // We're using the parent's onSubmit instead
   });
 
+  // We'll use the form from the hook but the submission handler from props
+  // to maintain compatibility with the existing code
   const handleFormSubmit = form.handleSubmit(onSubmit);
   
   return (
     <Form {...form}>
       <form onSubmit={handleFormSubmit} className="space-y-4">
-        <BasicInfoFields form={form} />
-        <CompanyFields form={form} />
+        <BasicInfoFields 
+          form={form} 
+          onPhoneChange={handlePhoneChange} 
+        />
+        <CompanyFields 
+          form={form}
+          onIdNumberChange={handleIdNumberChange}
+        />
         <DateAndServiceFields form={form} />
         <SourceFields form={form} />
         

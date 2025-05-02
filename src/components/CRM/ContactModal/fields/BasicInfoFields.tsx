@@ -15,19 +15,10 @@ import { AlertCircle } from "lucide-react";
 
 interface BasicInfoFieldsProps {
   form: UseFormReturn<ContactModalValues>;
+  onPhoneChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export function BasicInfoFields({ form }: BasicInfoFieldsProps) {
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Format phone number as (00) 00000-0000
-    const value = e.target.value.replace(/\D/g, '');
-    const formattedValue = value
-      .replace(/^(\d{2})(\d)/g, '($1) $2')
-      .replace(/(\d)(\d{4})$/, '$1-$2');
-    
-    form.setValue("phone", formattedValue);
-  };
-  
+export function BasicInfoFields({ form, onPhoneChange }: BasicInfoFieldsProps) {
   return (
     <>
       <FormField
@@ -107,7 +98,7 @@ export function BasicInfoFields({ form }: BasicInfoFieldsProps) {
                 <Input 
                   placeholder="(00) 00000-0000" 
                   {...field}
-                  onChange={handlePhoneChange}
+                  onChange={onPhoneChange}
                   className={cn(
                     fieldState.error && "border-destructive focus-visible:ring-destructive"
                   )}
