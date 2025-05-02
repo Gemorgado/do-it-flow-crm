@@ -135,9 +135,15 @@ export default function LoginPage() {
               opacity: 1
             }}>
                     <FormControl>
-                      <Checkbox id="rememberMe" checked={field.value} onCheckedChange={field.onChange} style={{
-                  opacity: 1
-                }} />
+                      <Checkbox 
+                        id="rememberMe" 
+                        checked={field.value} 
+                        onCheckedChange={field.onChange}
+                        className="border-gray-400 data-[state=checked]:bg-[#1a73e8] data-[state=checked]:border-[#1a73e8]"
+                        style={{
+                          opacity: 1
+                        }} 
+                      />
                     </FormControl>
                     <FormLabel htmlFor="rememberMe" className="text-sm font-normal cursor-pointer text-gray-700" style={{
                 opacity: 1
