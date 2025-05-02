@@ -27,4 +27,7 @@ export function validateReservation(res: Reservation, all: Reservation[]) {
 
   if (!isSlotFree(res, all))
     throw new Error('Conflito: já existe reserva nesse horário');
+    
+  if (!res.customerId)
+    throw new Error('Selecione um cliente');
 }

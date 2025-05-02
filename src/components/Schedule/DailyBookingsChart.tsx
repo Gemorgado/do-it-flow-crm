@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useReservations } from "@/hooks/useReservations";
 import { BarChart } from "@/components/ui/chart";
 import { eachDayOfInterval, format, parseISO, subDays } from "date-fns";
-import { Resource } from "@/types/schedule";
+import { Resource } from "@/constants/resources";
 import { getResourceColor, getResourceLabel } from "./util";
 
 export function DailyBookingsChart() {

@@ -2,34 +2,23 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useReservations } from "@/hooks/useReservations";
 import { BarChart } from "@/components/ui/chart";
-import { eachDayOfInterval, format, parseISO, isWithinInterval } from "date-fns";
-import { Resource } from "@/types/schedule";
-import { getResourceColor, getResourceLabel } from "@/components/Schedule/util";
 import { DateRange } from "react-day-picker";
+import { eachDayOfInterval, format, parseISO, subDays } from "date-fns";
+import { Resource } from "@/constants/resources";
+import { getResourceColor, getResourceLabel } from "@/components/Schedule/util";
 
 interface DailyBookingsReportChartProps {
-  dateRange: DateRange;
+  dateRange?: DateRange;
 }
 
 export function DailyBookingsReportChart({ dateRange }: DailyBookingsReportChartProps) {
   const { data: reservations = [] } = useReservations();
 
-  // If dates are not selected, return null
-  if (!dateRange.from || !dateRange.to) {
-    return (
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle className="text-xl">Reservas por Período</CardTitle>
-        </CardHeader>
-        <CardContent className="flex items-center justify-center h-[400px]">
-          <p className="text-muted-foreground">Selecione um intervalo de datas para visualizar os dados</p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  // Get days in selected range
-  const daysArr = eachDayOfInterval({ start: dateRange.from, end: dateRange.to });
+  // Get date range or last 7 days if not provided
+  const today = new Date();
+  const from = dateRange?.from || subDays(today, 6);
+  const to = dateRange?.to || today;
+  const daysArr = eachDayOfInterval({ start: from, end: to });
   
   // Initialize counts per day
   const countsPerDay: Record<string, Record<Resource, number>> = {};
@@ -44,16 +33,22 @@ export function DailyBookingsReportChart({ dateRange }: DailyBookingsReportChart
     };
   });
   
-  // Count reservations per day and resource within the date range
-  reservations.forEach(r => {
-    const reservationDate = parseISO(r.start);
-    
-    if (dateRange.from && dateRange.to && 
-        isWithinInterval(reservationDate, { start: dateRange.from, end: dateRange.to })) {
-      const day = format(reservationDate, 'dd/MM');
-      if (countsPerDay[day] && countsPerDay[day][r.resource as Resource] !== undefined) {
-        countsPerDay[day][r.resource as Resource]++;
-      }
+  // Filter and count reservations by date range
+  const filteredReservations = dateRange
+    ? reservations.filter(r => {
+        const date = parseISO(r.start);
+        return (
+          (!dateRange.from || date >= dateRange.from) &&
+          (!dateRange.to || date <= dateRange.to)
+        );
+      })
+    : reservations;
+  
+  // Count reservations per day and resource
+  filteredReservations.forEach(r => {
+    const day = format(parseISO(r.start), 'dd/MM');
+    if (countsPerDay[day] && countsPerDay[day][r.resource as Resource] !== undefined) {
+      countsPerDay[day][r.resource as Resource]++;
     }
   });
   
@@ -62,7 +57,6 @@ export function DailyBookingsReportChart({ dateRange }: DailyBookingsReportChart
   
   const resources: Resource[] = ['meet1', 'meet2', 'meet3', 'meet4', 'auditorio'];
   
-  // Fix: Convert to the format expected by the BarChart component
   const chartData = [
     {
       labels: labels,
@@ -76,9 +70,9 @@ export function DailyBookingsReportChart({ dateRange }: DailyBookingsReportChart
   ];
   
   return (
-    <Card className="w-full">
+    <Card className="w-full h-full">
       <CardHeader>
-        <CardTitle className="text-xl">Reservas por Período</CardTitle>
+        <CardTitle className="text-xl">Reservas Diárias por Recurso</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="h-[400px]">

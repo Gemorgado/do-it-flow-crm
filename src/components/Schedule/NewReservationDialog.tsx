@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -9,8 +9,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useCreateReservation } from "@/hooks/useReservations";
 import { formatISO, parseISO } from "date-fns";
 import { toast } from "@/hooks/use-toast";
-import { Resource } from "@/types/schedule";
-import { getResourceColor, getResourceLabel } from "./util";
+import { Resource } from "@/constants/resources";
+import { RESOURCES } from "@/constants/resources";
+import { getResourceColor } from "./util";
+import { useClients } from "@/hooks/useClients";
+import { Combobox } from "@/components/ui/combobox";
 
 interface NewReservationDialogProps {
   isOpen: boolean;
@@ -23,6 +26,8 @@ interface NewReservationDialogProps {
 
 export function NewReservationDialog({ isOpen, onClose, defaultValues }: NewReservationDialogProps) {
   const [selectedResource, setSelectedResource] = useState<Resource>("meet1");
+  const { data: clients = [] } = useClients();
+  const [selectedClient, setSelectedClient] = useState<{ id: string; name: string } | null>(null);
 
   const form = useForm({
     defaultValues: {
@@ -59,12 +64,22 @@ export function NewReservationDialog({ isOpen, onClose, defaultValues }: NewRese
           return;
         }
       }
+      
+      if (!selectedClient) {
+        toast({
+          title: "Cliente não selecionado",
+          description: "Por favor, selecione um cliente para a reserva",
+          variant: "destructive"
+        });
+        return;
+      }
 
       await createReservation.mutateAsync({
         resource: selectedResource,
         title: values.title,
         start: values.start,
         end: values.end,
+        customerId: selectedClient.id,
         createdBy: "current-user" // In a real app, get from authentication context
       });
       
@@ -82,8 +97,6 @@ export function NewReservationDialog({ isOpen, onClose, defaultValues }: NewRese
       });
     }
   };
-  
-  const resourceOptions: Resource[] = ["meet1", "meet2", "meet3", "meet4", "auditorio"];
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -119,23 +132,43 @@ export function NewReservationDialog({ isOpen, onClose, defaultValues }: NewRese
                     <SelectValue placeholder="Selecione um recurso" />
                   </SelectTrigger>
                   <SelectContent>
-                    {resourceOptions.map((resource) => (
+                    {RESOURCES.map((resource) => (
                       <SelectItem
-                        key={resource}
-                        value={resource}
+                        key={resource.id}
+                        value={resource.id}
                         className="flex items-center"
                       >
                         <div className="flex items-center">
                           <div
                             className="w-3 h-3 rounded-full mr-2"
-                            style={{ backgroundColor: getResourceColor(resource) }}
+                            style={{ backgroundColor: getResourceColor(resource.id) }}
                           ></div>
-                          {getResourceLabel(resource)}
+                          {resource.label}
                         </div>
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
+              </FormItem>
+            </div>
+            
+            <div className="grid grid-cols-1 gap-4">
+              <FormItem>
+                <FormLabel>Cliente</FormLabel>
+                <Combobox
+                  options={clients}
+                  selected={selectedClient}
+                  onSelect={setSelectedClient}
+                  getOptionLabel={(client) => client.name}
+                  placeholder="Selecione o cliente"
+                  searchPlaceholder="Buscar cliente..."
+                  emptyMessage="Nenhum cliente encontrado"
+                />
+                {!selectedClient && (
+                  <p className="text-xs text-orange-600 mt-1">
+                    É necessário selecionar um cliente
+                  </p>
+                )}
               </FormItem>
             </div>
             
@@ -188,7 +221,7 @@ export function NewReservationDialog({ isOpen, onClose, defaultValues }: NewRese
               </Button>
               <Button 
                 type="submit" 
-                disabled={createReservation.isPending}
+                disabled={createReservation.isPending || !selectedClient}
               >
                 {createReservation.isPending ? "Salvando..." : "Salvar Reserva"}
               </Button>

@@ -1,5 +1,5 @@
 
-export type Resource = 'meet1' | 'meet2' | 'meet3' | 'meet4' | 'auditorio';
+import { Resource } from "@/constants/resources";
 
 export interface Reservation {
   id: string;
