@@ -96,10 +96,20 @@ export function LeadForm({
   // Track form submission attempts for showing validation summary
   const [attemptedSubmit, setAttemptedSubmit] = useState(false);
   
-  const onSubmitWithValidation = form.handleSubmit((data) => {
+  // Fix: Create a proper submission handler that awaits the async operation
+  const onSubmitWithValidation = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     setAttemptedSubmit(true);
-    handleSubmit(data);
-  });
+    
+    // Only proceed if form is valid
+    if (Object.keys(form.formState.errors).length === 0) {
+      try {
+        await form.handleSubmit(handleSubmit)(e);
+      } catch (error) {
+        console.error("Error during form submission:", error);
+      }
+    }
+  };
 
   // Show error summary if user has attempted to submit and there are errors
   useEffect(() => {
