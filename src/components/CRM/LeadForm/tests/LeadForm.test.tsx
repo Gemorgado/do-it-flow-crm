@@ -149,10 +149,10 @@ describe('LeadForm Component', () => {
     });
     
     // Check that the lead was created with the first pipeline stage (id: "1", Novos)
-    const createdLead = leadPersistence.createLead.mock.calls[0][0];
-    expect(createdLead.stage.id).toBe("1");
-    expect(createdLead.stage.name).toBe("Novo");
-    expect(createdLead.stage.order).toBe(1);
+    const createdLeadCall = (leadPersistence.createLead as any).mock.calls[0][0];
+    expect(createdLeadCall.stage.id).toBe("1");
+    expect(createdLeadCall.stage.name).toBe("Novo");
+    expect(createdLeadCall.stage.order).toBe(1);
   });
 
   it('uses preset stage when provided', async () => {
@@ -179,9 +179,9 @@ describe('LeadForm Component', () => {
     });
     
     // Check that the lead was created with the preset stage
-    const createdLead = leadPersistence.createLead.mock.calls[0][0];
-    expect(createdLead.stage.id).toBe(mockPresetStage.id);
-    expect(createdLead.stage.name).toBe(mockPresetStage.name);
-    expect(createdLead.stage.order).toBe(mockPresetStage.order);
+    const createdLeadCall = (leadPersistence.createLead as any).mock.calls[0][0];
+    expect(createdLeadCall.stage.id).toBe(mockPresetStage.id);
+    expect(createdLeadCall.stage.name).toBe(mockPresetStage.name);
+    expect(createdLeadCall.stage.order).toBe(mockPresetStage.order);
   });
 });

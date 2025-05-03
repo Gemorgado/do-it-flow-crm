@@ -43,7 +43,7 @@ vi.mock('@/components/Pipeline/PipelineBoard', () => ({
     <div data-testid="pipeline-board">
       <div>Total stages: {pipelineStages.length}</div>
       <div data-testid="total-leads">Total leads: {
-        Object.values(leadsByStage).reduce((acc: any, stageLeads: any) => acc + stageLeads.length, 0)
+        Object.values(leadsByStage).reduce((acc: number, stageLeads: any[]) => acc + stageLeads.length, 0)
       }</div>
       {pipelineStages.map(stage => (
         <div 
