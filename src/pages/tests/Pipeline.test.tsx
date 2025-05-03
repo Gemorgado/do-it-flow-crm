@@ -5,6 +5,7 @@ import Pipeline from '@/pages/Pipeline';
 import userEvent from '@testing-library/user-event';
 import { usePipelineData } from '@/hooks/usePipelineData';
 import { leads, pipelineStages } from '@/data/leadsData';
+import React from 'react'; // Add React import for ReactNode type
 
 // Mock dependencies
 vi.mock('@/hooks/usePipelineData', () => ({
