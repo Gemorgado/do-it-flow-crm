@@ -5,22 +5,24 @@ export type ServiceType = ServiceOptionType;
 
 export interface Proposal {
   id: string;
-  companyId: string;
-  serviceType: ServiceType;
-  amount: number;            // em centavos
-  proposalDate: string;      // yyyy-mm-dd
+  companyId?: string;
+  serviceType?: ServiceType;
+  amount?: number;            // em centavos
+  proposalDate?: string;      // yyyy-mm-dd
   followUpAt?: string;       // ISO-datetime
   followUpNote?: string;
-  ownerId: string;           // ID do usuário responsável
+  ownerId?: string;           // ID do usuário responsável
   createdAt: string;
   
   // Additional fields used in the interface
-  title?: string;
-  leadId?: string;
-  value?: number;
-  expiresAt?: string;
-  status?: string;
+  title: string;
+  leadId: string;
+  value: number;
+  expiresAt: string;
+  status: "enviada" | "visualizada" | "aceita" | "rejeitada" | "expirada" | "em_negociacao";
+  notes?: string;
   products?: any[];
+  created_by?: string; // Add this property for Supabase compatibility
 }
 
 export interface CreateProposalInput {

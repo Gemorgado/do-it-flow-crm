@@ -3,6 +3,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { Client, Location, SpaceBinding } from '@/types';
 import { useSpaceBindings, useBindSpace, useUnbindSpace } from './useSpaceBindings';
 import { useClients } from './useClients';
+import { toast } from 'sonner';
+import { v4 as uuidv4 } from 'uuid';
 
 export const useSpaceBinderManager = (space: Location, onClose: () => void) => {
   // State for managing client selection and binding
@@ -52,6 +54,11 @@ export const useSpaceBinderManager = (space: Location, onClose: () => void) => {
       return;
     }
 
+    if (!startDate) {
+      toast.error('Start date is required');
+      return;
+    }
+
     // If we have an existing binding, update it
     if (existingBinding) {
       const updatedBinding = {
@@ -73,6 +80,7 @@ export const useSpaceBinderManager = (space: Location, onClose: () => void) => {
         startDate: startDate || new Date().toISOString(),
         endDate: endDate,
         unitPrice: unitPrice,
+        boundAt: new Date().toISOString(), // Add the required boundAt property
       };
       await bindSpace.mutateAsync(newBinding);
     }
@@ -125,9 +133,13 @@ export const useSpaceBinderManager = (space: Location, onClose: () => void) => {
     searchQuery,
     setSearchQuery,
     contractId,
+    setContractId,
     unitPrice,
+    setUnitPrice,
     startDate,
+    setStartDate,
     endDate,
+    setEndDate,
     existingBinding,
     isLoadingContract,
     activeContract,
@@ -138,7 +150,3 @@ export const useSpaceBinderManager = (space: Location, onClose: () => void) => {
     canSave
   };
 };
-
-// Add missing import
-import { toast } from 'sonner';
-import { v4 as uuidv4 } from 'uuid';

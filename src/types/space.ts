@@ -2,13 +2,15 @@
 import { ServiceType } from "./service";
 
 export interface SpaceBinding {
-  spaceId: string;          // id do elemento no mapa (sala ou desk)
+  id?: string;            
+  spaceId: string;        // id do elemento no mapa (sala ou desk)
   clientId: string;
-  contractId: string;
-  boundAt: string;          // ISO datetime
+  contractId?: string | null;
+  boundAt?: string;       // ISO datetime
   unitPrice?: number | null;       // Contract price
-  startDate?: string | null;       // Contract start date
+  startDate: string;      // Contract start date
   endDate?: string | null;         // Contract end date
-  id?: string;             // Optional ID for persistence
-  notes?: string;          // Optional notes field
+  notes?: string;         // Optional notes field
+  space?: any;           // Space information (optional)
+  client?: any;          // Client information (optional)
 }

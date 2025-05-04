@@ -13,7 +13,7 @@ vi.mock('../useSpaceBindings', () => ({
   useUnbindSpace: vi.fn()
 }));
 
-// Add the missing mock for useSpaceBinderManager
+// Mock useSpaceBinderManager
 vi.mock('../useSpaceBinderManager', () => ({
   __esModule: true,
   default: () => ({
@@ -139,14 +139,14 @@ describe('useSpaceBindingManager Hook', () => {
   });
 
   it('correctly identifies if a space is allocated', () => {
-    const { result } = renderHook(() => useSpaceBindingManager([...mockBindings]), { wrapper });
+    const { result } = renderHook(() => useSpaceBindingManager(mockBindings), { wrapper });
     
     expect(result.current.isSpaceAllocated('space-2')).toBe(true);
     expect(result.current.isSpaceAllocated('space-1')).toBe(false);
   });
 
   it('returns the binding for a specific space', () => {
-    const { result } = renderHook(() => useSpaceBindingManager([...mockBindings]), { wrapper });
+    const { result } = renderHook(() => useSpaceBindingManager(mockBindings), { wrapper });
     
     const binding = result.current.getSpaceBinding('space-2');
     expect(binding).toBeDefined();

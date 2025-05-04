@@ -1,7 +1,37 @@
-
 import { supabase } from '../supabase/client';
 import { Lead, LeadStatus, LeadSource, PipelineStage } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
+
+// Helper function to map frontend status to database status
+const mapLeadStatus = (status: LeadStatus): string => {
+  const statusMap: Record<string, string> = {
+    'novo': 'new',
+    'contatado': 'contacted',
+    'qualificado': 'qualified',
+    'proposta': 'proposal',
+    'negociação': 'negotiation',
+    'fechado': 'closed_won',
+    'perdido': 'closed_lost'
+  };
+  
+  return statusMap[status] || 'new';
+};
+
+// Helper function to map frontend source to database source
+const mapLeadSource = (source: LeadSource): string => {
+  const sourceMap: Record<string, string> = {
+    'site_organico': 'site_organic',
+    'google_ads': 'google_ads',
+    'meta_ads': 'meta_ads',
+    'instagram': 'instagram',
+    'indicacao': 'referral',
+    'visita_presencial': 'in_person_visit',
+    'eventos': 'events',
+    'outros': 'other'
+  };
+  
+  return sourceMap[source] || 'other';
+};
 
 export const leadPersistence = {
   listLeads: async (): Promise<Lead[]> => {
@@ -104,7 +134,7 @@ export const leadPersistence = {
       meetingScheduled: lead.meeting_scheduled
     };
   },
-
+  
   createLead: async (lead: Lead): Promise<Lead> => {
     // Get the "New Leads" stage (first stage) if no stage provided
     let stageId = lead.stage?.id;
@@ -127,20 +157,20 @@ export const leadPersistence = {
     const { data, error } = await supabase
       .from('leads')
       .insert({
-        id: leadId,
         name: lead.name,
         company: lead.company,
         email: lead.email,
         phone: lead.phone,
-        status: lead.status || 'new',
-        source: lead.source || 'other',
+        status: mapLeadStatus(lead.status),
+        source: mapLeadSource(lead.source),
         stage_id: stageId,
         assigned_to: lead.assignedTo,
         notes: lead.notes,
         value: lead.value,
         last_contact: lead.lastContact,
         next_follow_up: lead.nextFollowUp,
-        meeting_scheduled: lead.meetingScheduled
+        meeting_scheduled: lead.meetingScheduled,
+        id: leadId // Include the ID at the end of the object
       })
       .select()
       .single();
@@ -179,8 +209,8 @@ export const leadPersistence = {
         company: lead.company,
         email: lead.email,
         phone: lead.phone,
-        status: lead.status,
-        source: lead.source,
+        status: mapLeadStatus(lead.status),
+        source: mapLeadSource(lead.source),
         stage_id: lead.stage?.id || null,
         assigned_to: lead.assignedTo,
         notes: lead.notes,

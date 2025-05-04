@@ -90,6 +90,7 @@ export const useSpaceBindingManager = (initialBindings: SpaceBinding[] = []) => 
           contractId: service.id,
           startDate: service.contractStart,
           endDate: service.contractEnd,
+          boundAt: new Date().toISOString(), // Add the required boundAt property
           notes: ''
         };
 

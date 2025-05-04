@@ -1,36 +1,3 @@
-
-import { supabase } from '../supabase/client';
-import { Client, ClientService } from '@/types';
-import { v4 as uuidv4 } from 'uuid';
-
-// Helper function to map Supabase service types to our app service types
-const mapServiceType = (type: string): any => {
-  const mappings: Record<string, string> = {
-    'endereco_fiscal': 'fiscal_address',
-    'estacao_flex': 'flex_desk',
-    'estacao_fixa': 'fixed_desk',
-    'sala_privativa': 'private_office',
-    'sala_reuniao': 'meeting_room',
-    'auditorio': 'auditorium'
-  };
-  
-  return mappings[type] || type;
-};
-
-// Helper function to map our app service types to Supabase service types
-const mapToSupabaseServiceType = (type: string): any => {
-  const mappings: Record<string, string> = {
-    'fiscal_address': 'endereco_fiscal',
-    'flex_desk': 'estacao_flex',
-    'fixed_desk': 'estacao_fixa',
-    'private_office': 'sala_privativa',
-    'meeting_room': 'sala_reuniao',
-    'auditorium': 'auditorio'
-  };
-  
-  return mappings[type] || type;
-};
-
 // Helper function to map client status
 const mapClientStatus = (status: string): string => {
   const statusMap: Record<string, string> = {
@@ -184,7 +151,7 @@ export const clientPersistence = {
       billingEmails: client.billing_emails || []
     };
   },
-
+  
   createClient: async (client: Client): Promise<Client> => {
     const clientId = client.id || uuidv4();
 
@@ -198,12 +165,11 @@ export const clientPersistence = {
         email: client.email,
         phone: client.phone,
         address: client.address,
-        status: mapClientStatus(client.status),
+        status: client.status || 'ativo', // Using the native status
         notes: client.notes,
         assigned_to: client.assignedTo,
         is_active: client.isActive !== false,
-        converted_from_lead_id: client.convertedFromLeadId,
-        plan: client.plan ? mapToSupabaseServiceType(client.plan) : null,
+        plan: client.plan, // No mapping needed
         contract_start: client.contractStart,
         contract_end: client.contractEnd,
         contract_term: client.contractTerm,
@@ -225,14 +191,14 @@ export const clientPersistence = {
       const servicesToInsert = client.services.map(service => ({
         id: service.id || uuidv4(),
         client_id: clientId,
-        type: mapToSupabaseServiceType(service.type),
+        type: service.type, // No mapping needed
         description: service.description,
         location_id: service.locationId,
         contract_start: service.contractStart,
         contract_end: service.contractEnd,
         value: service.value,
-        billing_cycle: service.billingCycle || 'monthly',
-        status: service.status || 'active'
+        billing_cycle: service.billingCycle, // Use directly
+        status: service.status || 'ativo'
       }));
 
       const { error: servicesError } = await supabase
@@ -265,7 +231,7 @@ export const clientPersistence = {
         notes: client.notes,
         assigned_to: client.assignedTo,
         is_active: client.isActive,
-        plan: client.plan ? mapToSupabaseServiceType(client.plan) : null,
+        plan: client.plan, // No mapping needed
         contract_start: client.contractStart,
         contract_end: client.contractEnd,
         contract_term: client.contractTerm,
@@ -301,7 +267,7 @@ export const clientPersistence = {
       const servicesToInsert = client.services.map(service => ({
         id: service.id || uuidv4(),
         client_id: client.id,
-        type: mapToSupabaseServiceType(service.type),
+        type: service.type, // No mapping needed
         description: service.description,
         location_id: service.locationId,
         contract_start: service.contractStart,
@@ -337,3 +303,8 @@ export const clientPersistence = {
     }
   }
 };
+
+// Add missing import
+import { v4 as uuidv4 } from 'uuid';
+import { Client } from "@/types";
+import { supabase } from '../supabase/client';

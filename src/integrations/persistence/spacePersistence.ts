@@ -19,6 +19,8 @@ export const spacePersistence = {
       id: space.id,
       name: space.name,
       type: space.type,
+      identifier: space.id, // Use ID as identifier
+      available: space.is_active, // Map is_active to available
       floor: space.floor || 1,
       capacity: space.capacity || null,
       area: space.area || null,
@@ -55,6 +57,8 @@ export const spacePersistence = {
       id: data.id,
       name: data.name,
       type: data.type,
+      identifier: data.id, // Use ID as identifier
+      available: data.is_active, // Map is_active to available
       floor: data.floor || 1,
       capacity: data.capacity,
       area: data.area,
@@ -85,13 +89,17 @@ export const spacePersistence = {
       spaceId: allocation.space_id,
       clientId: allocation.client_id,
       contractId: allocation.contract_id,
+      boundAt: new Date(allocation.created_at).toISOString(), // Use created_at as boundAt
       startDate: allocation.start_date,
       endDate: allocation.end_date,
       notes: allocation.notes,
+      unitPrice: allocation.unit_price,
       space: allocation.spaces ? {
         id: allocation.spaces.id,
         name: allocation.spaces.name,
         type: allocation.spaces.type,
+        identifier: allocation.spaces.id, // Use ID as identifier
+        available: allocation.spaces.is_active, // Map is_active to available
         floor: allocation.spaces.floor || 1,
         capacity: allocation.spaces.capacity,
         area: allocation.spaces.area,
@@ -121,7 +129,8 @@ export const spacePersistence = {
         contract_id: binding.contractId,
         start_date: binding.startDate,
         end_date: binding.endDate,
-        notes: binding.notes
+        notes: binding.notes,
+        unit_price: binding.unitPrice
       });
 
     if (error) {
@@ -131,7 +140,8 @@ export const spacePersistence = {
 
     return {
       ...binding,
-      id: bindingId
+      id: bindingId,
+      boundAt: new Date().toISOString() // Set boundAt here for frontend
     };
   },
 
@@ -145,6 +155,7 @@ export const spacePersistence = {
         start_date: binding.startDate,
         end_date: binding.endDate,
         notes: binding.notes,
+        unit_price: binding.unitPrice,
         updated_at: new Date().toISOString()
       })
       .eq('id', binding.id);

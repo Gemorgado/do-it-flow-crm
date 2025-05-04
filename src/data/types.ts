@@ -33,7 +33,7 @@ export interface Proposal {
   value: number; // in cents
   createdAt: string;
   expiresAt: string;
-  status: "draft" | "sent" | "viewed" | "accepted" | "rejected" | "expired" | "negotiating";
+  status: "enviada" | "visualizada" | "aceita" | "rejeitada" | "expirada" | "em_negociacao";
   notes?: string;
   products: ProposalItem[];
   created_by?: string; // For Supabase compatibility
@@ -51,10 +51,12 @@ export interface SpaceBinding {
   id: string;
   spaceId: string;
   clientId: string;
-  contractId?: string;
+  contractId?: string | null;
+  boundAt: string;
   startDate: string;
-  endDate?: string;
+  endDate?: string | null;
   notes?: string;
+  unitPrice?: number | null;
   space?: Location | null;
   client?: {
     id: string;

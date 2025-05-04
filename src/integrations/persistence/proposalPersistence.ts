@@ -3,6 +3,42 @@ import { supabase } from '../supabase/client';
 import { Proposal, ProposalItem } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
 
+// Helper function to map frontend status to database status
+const mapProposalStatus = (status: string): string => {
+  const statusMap: Record<string, string> = {
+    'enviada': 'sent',
+    'visualizada': 'viewed',
+    'aceita': 'accepted',
+    'rejeitada': 'rejected',
+    'expirada': 'expired',
+    'em_negociacao': 'negotiating',
+    'draft': 'draft',
+    'sent': 'sent',
+    'viewed': 'viewed',
+    'accepted': 'accepted',
+    'rejected': 'rejected',
+    'expired': 'expired',
+    'negotiating': 'negotiating'
+  };
+  
+  return statusMap[status] || 'draft';
+};
+
+// Helper function to map database status to frontend status
+const mapToFrontendStatus = (status: string): string => {
+  const statusMap: Record<string, string> = {
+    'draft': 'enviada', // Assuming drafts are mapped to "enviada" for frontend
+    'sent': 'enviada',
+    'viewed': 'visualizada',
+    'accepted': 'aceita',
+    'rejected': 'rejeitada',
+    'expired': 'expirada',
+    'negotiating': 'em_negociacao'
+  };
+  
+  return statusMap[status] || 'enviada';
+};
+
 export const proposalPersistence = {
   listProposals: async (): Promise<Proposal[]> => {
     const { data, error } = await supabase
@@ -32,8 +68,9 @@ export const proposalPersistence = {
       value: item.value,
       createdAt: item.created_at,
       expiresAt: item.expires_at,
-      status: item.status,
+      status: mapToFrontendStatus(item.status),
       notes: item.notes,
+      created_by: item.created_by,
       products: item.proposal_items.map((product: any) => ({
         id: product.id,
         name: product.name,
@@ -102,7 +139,7 @@ export const proposalPersistence = {
         title: proposal.title,
         value: proposal.value,
         expires_at: proposal.expiresAt,
-        status: proposal.status,
+        status: mapProposalStatus(proposal.status),
         notes: proposal.notes,
         created_by: proposal.created_by
       })

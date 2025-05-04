@@ -21,7 +21,7 @@ export const useLeadToClientConversion = () => {
           company: lead.company || '',
           email: lead.email,
           phone: lead.phone || '',
-          status: 'ativo', // Using the correct status value from the enum
+          status: 'ativo', // Using the correct "ativo" value from enum
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
           assignedTo: lead.assignedTo,
@@ -45,7 +45,7 @@ export const useLeadToClientConversion = () => {
             contractStart: new Date().toISOString(),
             contractEnd: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString(),
             value: contractValue,
-            billingCycle: 'mensal',
+            billingCycle: 'mensal', // Using the correct "mensal" value
             status: 'ativo',
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
