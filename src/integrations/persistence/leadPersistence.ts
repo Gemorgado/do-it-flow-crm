@@ -1,4 +1,3 @@
-
 import { supabase } from '../supabase/client';
 import { Lead, LeadStatus, LeadSource, PipelineStage } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
@@ -105,8 +104,8 @@ export const leadPersistence = {
       company: lead.company || '',
       email: lead.email,
       phone: lead.phone || '',
-      status: lead.status as LeadStatus,
-      source: lead.source as LeadSource,
+      status: mapDbStatusToFrontend(lead.status) as LeadStatus,
+      source: mapDbSourceToFrontend(lead.source) as LeadSource,
       createdAt: lead.created_at,
       updatedAt: lead.updated_at,
       stage: lead.stage_id ? stages[lead.stage_id] : null,
@@ -155,8 +154,8 @@ export const leadPersistence = {
       company: lead.company || '',
       email: lead.email,
       phone: lead.phone || '',
-      status: lead.status as LeadStatus,
-      source: lead.source as LeadSource,
+      status: mapDbStatusToFrontend(lead.status) as LeadStatus,
+      source: mapDbSourceToFrontend(lead.source) as LeadSource,
       createdAt: lead.created_at,
       updatedAt: lead.updated_at,
       stage: lead.stage_id ? stages[lead.stage_id] : null,

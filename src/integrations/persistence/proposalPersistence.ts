@@ -1,3 +1,4 @@
+
 import { supabase } from '../supabase/client';
 import { Proposal, ProposalItem } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
@@ -64,6 +65,8 @@ export const proposalPersistence = {
       status: mapToFrontendStatus(item.status),
       notes: item.notes,
       created_by: item.created_by,
+      // Provide a default serviceType
+      serviceType: 'private_office', // Default value, may need to be updated based on actual data
       products: item.proposal_items.map((product: any) => ({
         id: product.id,
         name: product.name,
@@ -111,6 +114,8 @@ export const proposalPersistence = {
       status: mapToFrontendStatus(data.status),
       notes: data.notes,
       created_by: data.created_by,
+      // Provide a default serviceType
+      serviceType: 'private_office', // Default value, may need to be updated based on actual data
       products: data.proposal_items.map((product: any) => ({
         id: product.id,
         name: product.name,
@@ -123,6 +128,7 @@ export const proposalPersistence = {
 
   createProposal: async (proposal: Proposal): Promise<Proposal> => {
     const proposalId = proposal.id || uuidv4();
+    const proposalStatus = mapProposalStatus(proposal.status);
 
     // Start a transaction to insert both the proposal and its items
     const { data: proposalData, error: proposalError } = await supabase
@@ -133,7 +139,7 @@ export const proposalPersistence = {
         title: proposal.title,
         value: proposal.value,
         expires_at: proposal.expiresAt,
-        status: mapProposalStatus(proposal.status),
+        status: proposalStatus,
         notes: proposal.notes,
         created_by: proposal.created_by
       })

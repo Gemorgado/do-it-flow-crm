@@ -101,7 +101,7 @@ export const clientPersistence = {
       email: client.email,
       phone: client.phone || '',
       address: client.address || '',
-      status: mapClientStatus(client.status),
+      status: mapClientStatus(client.status) as Client["status"],
       createdAt: client.created_at,
       updatedAt: client.updated_at,
       notes: client.notes || '',

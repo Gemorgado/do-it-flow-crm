@@ -1,16 +1,8 @@
 
 import { supabase } from '../supabase/client';
-import { Location, SpaceBinding } from '@/types';
+import { Location } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
-import { SERVICE_TYPE_MAP } from '@/types/service';
-
-// Helper function to map space types
-const mapSpaceType = (type: string): string => {
-  if (type in SERVICE_TYPE_MAP) {
-    return SERVICE_TYPE_MAP[type as keyof typeof SERVICE_TYPE_MAP];
-  }
-  return type;
-};
+import { ServiceType } from '@/types/service';
 
 export const spacePersistence = {
   getLocations: async (): Promise<Location[]> => {
@@ -27,165 +19,105 @@ export const spacePersistence = {
     return data.map(space => ({
       id: space.id,
       name: space.name,
-      type: mapSpaceType(space.type),
-      identifier: space.id, // Use ID as identifier
-      available: space.is_active, // Map is_active to available
-      floor: space.floor || 1,
-      capacity: space.capacity || null,
-      area: space.area || null,
+      type: space.type as ServiceType,
       description: space.description || '',
+      floor: space.floor,
+      area: space.area,
+      capacity: space.capacity,
       isActive: space.is_active,
       createdAt: space.created_at,
       updatedAt: space.updated_at
     }));
   },
 
-  updateSpace: async (space: Location): Promise<Location> => {
+  getLocation: async (id: string): Promise<Location | undefined> => {
     const { data, error } = await supabase
       .from('spaces')
-      .update({
-        name: space.name,
-        type: mapSpaceType(space.type),
-        floor: space.floor,
-        capacity: space.capacity,
-        area: space.area,
-        description: space.description,
-        is_active: space.isActive !== false,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', space.id)
-      .select()
+      .select('*')
+      .eq('id', id)
       .single();
 
     if (error) {
-      console.error('Error updating space:', error);
+      if (error.code === 'PGRST116') {
+        // Not found
+        return undefined;
+      }
+      console.error('Error fetching space:', error);
       throw error;
     }
 
     return {
       id: data.id,
       name: data.name,
-      type: mapSpaceType(data.type),
-      identifier: data.id, // Use ID as identifier
-      available: data.is_active, // Map is_active to available
-      floor: data.floor || 1,
-      capacity: data.capacity,
-      area: data.area,
+      type: data.type as ServiceType,
       description: data.description || '',
+      floor: data.floor,
+      area: data.area,
+      capacity: data.capacity,
       isActive: data.is_active,
       createdAt: data.created_at,
       updatedAt: data.updated_at
     };
   },
 
-  // Space bindings methods (allocations)
-  listBindings: async (): Promise<SpaceBinding[]> => {
-    const { data, error } = await supabase
-      .from('space_allocations')
-      .select(`
-        *,
-        spaces:space_id(*),
-        clients:client_id(*)
-      `);
-
-    if (error) {
-      console.error('Error fetching space allocations:', error);
-      throw error;
-    }
-
-    return data.map(allocation => ({
-      id: allocation.id,
-      spaceId: allocation.space_id,
-      clientId: allocation.client_id,
-      contractId: allocation.contract_id,
-      boundAt: allocation.created_at || new Date().toISOString(), // Use created_at as boundAt
-      startDate: allocation.start_date,
-      endDate: allocation.end_date,
-      notes: allocation.notes,
-      unitPrice: allocation.unit_price,
-      space: allocation.spaces ? {
-        id: allocation.spaces.id,
-        name: allocation.spaces.name,
-        type: mapSpaceType(allocation.spaces.type),
-        identifier: allocation.spaces.id, // Use ID as identifier
-        available: allocation.spaces.is_active, // Map is_active to available
-        floor: allocation.spaces.floor || 1,
-        capacity: allocation.spaces.capacity,
-        area: allocation.spaces.area,
-        description: allocation.spaces.description || '',
-        isActive: allocation.spaces.is_active,
-        createdAt: allocation.spaces.created_at,
-        updatedAt: allocation.spaces.updated_at
-      } : null,
-      client: allocation.clients ? {
-        id: allocation.clients.id,
-        name: allocation.clients.name,
-        email: allocation.clients.email,
-        services: []  // We don't fetch services here for simplicity
-      } : null
-    }));
-  },
-
-  bindSpace: async (binding: SpaceBinding): Promise<SpaceBinding> => {
-    const bindingId = binding.id || uuidv4();
+  createSpace: async (space: Location): Promise<Location> => {
+    const spaceId = space.id || uuidv4();
 
     const { error } = await supabase
-      .from('space_allocations')
+      .from('spaces')
       .insert({
-        id: bindingId,
-        space_id: binding.spaceId,
-        client_id: binding.clientId,
-        contract_id: binding.contractId,
-        start_date: binding.startDate,
-        end_date: binding.endDate,
-        notes: binding.notes,
-        unit_price: binding.unitPrice,
-        created_at: binding.boundAt || new Date().toISOString()
+        id: spaceId,
+        name: space.name,
+        type: space.type as ServiceType,
+        description: space.description,
+        floor: space.floor,
+        area: space.area,
+        capacity: space.capacity,
+        is_active: space.isActive !== false
       });
 
     if (error) {
-      console.error('Error creating space binding:', error);
+      console.error('Error creating space:', error);
       throw error;
     }
 
     return {
-      ...binding,
-      id: bindingId,
-      boundAt: binding.boundAt || new Date().toISOString() // Ensure boundAt is set
+      ...space,
+      id: spaceId
     };
   },
 
-  updateBinding: async (binding: SpaceBinding): Promise<SpaceBinding> => {
+  updateSpace: async (space: Location): Promise<Location> => {
     const { error } = await supabase
-      .from('space_allocations')
+      .from('spaces')
       .update({
-        space_id: binding.spaceId,
-        client_id: binding.clientId,
-        contract_id: binding.contractId,
-        start_date: binding.startDate,
-        end_date: binding.endDate,
-        notes: binding.notes,
-        unit_price: binding.unitPrice,
+        name: space.name,
+        type: space.type,
+        description: space.description,
+        floor: space.floor,
+        area: space.area,
+        capacity: space.capacity,
+        is_active: space.isActive,
         updated_at: new Date().toISOString()
       })
-      .eq('id', binding.id);
+      .eq('id', space.id);
 
     if (error) {
-      console.error('Error updating space binding:', error);
+      console.error('Error updating space:', error);
       throw error;
     }
 
-    return binding;
+    return space;
   },
 
-  unbindSpace: async (spaceId: string): Promise<void> => {
+  deleteSpace: async (id: string): Promise<void> => {
     const { error } = await supabase
-      .from('space_allocations')
+      .from('spaces')
       .delete()
-      .eq('space_id', spaceId);
+      .eq('id', id);
 
     if (error) {
-      console.error('Error deleting space binding:', error);
+      console.error('Error deleting space:', error);
       throw error;
     }
   }

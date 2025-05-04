@@ -1,6 +1,6 @@
 
 import { useQuery } from "@tanstack/react-query";
-import { clients, clientServices } from "@/data/mockData";
+import { clients, clientServices } from "@/data/clientsData";
 import { Client, ClientService } from "@/types";
 
 /**
