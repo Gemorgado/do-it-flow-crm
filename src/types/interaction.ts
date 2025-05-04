@@ -1,4 +1,15 @@
 
+export interface Interaction {
+  id: string;
+  contactId: string;
+  type: "email" | "call" | "meeting" | "whatsapp" | "visit" | "other";
+  date: string;
+  notes: string;
+  createdBy: string;
+  followUpNeeded: boolean;
+  followUpDate?: string;
+}
+
 export interface WhatsAppMessage {
   id: string;
   leadId: string;
@@ -8,4 +19,3 @@ export interface WhatsAppMessage {
   read: boolean;
   archived?: boolean;
 }
-

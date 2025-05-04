@@ -1,28 +1,24 @@
 
-export type ServiceType = 
-  | "sala_privativa" 
-  | "estacao" 
-  | "endereco_fiscal" 
-  | "sala_reuniao"
-  | "estacao_flex"
-  | "estacao_fixa"
-  | "auditorio";
-
-export const SERVICE_VALUES: ServiceType[] = [
-  "sala_privativa",
-  "estacao",
-  "estacao_flex",
-  "estacao_fixa", 
-  "endereco_fiscal",
-  "sala_reuniao",
-  "auditorio"
-];
+import { ServiceType } from "./service";
 
 export interface Client {
   id: string;
   name: string;
+  company: string;
+  email: string;
+  phone: string;
+  address?: string;
+  services: ClientService[];
+  status: "ativo" | "inativo" | "inadimplente" | "cancelado";
+  createdAt: string;
+  updatedAt: string;
+  notes?: string;
+  assignedTo?: string;
+  isActive: boolean;
+  
+  // Fields for expanded client functionality
   plan?: ServiceType;
-  contractStart?: string;   // yyyy-mm-dd
+  contractStart?: string;
   contractEnd?: string;
   contractTerm?: number;
   contractValue?: number;
@@ -32,17 +28,24 @@ export interface Client {
   createdBy?: string;
   lastReadjustDate?: string;
   readjustIndex?: string;
-  isActive: boolean;
-  
-  // Keep compatibility with existing fields
-  company: string;
-  email: string;
-  phone: string;
-  address?: string;
-  services: any[];
-  status: "ativo" | "inativo" | "inadimplente" | "cancelado";
+}
+
+export interface ClientService {
+  id: string;
+  clientId: string;
+  type: ServiceType;
+  description: string;
+  locationId: string;
+  contractStart: string;
+  contractEnd: string;
+  value: number;
+  billingCycle: "mensal" | "anual";
+  status: ServiceStatus;
   createdAt: string;
   updatedAt: string;
-  notes?: string;
-  assignedTo?: string;
 }
+
+export type ServiceStatus = 
+  | "ativo" 
+  | "em_renovacao" 
+  | "cancelado";
