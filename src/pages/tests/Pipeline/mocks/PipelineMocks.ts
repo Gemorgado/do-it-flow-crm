@@ -1,6 +1,7 @@
 
 import { vi } from 'vitest';
 import { Lead, PipelineStage } from '@/types';
+import React from 'react';
 
 // Common mock factory functions to be reused across pipeline tests
 export const createMockLocalStorage = () => {
