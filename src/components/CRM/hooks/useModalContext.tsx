@@ -1,24 +1,57 @@
 
 import React, { createContext, useContext, useState, ReactNode } from "react";
-import { PipelineStage } from "@/types";
-import { LeadFormValues } from "@/types/crm";
+import { Lead, PipelineStage } from "@/types";
+import { ContactFormValues } from "@/types/crm";
 
 // Lead Modal Context
-interface LeadModalOptions {
-  presetStage?: PipelineStage;
-  onSubmit?: (data: LeadFormValues & { stageId?: string }) => Promise<void> | void;
+interface LeadModalState {
+  isOpen: boolean;
+  options?: {
+    presetStage?: PipelineStage;
+    leadToEdit?: Lead;
+  };
 }
 
 interface LeadModalContextType {
   isOpen: boolean;
-  options?: LeadModalOptions;
-  open: (options?: LeadModalOptions) => void;
+  options?: LeadModalState["options"];
+  open: (options?: LeadModalState["options"]) => void;
   close: () => void;
 }
 
 const LeadModalContext = createContext<LeadModalContextType | undefined>(undefined);
 
+export const LeadModalProvider = ({ children }: { children: ReactNode }) => {
+  const [state, setState] = useState<LeadModalState>({ isOpen: false });
+
+  const open = (options?: LeadModalState["options"]) => {
+    setState({ isOpen: true, options });
+  };
+
+  const close = () => {
+    setState({ isOpen: false });
+  };
+
+  return (
+    <LeadModalContext.Provider value={{ isOpen: state.isOpen, options: state.options, open, close }}>
+      {children}
+    </LeadModalContext.Provider>
+  );
+};
+
+export const useLeadModal = () => {
+  const context = useContext(LeadModalContext);
+  if (!context) {
+    throw new Error("useLeadModal must be used within a LeadModalProvider");
+  }
+  return context;
+};
+
 // Contact Modal Context
+interface ContactModalState {
+  isOpen: boolean;
+}
+
 interface ContactModalContextType {
   isOpen: boolean;
   open: () => void;
@@ -27,64 +60,28 @@ interface ContactModalContextType {
 
 const ContactModalContext = createContext<ContactModalContextType | undefined>(undefined);
 
-// Provider
-export function ModalProvider({ children }: { children: ReactNode }) {
-  // Lead modal state
-  const [leadModalOpen, setLeadModalOpen] = useState(false);
-  const [leadModalOptions, setLeadModalOptions] = useState<LeadModalOptions | undefined>(undefined);
+export const ContactModalProvider = ({ children }: { children: ReactNode }) => {
+  const [state, setState] = useState<ContactModalState>({ isOpen: false });
 
-  const openLeadModal = (options?: LeadModalOptions) => {
-    setLeadModalOptions(options);
-    setLeadModalOpen(true);
+  const open = () => {
+    setState({ isOpen: true });
   };
 
-  const closeLeadModal = () => {
-    setLeadModalOpen(false);
-    setLeadModalOptions(undefined);
-  };
-
-  // Contact modal state
-  const [contactModalOpen, setContactModalOpen] = useState(false);
-
-  const openContactModal = () => {
-    setContactModalOpen(true);
-  };
-
-  const closeContactModal = () => {
-    setContactModalOpen(false);
+  const close = () => {
+    setState({ isOpen: false });
   };
 
   return (
-    <LeadModalContext.Provider value={{ 
-      isOpen: leadModalOpen, 
-      options: leadModalOptions,
-      open: openLeadModal, 
-      close: closeLeadModal 
-    }}>
-      <ContactModalContext.Provider value={{ 
-        isOpen: contactModalOpen, 
-        open: openContactModal, 
-        close: closeContactModal 
-      }}>
-        {children}
-      </ContactModalContext.Provider>
-    </LeadModalContext.Provider>
+    <ContactModalContext.Provider value={{ isOpen: state.isOpen, open, close }}>
+      {children}
+    </ContactModalContext.Provider>
   );
-}
+};
 
-// Hooks
-export function useLeadModal() {
-  const context = useContext(LeadModalContext);
-  if (context === undefined) {
-    throw new Error("useLeadModal must be used within a ModalProvider");
-  }
-  return context;
-}
-
-export function useContactModal() {
+export const useContactModal = () => {
   const context = useContext(ContactModalContext);
-  if (context === undefined) {
-    throw new Error("useContactModal must be used within a ModalProvider");
+  if (!context) {
+    throw new Error("useContactModal must be used within a ContactModalProvider");
   }
   return context;
-}
+};

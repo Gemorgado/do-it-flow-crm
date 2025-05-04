@@ -1,9 +1,16 @@
 
+import { useState } from "react";
 import { Lead } from "@/types";
-import { LeadCardAlert } from "./LeadCardAlert";
 import { LeadCardBadge } from "./LeadCardBadge";
+import { LeadCardAlert } from "./LeadCardAlert";
 import { LeadCardFollowUp } from "./LeadCardFollowUp";
 import { LeadCardActions } from "./LeadCardActions";
+import { LeadConversionModal } from "@/components/CRM/LeadConversionModal";
+import { useLeadModal } from "@/components/CRM/hooks/useModalContext";
+import { ArrowRight, Calendar, Phone } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { getLeadAlertMessage } from "@/utils/pipelineAutomation";
 
 interface LeadCardProps {
   lead: Lead;
@@ -12,75 +19,108 @@ interface LeadCardProps {
 }
 
 export function LeadCard({ lead, onDragStart, onStageUpdate }: LeadCardProps) {
-  function formatValue(value?: number): string {
-    if (!value) return "Não informado";
-    return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-  }
-
-  // Function to handle auto-stage progression based on message keywords
-  const handleMessageSent = (message: string) => {
-    const progressionKeywords = {
-      "proposta": "3", // Move to proposal stage
-      "contrato": "4", // Move to negotiation stage
-      "pagamento": "5", // Move to closed stage
-      "orçamento": "2", // Move to qualified stage
-    };
-    
-    // Check if message contains any keywords that should trigger stage progression
-    for (const [keyword, stageId] of Object.entries(progressionKeywords)) {
-      if (message.toLowerCase().includes(keyword.toLowerCase()) && lead.stage.id !== stageId) {
-        if (onStageUpdate) {
-          onStageUpdate(lead.id, stageId);
-          break;
-        }
-      }
-    }
-  };
-
-  // Get source display name
-  const getCampaignSource = () => {
-    // This would come from actual lead data in a real app
-    // For demo, we'll randomly assign sources
-    const sources = ['Google Ads', 'Facebook Ads', 'Instagram', 'Direto', 'Email'];
-    const sourceIndex = parseInt(lead.id) % sources.length;
-    return sources[sourceIndex];
+  const [showActions, setShowActions] = useState(false);
+  const [showConversionModal, setShowConversionModal] = useState(false);
+  const leadModal = useLeadModal();
+  
+  // Generate alert message for leads that need attention
+  const alertMessage = getLeadAlertMessage(lead);
+  
+  // Format the time since last update
+  const timeSinceUpdate = formatDistanceToNow(new Date(lead.updatedAt), { 
+    addSuffix: true,
+    locale: ptBR
+  });
+  
+  const handleEdit = () => {
+    leadModal.open({ leadToEdit: lead });
   };
 
   return (
-    <div 
-      className="bg-white border rounded-md shadow-sm p-3 cursor-move hover:shadow-md transition-shadow"
-      draggable
-      onDragStart={(e) => onDragStart(e, lead)}
-    >
-      <div className="flex justify-between items-start mb-1">
-        <h4 className="font-medium flex items-center gap-1">
-          {lead.name}
-          <LeadCardAlert lead={lead} />
-        </h4>
-        {lead.value && (
-          <span className="text-sm text-doIt-primary font-medium">
-            {formatValue(lead.value)}
-          </span>
+    <>
+      <div 
+        className="bg-white p-3 rounded-md border shadow-sm cursor-grab hover:shadow-md transition-all"
+        draggable
+        onDragStart={(e) => onDragStart(e, lead)}
+        onMouseEnter={() => setShowActions(true)}
+        onMouseLeave={() => setShowActions(false)}
+      >
+        <div className="flex justify-between items-start">
+          <h4 className="font-medium text-sm">{lead.name}</h4>
+          {showActions && (
+            <LeadCardActions 
+              lead={lead}
+              onConvert={() => setShowConversionModal(true)}
+              onEdit={handleEdit}
+            />
+          )}
+        </div>
+        
+        <div className="mt-1 text-xs text-gray-500 flex items-center gap-1">
+          <span>{lead.company || "Sem empresa"}</span>
+          {lead.value && (
+            <>
+              <span>•</span>
+              <span className="font-medium">
+                R$ {lead.value.toLocaleString('pt-BR')}
+              </span>
+            </>
+          )}
+        </div>
+        
+        {/* Alert for leads that need attention */}
+        {alertMessage && (
+          <LeadCardAlert message={alertMessage} />
+        )}
+        
+        {/* Source and status badges */}
+        <div className="mt-2 flex flex-wrap gap-1">
+          <LeadCardBadge type="source">{lead.source}</LeadCardBadge>
+          <LeadCardBadge type="status">{lead.status}</LeadCardBadge>
+          
+          {lead.meetingScheduled && (
+            <LeadCardBadge type="meeting">
+              <Calendar className="h-3 w-3 mr-1" />
+              Agendado
+            </LeadCardBadge>
+          )}
+        </div>
+        
+        {/* Follow-up info if available */}
+        {lead.nextFollowUp && (
+          <LeadCardFollowUp date={lead.nextFollowUp} />
+        )}
+        
+        <div className="mt-2 pt-2 border-t border-gray-100 flex justify-between text-xs text-gray-400">
+          <div className="flex items-center gap-1">
+            <Phone className="h-3 w-3" />
+            <span>
+              {lead.lastContact ? formatDistanceToNow(new Date(lead.lastContact), { 
+                addSuffix: true, 
+                locale: ptBR 
+              }) : "Nenhum contato"}
+            </span>
+          </div>
+          <span>{timeSinceUpdate}</span>
+        </div>
+        
+        {/* Possible next stage indicator */}
+        {onStageUpdate && (
+          <div 
+            className="mt-2 pt-2 border-t border-gray-100 flex items-center justify-end text-xs text-blue-500 hover:text-blue-700 cursor-pointer transition-colors"
+            onClick={() => onStageUpdate(lead.id, (parseInt(lead.stage.id) + 1).toString())}
+          >
+            <span>Avançar</span>
+            <ArrowRight className="ml-1 h-3 w-3" />
+          </div>
         )}
       </div>
       
-      {lead.company && (
-        <p className="text-sm text-gray-600 mb-2">{lead.company}</p>
-      )}
-      
-      {/* Campaign source badge */}
-      <div className="mb-2">
-        <LeadCardBadge campaignSource={getCampaignSource()} />
-      </div>
-      
-      {/* Show next follow up date if it exists */}
-      <LeadCardFollowUp nextFollowUp={lead.nextFollowUp} />
-      
-      {/* Actions */}
-      <LeadCardActions 
-        lead={lead} 
-        onMessageSent={handleMessageSent} 
+      <LeadConversionModal 
+        lead={lead}
+        isOpen={showConversionModal}
+        onClose={() => setShowConversionModal(false)}
       />
-    </div>
+    </>
   );
 }
