@@ -7,6 +7,7 @@ export interface Lead {
   phone: string;
   status: LeadStatus;
   source: LeadSource;
+  sourceDetail?: string; // Adding this field to fix the error
   createdAt: string;
   updatedAt: string;
   stage: PipelineStage;

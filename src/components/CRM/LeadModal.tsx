@@ -34,7 +34,7 @@ export function LeadModal() {
         const updatedLead = {
           ...options.leadToEdit,
           name: data.companyOrPerson || options.leadToEdit.name,
-          company: data.company || options.leadToEdit.company,
+          company: data.idNumber || options.leadToEdit.company,
           email: data.email || options.leadToEdit.email,
           phone: data.phone || options.leadToEdit.phone,
           notes: data.notes || options.leadToEdit.notes,

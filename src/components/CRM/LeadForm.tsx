@@ -52,7 +52,7 @@ export function LeadForm({
     email: leadToEdit.email || '',
     phone: leadToEdit.phone || '',
     notes: leadToEdit.notes || '',
-    sourceCategory: mapLeadSourceToCategory(leadToEdit.source) || 'outro',
+    sourceCategory: mapLeadSourceToCategory(leadToEdit.source) as "indicacao" | "rede_social" | "outro",
     sourceDetail: leadToEdit.sourceDetail || '',
   } : undefined;
 
@@ -71,7 +71,7 @@ export function LeadForm({
           const updatedLead = {
             ...leadToEdit,
             name: data.companyOrPerson || leadToEdit.name,
-            company: data.company || leadToEdit.company,
+            company: data.idNumber || leadToEdit.company,
             email: data.email || leadToEdit.email,
             phone: data.phone || leadToEdit.phone,
             status: leadToEdit.status as LeadStatus,
@@ -95,7 +95,7 @@ export function LeadForm({
           const newLead = {
             id: uuidv4(),
             name: data.companyOrPerson || 'Sem nome',
-            company: data.company || '',
+            company: data.idNumber || '',
             email: data.email || 'sem-email@exemplo.com',
             phone: data.phone || '',
             status: 'novo' as LeadStatus,
@@ -200,7 +200,7 @@ export function LeadForm({
           <FormButtons 
             onCancel={onCancel} 
             isSubmitting={isSubmitting}
-            isEditMode={isEditMode}
+            isEditMode={isEditMode} 
           />
         </form>
       </Form>
