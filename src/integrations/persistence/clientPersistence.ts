@@ -3,6 +3,50 @@ import { supabase } from '../supabase/client';
 import { Client, ClientService } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
 
+// Helper function to map Supabase service types to our app service types
+const mapServiceType = (type: string): any => {
+  const mappings: Record<string, string> = {
+    'endereco_fiscal': 'fiscal_address',
+    'estacao_flex': 'flex_desk',
+    'estacao_fixa': 'fixed_desk',
+    'sala_privativa': 'private_office',
+    'sala_reuniao': 'meeting_room',
+    'auditorio': 'auditorium'
+  };
+  
+  return mappings[type] || type;
+};
+
+// Helper function to map our app service types to Supabase service types
+const mapToSupabaseServiceType = (type: string): any => {
+  const mappings: Record<string, string> = {
+    'fiscal_address': 'endereco_fiscal',
+    'flex_desk': 'estacao_flex',
+    'fixed_desk': 'estacao_fixa',
+    'private_office': 'sala_privativa',
+    'meeting_room': 'sala_reuniao',
+    'auditorium': 'auditorio'
+  };
+  
+  return mappings[type] || type;
+};
+
+// Helper function to map client status
+const mapClientStatus = (status: string): string => {
+  const statusMap: Record<string, string> = {
+    'active': 'ativo',
+    'inactive': 'inativo',
+    'delinquent': 'inadimplente',
+    'canceled': 'cancelado',
+    'ativo': 'ativo',
+    'inativo': 'inativo',
+    'inadimplente': 'inadimplente',
+    'cancelado': 'cancelado'
+  };
+  
+  return statusMap[status] || 'ativo';
+};
+
 export const clientPersistence = {
   listClients: async (): Promise<Client[]> => {
     // First get all clients
@@ -62,7 +106,6 @@ export const clientPersistence = {
       assignedTo: client.assigned_to || '',
       isActive: client.is_active,
       services: servicesByClient[client.id] || [],
-      convertedFromLeadId: client.converted_from_lead_id,
       plan: client.plan,
       contractStart: client.contract_start,
       contractEnd: client.contract_end,
@@ -129,7 +172,6 @@ export const clientPersistence = {
         createdAt: service.created_at,
         updatedAt: service.updated_at
       })),
-      convertedFromLeadId: client.converted_from_lead_id,
       plan: client.plan,
       contractStart: client.contract_start,
       contractEnd: client.contract_end,
@@ -156,12 +198,12 @@ export const clientPersistence = {
         email: client.email,
         phone: client.phone,
         address: client.address,
-        status: client.status || 'active',
+        status: mapClientStatus(client.status),
         notes: client.notes,
         assigned_to: client.assignedTo,
         is_active: client.isActive !== false,
         converted_from_lead_id: client.convertedFromLeadId,
-        plan: client.plan,
+        plan: client.plan ? mapToSupabaseServiceType(client.plan) : null,
         contract_start: client.contractStart,
         contract_end: client.contractEnd,
         contract_term: client.contractTerm,
@@ -183,7 +225,7 @@ export const clientPersistence = {
       const servicesToInsert = client.services.map(service => ({
         id: service.id || uuidv4(),
         client_id: clientId,
-        type: service.type,
+        type: mapToSupabaseServiceType(service.type),
         description: service.description,
         location_id: service.locationId,
         contract_start: service.contractStart,
@@ -219,11 +261,11 @@ export const clientPersistence = {
         email: client.email,
         phone: client.phone,
         address: client.address,
-        status: client.status,
+        status: mapClientStatus(client.status),
         notes: client.notes,
         assigned_to: client.assignedTo,
         is_active: client.isActive,
-        plan: client.plan,
+        plan: client.plan ? mapToSupabaseServiceType(client.plan) : null,
         contract_start: client.contractStart,
         contract_end: client.contractEnd,
         contract_term: client.contractTerm,
@@ -259,7 +301,7 @@ export const clientPersistence = {
       const servicesToInsert = client.services.map(service => ({
         id: service.id || uuidv4(),
         client_id: client.id,
-        type: service.type,
+        type: mapToSupabaseServiceType(service.type),
         description: service.description,
         location_id: service.locationId,
         contract_start: service.contractStart,

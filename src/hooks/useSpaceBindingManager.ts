@@ -90,13 +90,7 @@ export const useSpaceBindingManager = (initialBindings: SpaceBinding[] = []) => 
           contractId: service.id,
           startDate: service.contractStart,
           endDate: service.contractEnd,
-          client: {
-            id: client.id,
-            name: client.name,
-            email: client.email,
-            services: client.services || []
-          },
-          space: space
+          notes: ''
         };
 
         await persistence.bindSpace(newBinding);

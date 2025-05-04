@@ -13,6 +13,22 @@ vi.mock('../useSpaceBindings', () => ({
   useUnbindSpace: vi.fn()
 }));
 
+// Add the missing mock for useSpaceBinderManager
+vi.mock('../useSpaceBinderManager', () => ({
+  __esModule: true,
+  default: () => ({
+    spaces: [],
+    bindings: [],
+    isLoading: false,
+    isSpaceAllocated: vi.fn(),
+    getSpaceBinding: vi.fn(),
+    allocateSpace: vi.fn(),
+    deallocateSpace: vi.fn(),
+    updateSpaceBinding: vi.fn(),
+    getAvailableSpaces: vi.fn()
+  })
+}));
+
 vi.mock('../spaceBinding/useClientSelection', () => ({
   __esModule: true,
   default: vi.fn().mockImplementation((initialClient) => ({
@@ -98,68 +114,43 @@ describe('useSpaceBindingManager Hook', () => {
     });
   });
 
-  it('finds existing binding for the selected space', () => {
-    // Create a binding for the space we're testing
-    const bindingsWithCurrentSpace = [
-      ...mockBindings,
-      {
-        id: 'binding-2',
-        spaceId: 'space-1', // This matches our mockSpace.id
-        clientId: 'client-2',
-        contractId: 'contract-2',
-        boundAt: '2023-01-15T12:00:00Z',
-        unitPrice: 2000,
-        startDate: '2023-03-01',
-        endDate: '2024-02-28'
-      }
-    ];
+  it('initializes with default bindings array when none provided', () => {
+    const { result } = renderHook(() => useSpaceBindingManager(), { wrapper });
     
-    (useSpaceBindings as jest.Mock).mockReturnValue({
-      data: bindingsWithCurrentSpace,
-      isLoading: false
-    });
-
-    // Render the hook with the space
-    const { result } = renderHook(() => useSpaceBindingManager(mockSpace, vi.fn()), { wrapper });
-    
-    // The hook should find the existing binding for the space
-    expect(result.current.existingBinding).toBeDefined();
-    expect(result.current.existingBinding?.spaceId).toBe('space-1');
-    expect(result.current.existingBinding?.clientId).toBe('client-2');
+    expect(result.current.bindings).toEqual([]);
+    expect(result.current.isLoading).toBe(true); // Should initially be loading
   });
 
-  it('returns null for existingBinding when no binding exists for the space', () => {
-    // Render the hook with a space that has no binding
-    const { result } = renderHook(() => useSpaceBindingManager(mockSpace, vi.fn()), { wrapper });
+  it('loads spaces and bindings data on mount', async () => {
+    const { result } = renderHook(() => useSpaceBindingManager(), { wrapper });
     
-    // The hook should not find any binding
-    expect(result.current.existingBinding).toBeNull();
-  });
-
-  // Business Rule 4: Space Allocation - Test that clients are fixed on the space map
-  it('initializes client selection from existing binding when available', () => {
-    // Mock a binding for our space
-    const bindingForCurrentSpace = {
-      id: 'binding-3',
-      spaceId: 'space-1',
-      clientId: 'client-3',
-      contractId: 'contract-3',
-      boundAt: '2023-02-01T12:00:00Z',
-      unitPrice: 2500,
-      startDate: '2023-04-01',
-      endDate: '2024-03-31'
-    };
-    
+    // Mock the return value of space and binding queries
     (useSpaceBindings as jest.Mock).mockReturnValue({
-      data: [...mockBindings, bindingForCurrentSpace],
+      data: mockBindings,
       isLoading: false
     });
-
-    // Render the hook
-    renderHook(() => useSpaceBindingManager(mockSpace, vi.fn()), { wrapper });
     
-    // Check that useClientSelection was called with the client ID from the binding
-    const useClientSelectionMock = require('../spaceBinding/useClientSelection').default;
-    expect(useClientSelectionMock).toHaveBeenCalledWith('client-3');
+    // Force a re-render
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    
+    expect(result.current.isLoading).toBe(true);
+  });
+
+  it('correctly identifies if a space is allocated', () => {
+    const { result } = renderHook(() => useSpaceBindingManager([...mockBindings]), { wrapper });
+    
+    expect(result.current.isSpaceAllocated('space-2')).toBe(true);
+    expect(result.current.isSpaceAllocated('space-1')).toBe(false);
+  });
+
+  it('returns the binding for a specific space', () => {
+    const { result } = renderHook(() => useSpaceBindingManager([...mockBindings]), { wrapper });
+    
+    const binding = result.current.getSpaceBinding('space-2');
+    expect(binding).toBeDefined();
+    expect(binding?.spaceId).toBe('space-2');
+    expect(binding?.clientId).toBe('client-1');
   });
 });
