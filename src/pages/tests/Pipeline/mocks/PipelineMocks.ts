@@ -5,7 +5,7 @@ import React from 'react';
 
 // Common mock factory functions to be reused across the pipeline tests
 export const createMockLocalStorage = () => {
-  let store = {};
+  let store: Record<string, string> = {};
   return {
     getItem: (key: string) => store[key] || null,
     setItem: (key: string, value: string) => {
