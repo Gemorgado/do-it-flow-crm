@@ -1,3 +1,4 @@
+
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@/test/utils';
 import Pipeline from '@/pages/Pipeline';
@@ -5,6 +6,15 @@ import userEvent from '@testing-library/user-event';
 import { usePipelineData } from '@/hooks/usePipelineData';
 import { leads, pipelineStages } from '@/data/leadsData';
 import React from 'react'; // Add React import for ReactNode type
+
+// DIAGNOSTIC BEFORE FIX:
+// vi.mock('@/components/Pipeline/PipelineBoard', () => ({
+//   PipelineBoard: ({ pipelineStages, leadsByStage, onDragStart, onDragOver, onDrop, onStageUpdate }) => (
+//     <div data-testid="pipeline-board">
+//       <div>Total stages: {pipelineStages.length}</div>
+//       <div data-testid="total-leads">Total leads: {
+//         Object.values(leadsByStage).reduce((acc, stageLeads) => acc + stageLeads.length, 0)
+//       }</div>
 
 // Mock dependencies
 vi.mock('@/hooks/usePipelineData', () => ({
