@@ -56,9 +56,12 @@ export const mockPipelineComponents = () => {
   }));
 
   vi.mock('@/components/Pipeline/PipelineSearch', () => ({
-    PipelineSearch: ({ onSearch, onFilterByUser }: { 
-      onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void, 
-      onFilterByUser: (value: string) => void 
+    PipelineSearch: ({ 
+      onSearch, 
+      onFilterByUser 
+    }: { 
+      onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void; 
+      onFilterByUser: (value: string) => void;
     }) => (
       <div data-testid="pipeline-search">
         <input 
@@ -86,12 +89,12 @@ export const mockPipelineComponents = () => {
       onDrop, 
       onStageUpdate 
     }: { 
-      pipelineStages: PipelineStage[],
-      leadsByStage: Record<string, Lead[]>,
-      onDragStart: (e: React.DragEvent, lead: Lead) => void,
-      onDragOver: (e: React.DragEvent) => void,
-      onDrop: (e: React.DragEvent, stageId: string) => void,
-      onStageUpdate: (leadId: string, stageId: string) => void
+      pipelineStages: PipelineStage[];
+      leadsByStage: Record<string, Lead[]>;
+      onDragStart: (e: React.DragEvent<HTMLDivElement>, lead: Lead) => void;
+      onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
+      onDrop: (e: React.DragEvent<HTMLDivElement>, stageId: string) => void;
+      onStageUpdate: (leadId: string, stageId: string) => void;
     }) => (
       <div data-testid="pipeline-board">
         <div>Total stages: {pipelineStages.length}</div>
@@ -113,7 +116,7 @@ export const mockPipelineComponents = () => {
                   data-testid={`lead-${lead.id}`}
                   draggable
                   onDragStart={(e) => onDragStart(e, lead)}
-                  onClick={() => onStageUpdate(lead.id, '3')} // For testing, clicking moves to stage 3
+                  onClick={() => onStageUpdate(lead.id, '3')} 
                 >
                   {lead.name}
                 </div>
