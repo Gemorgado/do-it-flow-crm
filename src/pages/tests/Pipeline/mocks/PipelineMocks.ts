@@ -1,7 +1,6 @@
 
 import { vi } from 'vitest';
 import { Lead, PipelineStage } from '@/types';
-import React from 'react';
 
 /**
  * Creates a mock localStorage for testing
@@ -46,20 +45,13 @@ export function createMockPipelineData() {
  */
 export function mockPipelineBoard() {
   vi.mock('@/components/Pipeline/PipelineBoard', () => ({
-    PipelineBoard: ({
-      pipelineStages,
+    PipelineBoard: ({ 
+      pipelineStages, 
       leadsByStage,
       onDragStart,
       onDragOver,
       onDrop,
-      onStageUpdate
-    }: {
-      pipelineStages: PipelineStage[];
-      leadsByStage: Record<string, Lead[]>;
-      onDragStart: (e: React.DragEvent, lead: Lead) => void;
-      onDragOver: (e: React.DragEvent) => void;
-      onDrop: (e: React.DragEvent, stageId: string) => void;
-      onStageUpdate: (leadId: string, stageId: string) => void;
+      onStageUpdate 
     }) => {
       return (
         <div data-testid="pipeline-board">
@@ -103,13 +95,7 @@ export function mockPipelineBoard() {
  */
 export function mockPipelineSearch() {
   vi.mock('@/components/Pipeline/PipelineSearch', () => ({
-    PipelineSearch: ({
-      onSearch,
-      onFilterByUser
-    }: {
-      onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
-      onFilterByUser: (userId: string) => void;
-    }) => {
+    PipelineSearch: ({ onSearch, onFilterByUser }) => {
       return (
         <div data-testid="pipeline-search">
           <input 
@@ -135,11 +121,7 @@ export function mockPipelineSearch() {
  */
 export function mockPipelineHeader() {
   vi.mock('@/components/Pipeline/PipelineHeader', () => ({
-    PipelineHeader: ({ 
-      leadsNeedingAttention 
-    }: { 
-      leadsNeedingAttention: Lead[] 
-    }) => {
+    PipelineHeader: ({ leadsNeedingAttention }) => {
       return (
         <div data-testid="pipeline-header">
           Pipeline Header (Leads needing attention: {leadsNeedingAttention.length})
