@@ -34,7 +34,7 @@ export function useClientContracts(clientId: string | null) {
       // Ensure we're returning the right format
       const filteredContracts = clientServices.filter(
         contract => contract.clientId === clientId && 
-                   contract.status === "ativo"
+                   contract.status === "active"
       );
       
       console.log(`Found ${filteredContracts.length} active contracts:`, filteredContracts);
@@ -67,7 +67,7 @@ export function useClientActiveContract(clientId: string | null) {
       // Simulate API call to get active contract
       // In a real app, this would call an endpoint like /clients/:id/contract-active
       const activeContracts = clientServices.filter(
-        contract => contract.clientId === clientId && contract.status === "ativo"
+        contract => contract.clientId === clientId && contract.status === "active"
       );
       
       // Return the most recent contract (in a real app, this logic would be on the backend)

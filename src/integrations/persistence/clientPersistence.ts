@@ -1,4 +1,3 @@
-
 // Helper functions to map between frontend and backend formats
 import { Client, ClientService, ServiceType, ServiceStatus, BillingCycle } from "@/types";
 import { 
@@ -16,41 +15,33 @@ import { v4 as uuidv4 } from 'uuid';
 // Helper function to map client status
 const mapClientStatus = (status: string): string => {
   if (status in PT_BR_TO_CLIENT_STATUS) {
-    return PT_BR_TO_CLIENT_STATUS[status];
-  } else if (status in CLIENT_STATUS_TO_PT_BR) {
-    return status;
+    return PT_BR_TO_CLIENT_STATUS[status as keyof typeof PT_BR_TO_CLIENT_STATUS];
   }
   return status;
 };
 
 // Helper function to map service type
-const mapServiceType = (type: string): string => {
+const mapServiceType = (type: string): ServiceType => {
   if (type in PT_BR_TO_SERVICE_TYPE) {
     return PT_BR_TO_SERVICE_TYPE[type as keyof typeof PT_BR_TO_SERVICE_TYPE];
-  } else if (type in SERVICE_TYPE_TO_PT_BR) {
-    return type;
   }
-  return type;
+  return type as ServiceType;
 };
 
 // Helper function to map billing cycle
-const mapBillingCycle = (cycle: string): string => {
+const mapBillingCycle = (cycle: string): BillingCycle => {
   if (cycle in PT_BR_TO_BILLING_CYCLE) {
     return PT_BR_TO_BILLING_CYCLE[cycle as keyof typeof PT_BR_TO_BILLING_CYCLE];
-  } else if (cycle in BILLING_CYCLE_TO_PT_BR) {
-    return cycle;
   }
-  return cycle;
+  return cycle as BillingCycle;
 };
 
 // Helper function to map service status
-const mapServiceStatus = (status: string): string => {
+const mapServiceStatus = (status: string): ServiceStatus => {
   if (status in PT_BR_TO_SERVICE_STATUS) {
     return PT_BR_TO_SERVICE_STATUS[status as keyof typeof PT_BR_TO_SERVICE_STATUS];
-  } else if (status in SERVICE_STATUS_TO_PT_BR) {
-    return status;
   }
-  return status;
+  return status as ServiceStatus;
 };
 
 // Helper function to convert DB service to frontend service format
@@ -58,14 +49,14 @@ const convertDbServiceToClient = (service: any): ClientService => {
   return {
     id: service.id,
     clientId: service.client_id,
-    type: mapServiceType(service.type) as ServiceType,
+    type: mapServiceType(service.type),
     description: service.description,
     locationId: service.location_id || '',
     contractStart: service.contract_start,
     contractEnd: service.contract_end,
     value: service.value,
-    billingCycle: mapBillingCycle(service.billing_cycle) as BillingCycle,
-    status: mapServiceStatus(service.status) as ServiceStatus,
+    billingCycle: mapBillingCycle(service.billing_cycle),
+    status: mapServiceStatus(service.status),
     createdAt: service.created_at,
     updatedAt: service.updated_at
   };
@@ -99,20 +90,7 @@ export const clientPersistence = {
       if (!servicesByClient[service.client_id]) {
         servicesByClient[service.client_id] = [];
       }
-      servicesByClient[service.client_id].push({
-        id: service.id,
-        clientId: service.client_id,
-        type: mapServiceType(service.type) as ServiceType,
-        description: service.description,
-        locationId: service.location_id,
-        contractStart: service.contract_start,
-        contractEnd: service.contract_end,
-        value: service.value,
-        billingCycle: mapBillingCycle(service.billing_cycle) as "mensal" | "anual",
-        status: mapClientStatus(service.status) as "ativo" | "em_renovacao" | "cancelado",
-        createdAt: service.created_at,
-        updatedAt: service.updated_at
-      });
+      servicesByClient[service.client_id].push(convertDbServiceToClient(service));
     });
 
     // Map clients with their services
@@ -123,14 +101,14 @@ export const clientPersistence = {
       email: client.email,
       phone: client.phone || '',
       address: client.address || '',
-      status: mapClientStatus(client.status) as "ativo" | "inativo" | "inadimplente" | "cancelado",
+      status: mapClientStatus(client.status),
       createdAt: client.created_at,
       updatedAt: client.updated_at,
       notes: client.notes || '',
       assignedTo: client.assigned_to || '',
       isActive: client.is_active,
       services: servicesByClient[client.id] || [],
-      plan: client.plan ? mapServiceType(client.plan) as ServiceType : undefined,
+      plan: client.plan ? mapServiceType(client.plan) : undefined,
       contractStart: client.contract_start,
       contractEnd: client.contract_end,
       contractTerm: client.contract_term,
@@ -183,7 +161,7 @@ export const clientPersistence = {
       assignedTo: client.assigned_to || '',
       isActive: client.is_active,
       services: services.map(convertDbServiceToClient),
-      plan: client.plan ? mapServiceType(client.plan) as ServiceType : undefined,
+      plan: client.plan ? mapServiceType(client.plan) : undefined,
       contractStart: client.contract_start,
       contractEnd: client.contract_end,
       contractTerm: client.contract_term,
@@ -198,6 +176,13 @@ export const clientPersistence = {
   
   createClient: async (client: Client): Promise<Client> => {
     const clientId = client.id || uuidv4();
+    
+    // Convert the plan back to database format if it exists
+    let dbPlanValue = null;
+    if (client.plan) {
+      // Use the plan value directly as it should now match the database
+      dbPlanValue = client.plan;
+    }
 
     // Insert the client
     const { error: clientError } = await supabase
@@ -209,11 +194,11 @@ export const clientPersistence = {
         email: client.email,
         phone: client.phone,
         address: client.address,
-        status: mapClientStatus(client.status),
+        status: client.status, // Should now be properly typed as "active", "inactive", etc.
         notes: client.notes,
         assigned_to: client.assignedTo,
         is_active: client.isActive !== false,
-        plan: client.plan ? mapServiceType(client.plan) : null,
+        plan: dbPlanValue,
         contract_start: client.contractStart,
         contract_end: client.contractEnd,
         contract_term: client.contractTerm,
@@ -236,16 +221,15 @@ export const clientPersistence = {
         const { error: serviceError } = await supabase
           .from('client_services')
           .insert({
-            id: service.id || uuidv4(),
             client_id: clientId,
-            type: mapServiceType(service.type),
+            type: service.type, // Now properly typed as "fiscal_address", etc.
             description: service.description,
             location_id: service.locationId,
             contract_start: service.contractStart,
             contract_end: service.contractEnd,
             value: service.value,
-            billing_cycle: mapBillingCycle(service.billingCycle),
-            status: mapServiceStatus(service.status)
+            billing_cycle: service.billingCycle, // Now properly typed as "monthly" or "yearly"
+            status: service.status // Now properly typed as "active", "renewal", or "canceled"
           });
 
         if (serviceError) {
@@ -271,7 +255,7 @@ export const clientPersistence = {
         email: client.email,
         phone: client.phone,
         address: client.address,
-        status: mapClientStatus(client.status),
+        status: client.status,
         notes: client.notes,
         assigned_to: client.assignedTo,
         is_active: client.isActive,
@@ -314,7 +298,7 @@ export const clientPersistence = {
           .insert({
             id: service.id || uuidv4(),
             client_id: client.id,
-            type: mapServiceType(service.type),
+            type: service.type,
             description: service.description,
             location_id: service.locationId,
             contract_start: service.contractStart,

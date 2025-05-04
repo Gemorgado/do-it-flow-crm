@@ -44,7 +44,7 @@ export function useContactsData() {
     email: customer.email || "",
     phone: customer.phone || "",
     services: [],
-    status: "ativo", // Default status
+    status: "active", // Default status
     createdAt: customer.updatedAt,
     updatedAt: customer.updatedAt,
     createdBy: "system", // Default created by

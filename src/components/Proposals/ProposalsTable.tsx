@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { FileText, MoreHorizontal, Calendar, User } from "lucide-react";
-import { Proposal } from "@/types";
+import { Proposal, ProposalStatus, PROPOSAL_STATUS_DISPLAY_LABELS } from "@/types";
 import { formatCurrency, formatDate } from "@/utils/formatters";
 
 interface ProposalsTableProps {
@@ -28,42 +28,24 @@ export function ProposalsTable({
   onEdit
 }: ProposalsTableProps) {
   // Function to get status color
-  function getStatusColor(status: Proposal["status"]): string {
+  function getStatusColor(status: ProposalStatus): string {
     switch (status) {
-      case "enviada":
+      case "sent":
         return "bg-blue-100 text-blue-800";
-      case "visualizada":
+      case "viewed":
         return "bg-purple-100 text-purple-800";
-      case "aceita":
+      case "accepted":
         return "bg-green-100 text-green-800";
-      case "rejeitada":
+      case "rejected":
         return "bg-red-100 text-red-800";
-      case "expirada":
+      case "expired":
         return "bg-gray-100 text-gray-800";
-      case "em_negociacao":
+      case "negotiating":
         return "bg-amber-100 text-amber-800";
+      case "draft":
+        return "bg-gray-100 text-gray-800";
       default:
         return "bg-gray-100 text-gray-800";
-    }
-  }
-
-  // Function to get status label
-  function getStatusLabel(status: Proposal["status"]): string {
-    switch (status) {
-      case "enviada":
-        return "Enviada";
-      case "visualizada":
-        return "Visualizada";
-      case "aceita":
-        return "Aceita";
-      case "rejeitada":
-        return "Rejeitada";
-      case "expirada":
-        return "Expirada";
-      case "em_negociacao":
-        return "Em Negociação";
-      default:
-        return "Desconhecido";
     }
   }
 
@@ -106,8 +88,8 @@ export function ProposalsTable({
                     <div className="font-medium">{formatCurrency(proposal.value)}</div>
                   </TableCell>
                   <TableCell>
-                    <Badge className={`${getStatusColor(proposal.status)}`}>
-                      {getStatusLabel(proposal.status)}
+                    <Badge className={`${getStatusColor(proposal.status as ProposalStatus)}`}>
+                      {PROPOSAL_STATUS_DISPLAY_LABELS[proposal.status as ProposalStatus]}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">

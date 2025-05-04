@@ -34,13 +34,13 @@ export function useClientFormEnhancements() {
     // Filter spaces based on plan type
     let filteredSpaces: Location[] = [];
     
-    if (planType === 'sala_privativa') {
+    if (planType === 'private_office') {
       filteredSpaces = spaces.filter(space => 
-        space.type === 'sala_privativa' || space.type === 'endereco_fiscal'
+        space.type === 'private_office' || space.type === 'fiscal_address'
       );
-    } else if (planType === 'estacao_fixa') {
+    } else if (planType === 'fixed_desk') {
       filteredSpaces = spaces.filter(space => 
-        space.type === 'estacao_fixa' || space.type === 'estacao_flex'
+        space.type === 'fixed_desk' || space.type === 'flex_desk'
       );
     }
     
