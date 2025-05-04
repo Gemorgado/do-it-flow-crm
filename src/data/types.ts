@@ -30,20 +30,38 @@ export interface Proposal {
   id: string;
   leadId: string;
   title: string;
-  value: number;
+  value: number; // in cents
   createdAt: string;
   expiresAt: string;
-  status: "enviada" | "visualizada" | "aceita" | "rejeitada" | "expirada" | "em_negociacao";
+  status: "draft" | "sent" | "viewed" | "accepted" | "rejected" | "expired" | "negotiating";
   notes?: string;
   products: ProposalItem[];
+  created_by?: string; // For Supabase compatibility
 }
 
 export interface ProposalItem {
   id: string;
   name: string;
   quantity: number;
-  unitPrice: number;
-  total: number;
+  unitPrice: number; // in cents
+  total: number; // in cents
+}
+
+export interface SpaceBinding {
+  id: string;
+  spaceId: string;
+  clientId: string;
+  contractId?: string;
+  startDate: string;
+  endDate?: string;
+  notes?: string;
+  space?: Location | null;
+  client?: {
+    id: string;
+    name: string;
+    email: string;
+    services: ClientService[];
+  } | null;
 }
 
 export type { ChartData };

@@ -1,81 +1,171 @@
-import { Location, SpaceBinding } from "@/types";
-import { store, saveToStorage } from "./store";
+
+import { supabase } from '../supabase/client';
+import { Location, SpaceBinding } from '@/types';
+import { v4 as uuidv4 } from 'uuid';
 
 export const spacePersistence = {
-  // Métodos de espaço
   getLocations: async (): Promise<Location[]> => {
-    return Promise.resolve([...store.locations]);
-  },
-  
-  updateSpace: async (updatedSpace: Location): Promise<Location> => {
-    console.log("Tentando atualizar espaço com ID:", updatedSpace.id);
-    console.log("Espaços atuais:", store.locations);
-    
-    const index = store.locations.findIndex(space => space.id === updatedSpace.id);
-    
-    if (index !== -1) {
-      // Preserva o ID e outros campos imutáveis
-      const originalSpace = store.locations[index];
-      store.locations[index] = {
-        ...originalSpace,
-        ...updatedSpace
-      };
-      
-      saveToStorage();
-      console.log("Espaço atualizado com sucesso:", store.locations[index]);
-      return store.locations[index];
+    const { data, error } = await supabase
+      .from('spaces')
+      .select('*')
+      .order('name', { ascending: true });
+
+    if (error) {
+      console.error('Error fetching spaces:', error);
+      throw error;
     }
-    
-    // Registra informações adicionais para debug quando o espaço não for encontrado
-    const existingIds = store.locations.map(space => space.id);
-    console.error(`Espaço não encontrado. ID buscado: ${updatedSpace.id}. IDs disponíveis:`, existingIds);
-    
-    // Se não existir, adicionar à lista (para evitar erros)
-    store.locations.push(updatedSpace);
-    saveToStorage();
-    console.log("Espaço não encontrado, mas foi adicionado:", updatedSpace);
-    return updatedSpace;
+
+    return data.map(space => ({
+      id: space.id,
+      name: space.name,
+      type: space.type,
+      floor: space.floor || 1,
+      capacity: space.capacity || null,
+      area: space.area || null,
+      description: space.description || '',
+      isActive: space.is_active,
+      createdAt: space.created_at,
+      updatedAt: space.updated_at
+    }));
   },
-  
-  // Métodos de vinculações de espaço
+
+  updateSpace: async (space: Location): Promise<Location> => {
+    const { data, error } = await supabase
+      .from('spaces')
+      .update({
+        name: space.name,
+        type: space.type,
+        floor: space.floor,
+        capacity: space.capacity,
+        area: space.area,
+        description: space.description,
+        is_active: space.isActive !== false,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', space.id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error updating space:', error);
+      throw error;
+    }
+
+    return {
+      id: data.id,
+      name: data.name,
+      type: data.type,
+      floor: data.floor || 1,
+      capacity: data.capacity,
+      area: data.area,
+      description: data.description || '',
+      isActive: data.is_active,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at
+    };
+  },
+
+  // Space bindings methods (allocations)
   listBindings: async (): Promise<SpaceBinding[]> => {
-    return Promise.resolve([...store.bindings]);
-  },
-  
-  bindSpace: async (binding: SpaceBinding): Promise<SpaceBinding> => {
-    // Remove qualquer vinculação existente para este espaço
-    store.bindings = store.bindings.filter(b => b.spaceId !== binding.spaceId);
-    
-    // Adiciona a nova vinculação
-    store.bindings.push(binding);
-    saveToStorage();
-    
-    return binding;
-  },
-  
-  updateBinding: async (binding: SpaceBinding): Promise<SpaceBinding> => {
-    console.log("Tentando atualizar vinculação para espaço:", binding.spaceId);
-    
-    const index = store.bindings.findIndex(b => b.spaceId === binding.spaceId);
-    
-    if (index !== -1) {
-      store.bindings[index] = binding;
-      saveToStorage();
-      console.log("Vinculação atualizada com sucesso:", binding);
-      return binding;
+    const { data, error } = await supabase
+      .from('space_allocations')
+      .select(`
+        *,
+        spaces:space_id(*),
+        clients:client_id(*)
+      `);
+
+    if (error) {
+      console.error('Error fetching space allocations:', error);
+      throw error;
     }
-    
-    // Se não existir, adicionar à lista (para evitar erros)
-    store.bindings.push(binding);
-    saveToStorage();
-    console.log("Vinculação não encontrada, mas foi adicionada:", binding);
+
+    return data.map(allocation => ({
+      id: allocation.id,
+      spaceId: allocation.space_id,
+      clientId: allocation.client_id,
+      contractId: allocation.contract_id,
+      startDate: allocation.start_date,
+      endDate: allocation.end_date,
+      notes: allocation.notes,
+      space: allocation.spaces ? {
+        id: allocation.spaces.id,
+        name: allocation.spaces.name,
+        type: allocation.spaces.type,
+        floor: allocation.spaces.floor || 1,
+        capacity: allocation.spaces.capacity,
+        area: allocation.spaces.area,
+        description: allocation.spaces.description || '',
+        isActive: allocation.spaces.is_active,
+        createdAt: allocation.spaces.created_at,
+        updatedAt: allocation.spaces.updated_at
+      } : null,
+      client: allocation.clients ? {
+        id: allocation.clients.id,
+        name: allocation.clients.name,
+        email: allocation.clients.email,
+        services: []  // We don't fetch services here for simplicity
+      } : null
+    }));
+  },
+
+  bindSpace: async (binding: SpaceBinding): Promise<SpaceBinding> => {
+    const bindingId = binding.id || uuidv4();
+
+    const { error } = await supabase
+      .from('space_allocations')
+      .insert({
+        id: bindingId,
+        space_id: binding.spaceId,
+        client_id: binding.clientId,
+        contract_id: binding.contractId,
+        start_date: binding.startDate,
+        end_date: binding.endDate,
+        notes: binding.notes
+      });
+
+    if (error) {
+      console.error('Error creating space binding:', error);
+      throw error;
+    }
+
+    return {
+      ...binding,
+      id: bindingId
+    };
+  },
+
+  updateBinding: async (binding: SpaceBinding): Promise<SpaceBinding> => {
+    const { error } = await supabase
+      .from('space_allocations')
+      .update({
+        space_id: binding.spaceId,
+        client_id: binding.clientId,
+        contract_id: binding.contractId,
+        start_date: binding.startDate,
+        end_date: binding.endDate,
+        notes: binding.notes,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', binding.id);
+
+    if (error) {
+      console.error('Error updating space binding:', error);
+      throw error;
+    }
+
     return binding;
   },
-  
+
   unbindSpace: async (spaceId: string): Promise<void> => {
-    store.bindings = store.bindings.filter(binding => binding.spaceId !== spaceId);
-    saveToStorage();
-    
-    return Promise.resolve();
+    const { error } = await supabase
+      .from('space_allocations')
+      .delete()
+      .eq('space_id', spaceId);
+
+    if (error) {
+      console.error('Error deleting space binding:', error);
+      throw error;
+    }
   }
 };

@@ -1,120 +1,59 @@
 
-import { useState } from "react";
-import { Lead, Client, ServiceType } from "@/types";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { v4 as uuidv4 } from "uuid";
-import { toast } from "sonner";
-import { leadPersistence } from "@/integrations/persistence/leadPersistence";
+import { useCallback } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { Lead, Client, ClientService } from '@/types';
+import { persistence } from '@/integrations/persistence';
+import { toast } from 'sonner';
+import { v4 as uuidv4 } from 'uuid';
 
-export function useLeadToClientConversion() {
-  const [isConverting, setIsConverting] = useState(false);
-  const queryClient = useQueryClient();
-  
-  // Mutation para converter lead em cliente
-  const convertToClientMutation = useMutation({
-    mutationFn: async ({ 
-      lead, 
-      serviceType, 
-      contractValue 
-    }: { 
-      lead: Lead; 
-      serviceType?: ServiceType; 
-      contractValue?: number 
-    }) => {
+export const useLeadToClientConversion = () => {
+  const convertLeadToClient = useCallback(
+    async (lead: Lead, service: ClientService): Promise<Client | null> => {
       try {
-        setIsConverting(true);
-        
-        // 1. Criar um cliente a partir dos dados do lead
+        // 1. Create new client from lead data
         const newClient: Client = {
           id: uuidv4(),
           name: lead.name,
-          company: lead.company || "",
+          company: lead.company,
           email: lead.email,
-          phone: lead.phone,
-          services: [],
-          status: "ativo",
+          phone: lead.phone || '',
+          status: 'active',
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-          isActive: true
+          assignedTo: lead.assignedTo,
+          isActive: true,
+          services: [service],
+          convertedFromLeadId: lead.id,
+          notes: lead.notes || '',
         };
+
+        // 2. Start a transaction
+        // First, insert the client
+        const clientResult = await persistence.createClient(newClient);
         
-        // 2. Se houver um tipo de serviço, criar serviço para o cliente
-        if (serviceType) {
-          const startDate = new Date();
-          const endDate = new Date();
-          endDate.setFullYear(endDate.getFullYear() + 1); // Contrato de 1 ano por padrão
-          
-          newClient.services.push({
-            id: uuidv4(),
-            clientId: newClient.id,
-            type: serviceType,
-            description: `${serviceType} - Plano Anual`,
-            locationId: "pending-assignment",
-            contractStart: startDate.toISOString().split('T')[0],
-            contractEnd: endDate.toISOString().split('T')[0],
-            value: contractValue || 0,
-            billingCycle: "mensal",
-            status: "ativo",
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-          });
-          
-          // Também podemos atualizar os campos específicos do cliente
-          if (serviceType) newClient.plan = serviceType;
-          if (contractValue) newClient.contractValue = contractValue;
-          newClient.contractStart = startDate.toISOString().split('T')[0];
-          newClient.contractEnd = endDate.toISOString().split('T')[0];
-        }
+        // 3. Update the lead status to 'converted' and remove from pipeline
+        await supabase
+          .from('leads')
+          .update({
+            status: 'converted',
+            stage_id: null,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', lead.id);
+
+        toast.success('Lead successfully converted to client');
+        return clientResult;
         
-        // 3. Salvar o novo cliente na persistence layer
-        // Simulando uma API call para criar cliente
-        console.log("Salvando novo cliente:", newClient);
-        
-        // 4. Atualizar o lead para marcá-lo como convertido (ou removê-lo)
-        await leadPersistence.updateLead({
-          ...lead,
-          status: "fechado",
-          updatedAt: new Date().toISOString(),
-        });
-        
-        // 5. Opcionalmente, remover o lead
-        // await leadPersistence.deleteLead(lead.id);
-        
-        return newClient;
       } catch (error) {
-        console.error("Erro ao converter lead em cliente:", error);
-        throw error;
-      } finally {
-        setIsConverting(false);
+        console.error('Error converting lead to client:', error);
+        toast.error('Failed to convert lead to client');
+        return null;
       }
     },
-    onSuccess: () => {
-      // Invalidar queries para recarregar os dados
-      queryClient.invalidateQueries({ queryKey: ['leads'] });
-      queryClient.invalidateQueries({ queryKey: ['clients'] });
-      queryClient.invalidateQueries({ queryKey: ['pipeline', 'leads'] });
-      
-      toast.success("Lead convertido com sucesso", {
-        description: "O lead foi convertido em cliente"
-      });
-    },
-    onError: (error) => {
-      toast.error("Erro ao converter lead", {
-        description: error instanceof Error 
-          ? error.message 
-          : "Não foi possível converter o lead em cliente"
-      });
-    }
-  });
-
-  // Função para converter um lead em cliente
-  const convertLeadToClient = (lead: Lead, serviceType?: ServiceType, contractValue?: number) => {
-    convertToClientMutation.mutate({ lead, serviceType, contractValue });
-  };
+    []
+  );
 
   return {
-    convertLeadToClient,
-    isConverting: isConverting || convertToClientMutation.isPending,
-    error: convertToClientMutation.error
+    convertLeadToClient
   };
-}
+};

@@ -1,5 +1,5 @@
 
-import type { Client, Interaction, Lead, Location, SpaceBinding, Task } from "@/types";
+import type { Client, Interaction, Lead, Location, Proposal, SpaceBinding, Task } from "@/types";
 import type { ConexaSnapshot } from "../conexa/types";
 
 // Define the persistence adapter interface
@@ -41,6 +41,13 @@ export interface PersistenceAdapter {
   bindSpace: (binding: SpaceBinding) => Promise<SpaceBinding>;
   updateBinding: (binding: SpaceBinding) => Promise<SpaceBinding>;
   unbindSpace: (spaceId: string) => Promise<void>;
+
+  // Proposal methods
+  listProposals: () => Promise<Proposal[]>;
+  getProposal: (id: string) => Promise<Proposal | undefined>;
+  createProposal: (proposal: Proposal) => Promise<Proposal>;
+  updateProposal: (proposal: Proposal) => Promise<Proposal>;
+  deleteProposal: (id: string) => Promise<void>;
 
   // Conexa snapshot methods
   upsertSnapshot: (snapshot: ConexaSnapshot) => Promise<void>;

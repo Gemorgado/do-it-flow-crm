@@ -1,0 +1,214 @@
+
+import { supabase } from '../supabase/client';
+import { Proposal, ProposalItem } from '@/types';
+import { v4 as uuidv4 } from 'uuid';
+
+export const proposalPersistence = {
+  listProposals: async (): Promise<Proposal[]> => {
+    const { data, error } = await supabase
+      .from('proposals')
+      .select(`
+        id, 
+        lead_id,
+        title,
+        value,
+        created_at,
+        expires_at, 
+        status,
+        notes,
+        created_by,
+        proposal_items(*)
+      `);
+
+    if (error) {
+      console.error('Error fetching proposals:', error);
+      throw error;
+    }
+
+    return data.map(item => ({
+      id: item.id,
+      leadId: item.lead_id,
+      title: item.title,
+      value: item.value,
+      createdAt: item.created_at,
+      expiresAt: item.expires_at,
+      status: item.status,
+      notes: item.notes,
+      products: item.proposal_items.map((product: any) => ({
+        id: product.id,
+        name: product.name,
+        quantity: product.quantity,
+        unitPrice: product.unit_price,
+        total: product.total
+      }))
+    }));
+  },
+
+  getProposal: async (id: string): Promise<Proposal | undefined> => {
+    const { data, error } = await supabase
+      .from('proposals')
+      .select(`
+        id, 
+        lead_id,
+        title,
+        value,
+        created_at,
+        expires_at, 
+        status,
+        notes,
+        created_by,
+        proposal_items(*)
+      `)
+      .eq('id', id)
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        // Record not found
+        return undefined;
+      }
+      console.error('Error fetching proposal:', error);
+      throw error;
+    }
+
+    return {
+      id: data.id,
+      leadId: data.lead_id,
+      title: data.title,
+      value: data.value,
+      createdAt: data.created_at,
+      expiresAt: data.expires_at,
+      status: data.status,
+      notes: data.notes,
+      products: data.proposal_items.map((product: any) => ({
+        id: product.id,
+        name: product.name,
+        quantity: product.quantity,
+        unitPrice: product.unit_price,
+        total: product.total
+      }))
+    };
+  },
+
+  createProposal: async (proposal: Proposal): Promise<Proposal> => {
+    const proposalId = proposal.id || uuidv4();
+
+    // Start a transaction to insert both the proposal and its items
+    const { data: proposalData, error: proposalError } = await supabase
+      .from('proposals')
+      .insert({
+        id: proposalId,
+        lead_id: proposal.leadId,
+        title: proposal.title,
+        value: proposal.value,
+        expires_at: proposal.expiresAt,
+        status: proposal.status,
+        notes: proposal.notes,
+        created_by: proposal.created_by
+      })
+      .select()
+      .single();
+
+    if (proposalError) {
+      console.error('Error creating proposal:', proposalError);
+      throw proposalError;
+    }
+
+    // Insert proposal items
+    if (proposal.products?.length) {
+      const proposalItems = proposal.products.map(product => ({
+        id: product.id || uuidv4(),
+        proposal_id: proposalId,
+        name: product.name,
+        quantity: product.quantity,
+        unit_price: product.unitPrice,
+        total: product.total
+      }));
+
+      const { error: itemsError } = await supabase
+        .from('proposal_items')
+        .insert(proposalItems);
+
+      if (itemsError) {
+        console.error('Error creating proposal items:', itemsError);
+        throw itemsError;
+      }
+    }
+
+    // Return created proposal with products
+    return {
+      ...proposal,
+      id: proposalId,
+      createdAt: proposalData.created_at
+    };
+  },
+
+  updateProposal: async (proposal: Proposal): Promise<Proposal> => {
+    // Update the proposal
+    const { error: proposalError } = await supabase
+      .from('proposals')
+      .update({
+        lead_id: proposal.leadId,
+        title: proposal.title,
+        value: proposal.value,
+        expires_at: proposal.expiresAt,
+        status: proposal.status,
+        notes: proposal.notes,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', proposal.id);
+
+    if (proposalError) {
+      console.error('Error updating proposal:', proposalError);
+      throw proposalError;
+    }
+
+    // Handle proposal items (delete and re-create for simplicity)
+    if (proposal.products?.length) {
+      // Delete existing items
+      const { error: deleteError } = await supabase
+        .from('proposal_items')
+        .delete()
+        .eq('proposal_id', proposal.id);
+
+      if (deleteError) {
+        console.error('Error deleting proposal items:', deleteError);
+        throw deleteError;
+      }
+
+      // Insert new items
+      const proposalItems = proposal.products.map(product => ({
+        id: product.id || uuidv4(),
+        proposal_id: proposal.id,
+        name: product.name,
+        quantity: product.quantity,
+        unit_price: product.unitPrice,
+        total: product.total
+      }));
+
+      const { error: itemsError } = await supabase
+        .from('proposal_items')
+        .insert(proposalItems);
+
+      if (itemsError) {
+        console.error('Error creating proposal items:', itemsError);
+        throw itemsError;
+      }
+    }
+
+    return proposal;
+  },
+
+  deleteProposal: async (id: string): Promise<void> => {
+    // Delete proposal (will cascade delete items due to foreign key constraint)
+    const { error } = await supabase
+      .from('proposals')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error deleting proposal:', error);
+      throw error;
+    }
+  }
+};

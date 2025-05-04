@@ -1,165 +1,256 @@
 
-import { useState, useEffect } from "react";
-import { Lead, PipelineStage } from "@/types";
-import { toast } from "sonner";
-import { 
-  getLeadsNeedingAttention, 
-  triggerAutomation, 
-  trackStageChange 
-} from "@/utils/pipelineAutomation";
-import { trackLeadEvent } from "@/utils/trackingUtils";
-import { useQueryClient } from "@tanstack/react-query";
-import { leadPersistence } from "@/integrations/persistence/leadPersistence";
-import { PipelineColumn } from "@/components/Pipeline/PipelineColumn";
+import { useState, useEffect, useCallback } from 'react';
+import { Lead, PipelineStage } from '@/types';
+import { supabase } from '@/integrations/supabase/client';
+import { persistence } from '@/integrations/persistence';
+import { toast } from 'sonner';
 
-export function usePipelineData(initialLeads: Lead[], pipelineStages: PipelineStage[]) {
+// Convert Supabase lead format to application format
+const mapLeadFromSupabase = (lead: any, stages: Record<string, PipelineStage>): Lead => {
+  return {
+    id: lead.id,
+    name: lead.name,
+    company: lead.company || '',
+    email: lead.email,
+    phone: lead.phone || '',
+    status: lead.status,
+    source: lead.source,
+    createdAt: lead.created_at,
+    updatedAt: lead.updated_at,
+    stage: lead.stage_id ? stages[lead.stage_id] : null,
+    assignedTo: lead.assigned_to || '',
+    notes: lead.notes || '',
+    value: lead.value || 0,
+    lastContact: lead.last_contact,
+    nextFollowUp: lead.next_follow_up,
+    meetingScheduled: lead.meeting_scheduled
+  };
+};
+
+export const usePipelineData = (initialLeads: Lead[] = [], initialStages: PipelineStage[] = []) => {
+  const [leads, setLeads] = useState<Lead[]>(initialLeads);
+  const [pipelineStages, setPipelineStages] = useState<PipelineStage[]>(initialStages);
   const [filteredLeads, setFilteredLeads] = useState<Lead[]>(initialLeads);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [userFilter, setUserFilter] = useState('all');
+  const [isLoading, setIsLoading] = useState(true);
   const [draggedLead, setDraggedLead] = useState<Lead | null>(null);
-  const [leadsNeedingAttention, setLeadsNeedingAttention] = useState<Lead[]>([]);
-  const queryClient = useQueryClient();
   
-  // Group leads by pipeline stage
-  const leadsByStage: Record<string, Lead[]> = {};
-  
-  pipelineStages.forEach(stage => {
-    leadsByStage[stage.id] = filteredLeads.filter(
-      lead => lead.stage.id === stage.id
-    );
-  });
+  // Compute leads by stage
+  const leadsByStage = pipelineStages.reduce<Record<string, Lead[]>>((acc, stage) => {
+    acc[stage.id] = filteredLeads.filter((lead) => lead.stage?.id === stage.id);
+    return acc;
+  }, {});
 
-  // Track page view on component mount
+  // Compute leads needing attention
+  const leadsNeedingAttention = filteredLeads.filter(
+    (lead) => lead.nextFollowUp && new Date(lead.nextFollowUp) <= new Date()
+  );
+
+  // Load initial data
   useEffect(() => {
-    // Track page view
-    trackLeadEvent('pipeline_view', {
-      leads_count: filteredLeads.length,
-      page_name: 'Pipeline de Vendas'
+    const loadData = async () => {
+      try {
+        setIsLoading(true);
+        
+        // Fetch stages
+        const { data: stagesData, error: stagesError } = await supabase
+          .from('pipeline_stages')
+          .select('*')
+          .order('order_number');
+          
+        if (stagesError) throw stagesError;
+        
+        const stages = stagesData.map(stage => ({
+          id: stage.id,
+          name: stage.name,
+          order: stage.order_number,
+          color: stage.color
+        }));
+        
+        setPipelineStages(stages);
+        
+        // Fetch leads
+        const { data: leadsData, error: leadsError } = await supabase
+          .from('leads')
+          .select('*')
+          .neq('status', 'converted');
+          
+        if (leadsError) throw leadsError;
+        
+        // Create a stages lookup object
+        const stagesLookup: Record<string, PipelineStage> = {};
+        stages.forEach(stage => {
+          stagesLookup[stage.id] = stage;
+        });
+        
+        const mappedLeads = leadsData.map(lead => mapLeadFromSupabase(lead, stagesLookup));
+        setLeads(mappedLeads);
+        setFilteredLeads(mappedLeads);
+      } catch (error) {
+        console.error('Error loading pipeline data:', error);
+        toast.error('Failed to load pipeline data');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadData();
+    
+    // Subscribe to changes using Supabase realtime
+    const pipelineChannel = supabase.channel('pipeline_changes')
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'leads' },
+        payload => {
+          console.log('Lead change received:', payload);
+          // Reload data when any lead changes
+          loadData();
+        }
+      )
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'pipeline_stages' },
+        payload => {
+          console.log('Stage change received:', payload);
+          // Reload data when any stage changes
+          loadData();
+        }
+      )
+      .subscribe();
+      
+    // Clean up subscription
+    return () => {
+      supabase.removeChannel(pipelineChannel);
+    };
+  }, []);
+  
+  // Filter leads when search term or user filter changes
+  useEffect(() => {
+    const filtered = leads.filter(lead => {
+      const matchesSearch = searchTerm === '' || 
+        lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (lead.company && lead.company.toLowerCase().includes(searchTerm.toLowerCase()));
+      
+      const matchesUser = userFilter === 'all' || lead.assignedTo === userFilter;
+      
+      return matchesSearch && matchesUser;
     });
     
-    // Track leads needing attention
-    const needAttention = getLeadsNeedingAttention(filteredLeads);
-    setLeadsNeedingAttention(needAttention);
-    
-    // Check automation triggers for each lead
-    filteredLeads.forEach(lead => {
-      triggerAutomation(lead);
-    });
-  }, [filteredLeads]);
+    setFilteredLeads(filtered);
+  }, [leads, searchTerm, userFilter]);
 
-  // Add a new function to add a lead to the pipeline
-  const addLeadToPipeline = (lead: Lead) => {
-    // Update the filteredLeads state to include the new lead
-    setFilteredLeads(prevLeads => [lead, ...prevLeads]);
-    
-    // No need to manually update leadsByStage as it's derived from filteredLeads
-    // This will trigger a re-render with the updated leadsByStage
-    
-    // Invalidate relevant queries
-    queryClient.invalidateQueries({ queryKey: ['pipeline', 'leads'] });
-    
-    // Show a success toast
-    toast.success("Lead adicionado ao pipeline", {
-      description: `${lead.name} foi adicionado à coluna ${lead.stage.name}`
-    });
-  };
-
-  const handleDragStart = (e: React.DragEvent, lead: Lead) => {
+  // Handle drag operations
+  const handleDragStart = useCallback((e: React.DragEvent<HTMLDivElement>, lead: Lead) => {
+    console.log('Drag started:', lead);
+    e.dataTransfer.setData('text/plain', lead.id);
     setDraggedLead(lead);
-    e.dataTransfer.effectAllowed = "move";
-    // Set a semi-transparent drag image
-    const dragIcon = document.createElement('div');
-    dragIcon.className = "bg-white p-3 rounded-md shadow-md opacity-80";
-    dragIcon.textContent = lead.name;
-    document.body.appendChild(dragIcon);
-    e.dataTransfer.setDragImage(dragIcon, 20, 20);
-    
-    // Clean up the drag image element after it's no longer needed
-    setTimeout(() => {
-      document.body.removeChild(dragIcon);
-    }, 0);
-  };
+  }, []);
 
-  const handleDragOver = (e: React.DragEvent) => {
+  const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
-  };
+  }, []);
 
-  const handleDrop = (e: React.DragEvent, targetStageId: string) => {
+  const handleDrop = useCallback(async (e: React.DragEvent<HTMLDivElement>, stageId: string) => {
     e.preventDefault();
+    const leadId = e.dataTransfer.getData('text/plain');
     
-    // Ensure we have a lead being dragged and it's not already in the target stage
-    if (!draggedLead || draggedLead.stage.id === targetStageId) return;
-
-    updateLeadStage(draggedLead.id, targetStageId);
-  };
-
-  const updateLeadStage = (leadId: string, targetStageId: string) => {
-    // Find the lead and target stage
-    const lead = filteredLeads.find(l => l.id === leadId);
-    const targetStage = pipelineStages.find(stage => stage.id === targetStageId);
-    
-    if (!lead || !targetStage) return;
-
-    // Track stage change for analytics
-    trackStageChange(lead, targetStageId);
-
-    // Update the lead's stage and updatedAt timestamp
-    const now = new Date().toISOString();
-    const updatedLeads = filteredLeads.map(l => 
-      l.id === leadId 
-        ? { ...l, stage: targetStage, updatedAt: now }
-        : l
-    );
-
-    // Update state
-    setFilteredLeads(updatedLeads);
-    setDraggedLead(null);
-    
-    // Invalidate relevant queries to refresh data
-    queryClient.invalidateQueries({ queryKey: ['pipeline', 'leads'] });
-    
-    // Show a success toast
-    toast.success("Lead movido com sucesso", {
-      description: `${lead.name} foi movido para ${targetStage.name}`
-    });
-  };
-
-  const handleSearchLeads = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const searchTerm = e.target.value.toLowerCase();
-    
-    if (!searchTerm.trim()) {
-      setFilteredLeads(initialLeads);
+    if (!draggedLead) {
+      console.error('No dragged lead found');
       return;
     }
     
-    const filtered = initialLeads.filter(lead => 
-      lead.name.toLowerCase().includes(searchTerm) || 
-      (lead.company && lead.company.toLowerCase().includes(searchTerm)) ||
-      lead.email.toLowerCase().includes(searchTerm)
-    );
+    console.log(`Dropping lead ${leadId} into stage ${stageId}`);
     
-    setFilteredLeads(filtered);
-  };
-
-  const handleFilterByUser = (userId: string) => {
-    if (userId === "atribuido") {
-      setFilteredLeads(initialLeads);
-      return;
+    try {
+      // Find the lead
+      const leadToUpdate = leads.find(l => l.id === leadId);
+      if (!leadToUpdate) {
+        console.error(`Lead with ID ${leadId} not found`);
+        return;
+      }
+      
+      // Find the stage
+      const newStage = pipelineStages.find(s => s.id === stageId);
+      if (!newStage) {
+        console.error(`Stage with ID ${stageId} not found`);
+        return;
+      }
+      
+      // Update the lead's stage
+      await updateLeadStage(leadId, stageId);
+      
+    } catch (error) {
+      console.error('Error dropping lead:', error);
+      toast.error('Failed to update lead stage');
+    } finally {
+      setDraggedLead(null);
     }
-    
-    const filtered = initialLeads.filter(lead => lead.assignedTo === userId);
-    setFilteredLeads(filtered);
-  };
+  }, [draggedLead, leads, pipelineStages]);
+
+  // Update lead stage
+  const updateLeadStage = useCallback(async (leadId: string, stageId: string) => {
+    try {
+      const { error } = await supabase
+        .from('leads')
+        .update({ stage_id: stageId, updated_at: new Date().toISOString() })
+        .eq('id', leadId);
+        
+      if (error) throw error;
+      
+      // No need to update local state as the realtime subscription will handle it
+      toast.success('Lead stage updated');
+      
+    } catch (error) {
+      console.error('Error updating lead stage:', error);
+      toast.error('Failed to update lead stage');
+    }
+  }, []);
+
+  // Handle search
+  const handleSearchLeads = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  }, []);
+
+  // Handle user filter
+  const handleFilterByUser = useCallback((userId: string) => {
+    setUserFilter(userId);
+  }, []);
+
+  // Add new lead to pipeline
+  const addLeadToPipeline = useCallback(async (lead: Lead) => {
+    try {
+      // Make sure lead has first stage if not specified
+      if (!lead.stage && pipelineStages.length > 0) {
+        const firstStage = pipelineStages.find(s => s.order === 1) || pipelineStages[0];
+        lead.stage = firstStage;
+      }
+      
+      const createdLead = await persistence.createLead(lead);
+      
+      // No need to update local state as the realtime subscription will handle it
+      toast.success('Lead added to pipeline');
+      
+      return createdLead;
+    } catch (error) {
+      console.error('Error adding lead to pipeline:', error);
+      toast.error('Failed to add lead to pipeline');
+      throw error;
+    }
+  }, [pipelineStages]);
 
   return {
+    leads,
     filteredLeads,
+    pipelineStages,
     leadsByStage,
     leadsNeedingAttention,
+    isLoading,
     handleDragStart,
     handleDragOver,
     handleDrop,
+    updateLeadStage,
     handleSearchLeads,
     handleFilterByUser,
-    updateLeadStage,
-    addLeadToPipeline // Export the new function
+    addLeadToPipeline
   };
-}
+};
