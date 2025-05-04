@@ -51,4 +51,4 @@ export type ServiceStatus =
   | "cancelado";
 
 // Export ServiceType to make it available to modules importing from client.ts
-export { ServiceType };
+export type { ServiceType };

@@ -34,10 +34,12 @@ export function ClientRow({ client, onEdit }: ClientRowProps) {
   const getServiceTypeName = (type?: ServiceType): string => {
     if (!type) return "-";
     switch (type) {
-      case "sala_privativa": return "Sala Privativa";
-      case "estacao": return "Estação";
       case "endereco_fiscal": return "Endereço Fiscal";
+      case "estacao_flex": return "Estação Flex";
+      case "estacao_fixa": return "Estação Fixa";
+      case "sala_privativa": return "Sala Privativa";
       case "sala_reuniao": return "Sala de Reunião";
+      case "auditorio": return "Auditório";
       default: return "-";
     }
   };
