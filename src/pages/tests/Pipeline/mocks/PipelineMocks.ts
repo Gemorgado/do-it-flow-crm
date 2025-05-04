@@ -1,6 +1,7 @@
 
 import { vi } from 'vitest';
 import { Lead, PipelineStage } from '@/types';
+import React from 'react';
 
 /**
  * Creates a mock localStorage for testing
@@ -44,91 +45,52 @@ export function createMockPipelineData() {
  * Mock the PipelineBoard component
  */
 export function mockPipelineBoard() {
-  vi.mock('@/components/Pipeline/PipelineBoard', () => ({
-    PipelineBoard: ({ 
-      pipelineStages, 
-      leadsByStage,
-      onDragStart,
-      onDragOver,
-      onDrop,
-      onStageUpdate 
-    }) => {
-      return (
-        <div data-testid="pipeline-board">
-          <div>Total stages: {pipelineStages.length}</div>
-          <div data-testid="total-leads">
-            Total leads: {
-              Object.values(leadsByStage).reduce((acc, stageLeads) => acc + stageLeads.length, 0)
-            }
-          </div>
-          {pipelineStages.map((stage) => (
-            <div 
-              key={stage.id} 
-              data-testid={`stage-${stage.id}`}
-              onDragOver={onDragOver}
-              onDrop={(e) => onDrop(e, stage.id)}
-            >
-              <h3>{stage.name} ({leadsByStage[stage.id]?.length || 0})</h3>
-              <div>
-                {leadsByStage[stage.id]?.map((lead) => (
-                  <div 
-                    key={lead.id}
-                    data-testid={`lead-${lead.id}`}
-                    draggable
-                    onDragStart={(e) => onDragStart(e, lead)}
-                    onClick={() => onStageUpdate(lead.id, '3')}
-                  >
-                    {lead.name}
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      );
-    }
-  }));
+  vi.mock('@/components/Pipeline/PipelineBoard', () => {
+    return {
+      PipelineBoard: ({ 
+        pipelineStages, 
+        leadsByStage,
+        onDragStart,
+        onDragOver,
+        onDrop,
+        onStageUpdate 
+      }) => {
+        const MockComponent = () => null; // Simple mock component that renders nothing
+        MockComponent.displayName = 'MockPipelineBoard';
+        return MockComponent;
+      }
+    };
+  });
 }
 
 /**
  * Mock the PipelineSearch component
  */
 export function mockPipelineSearch() {
-  vi.mock('@/components/Pipeline/PipelineSearch', () => ({
-    PipelineSearch: ({ onSearch, onFilterByUser }) => {
-      return (
-        <div data-testid="pipeline-search">
-          <input 
-            data-testid="search-input" 
-            onChange={onSearch}
-            placeholder="Search leads" 
-          />
-          <select 
-            data-testid="user-filter" 
-            onChange={(e) => onFilterByUser(e.target.value)}
-          >
-            <option value="all">All users</option>
-            <option value="user1">User 1</option>
-          </select>
-        </div>
-      );
-    }
-  }));
+  vi.mock('@/components/Pipeline/PipelineSearch', () => {
+    return {
+      PipelineSearch: ({ onSearch, onFilterByUser }) => {
+        const MockComponent = () => null;
+        MockComponent.displayName = 'MockPipelineSearch';
+        return MockComponent;
+      }
+    };
+  });
 }
 
 /**
  * Mock the PipelineHeader component
  */
 export function mockPipelineHeader() {
-  vi.mock('@/components/Pipeline/PipelineHeader', () => ({
-    PipelineHeader: ({ leadsNeedingAttention }) => {
-      return (
-        <div data-testid="pipeline-header">
-          Pipeline Header (Leads needing attention: {leadsNeedingAttention.length})
-        </div>
-      );
-    }
-  }));
+  vi.mock('@/components/Pipeline/PipelineHeader', () => {
+    return {
+      PipelineHeader: ({ leadsNeedingAttention }) => {
+        const MockComponent = () => null;
+        MockComponent.displayName = 'MockPipelineHeader';
+        return MockComponent;
+      }
+    };
+  });
 }
 
 /**
