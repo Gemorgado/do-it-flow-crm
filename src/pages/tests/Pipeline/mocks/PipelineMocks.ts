@@ -4,23 +4,56 @@ import { vi } from 'vitest';
 import React from 'react';
 
 /**
- * Chame registerPipelineMocks() no início do seu teste
- * (ex.: dentro de setupMocks.ts ou no próprio arquivo de teste)
+ * Creates a mock localStorage for testing
  */
-export function registerPipelineMocks() {
-  /**
-   * Mock do PipelineBoard
-   * – exibe contagem de estágios e leads
-   * – permite drag-and-drop fake e clique para mudar estágio
-   */
-  vi.mock('@/components/Pipeline/PipelineBoard', () => {
-    const PipelineBoard = ({
-      pipelineStages,
-      leadsByStage,
-      onDragStart,
-      onDragOver,
-      onDrop,
-      onStageUpdate,
+export function createMockLocalStorage() {
+  return {
+    getItem: vi.fn(),
+    setItem: vi.fn(),
+    removeItem: vi.fn(),
+    clear: vi.fn(),
+    length: 0,
+    key: vi.fn()
+  };
+}
+
+/**
+ * Creates mock pipeline data for testing
+ */
+export function createMockPipelineData() {
+  return {
+    leadsByStage: {
+      '1': [{ id: '1', name: 'Test Lead 1', stage: { id: '1' } }],
+      '2': [{ id: '2', name: 'Test Lead 2', stage: { id: '2' } }]
+    },
+    leadsNeedingAttention: [{ id: '1', name: 'Test Lead 1' }],
+    filteredLeads: [
+      { id: '1', name: 'Test Lead 1', stage: { id: '1' } },
+      { id: '2', name: 'Test Lead 2', stage: { id: '2' } }
+    ],
+    handleDragStart: vi.fn(),
+    handleDragOver: vi.fn(),
+    handleDrop: vi.fn(),
+    handleSearchLeads: vi.fn(),
+    handleFilterByUser: vi.fn(),
+    updateLeadStage: vi.fn(),
+    addLeadToPipeline: vi.fn()
+  };
+}
+
+/**
+ * Registers all pipeline component mocks for testing
+ */
+export function mockPipelineComponents() {
+  // Mock the PipelineBoard component
+  vi.mock('@/components/Pipeline/PipelineBoard', () => ({
+    PipelineBoard: ({ 
+      pipelineStages, 
+      leadsByStage, 
+      onDragStart, 
+      onDragOver, 
+      onDrop, 
+      onStageUpdate 
     }: {
       pipelineStages: { id: string; name: string }[];
       leadsByStage: Record<string, any[]>;
@@ -32,26 +65,21 @@ export function registerPipelineMocks() {
       <div data-testid="pipeline-board">
         <div>Total stages: {pipelineStages.length}</div>
         <div data-testid="total-leads">
-          Total leads:{' '}
-          {Object.values(leadsByStage).reduce(
-            (acc, stageLeads) => acc + stageLeads.length,
-            0,
-          )}
+          Total leads: {
+            Object.values(leadsByStage).reduce((acc, stageLeads) => acc + stageLeads.length, 0)
+          }
         </div>
-
         {pipelineStages.map((stage) => (
-          <div
-            key={stage.id}
+          <div 
+            key={stage.id} 
             data-testid={`stage-${stage.id}`}
             onDragOver={onDragOver}
             onDrop={(e) => onDrop(e, stage.id)}
           >
-            <h3>
-              {stage.name} ({leadsByStage[stage.id]?.length ?? 0})
-            </h3>
+            <h3>{stage.name} ({leadsByStage[stage.id]?.length || 0})</h3>
             <div>
               {leadsByStage[stage.id]?.map((lead) => (
-                <div
+                <div 
                   key={lead.id}
                   data-testid={`lead-${lead.id}`}
                   draggable
@@ -65,9 +93,47 @@ export function registerPipelineMocks() {
           </div>
         ))}
       </div>
-    );
+    )
+  }));
 
-    /* 👈 É ESSENCIAL retornar um objeto com a prop que tem MESMO nome usado no import */
-    return { PipelineBoard };
-  });
+  // Mock PipelineSearch component
+  vi.mock('@/components/Pipeline/PipelineSearch', () => ({
+    PipelineSearch: ({ onSearch, onFilterByUser }: {
+      onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
+      onFilterByUser: (userId: string) => void;
+    }) => (
+      <div data-testid="pipeline-search">
+        <input 
+          data-testid="search-input" 
+          onChange={(e) => onSearch(e)}
+          placeholder="Search leads" 
+        />
+        <select 
+          data-testid="user-filter" 
+          onChange={(e) => onFilterByUser(e.target.value)}
+        >
+          <option value="all">All users</option>
+          <option value="user1">User 1</option>
+        </select>
+      </div>
+    )
+  }));
+
+  // Mock PipelineHeader component
+  vi.mock('@/components/Pipeline/PipelineHeader', () => ({
+    PipelineHeader: ({ leadsNeedingAttention }: { 
+      leadsNeedingAttention: any[] 
+    }) => (
+      <div data-testid="pipeline-header">
+        Pipeline Header (Leads needing attention: {leadsNeedingAttention.length})
+      </div>
+    )
+  }));
+}
+
+/**
+ * Registers all pipeline mocks at once
+ */
+export function registerPipelineMocks() {
+  mockPipelineComponents();
 }
