@@ -1,10 +1,9 @@
 
-
 // This file re-exports all types from domain-specific files
 // to maintain compatibility with existing imports
 
 // Re-export all domain-specific types
-export * from "./lead";
+export * from "./lead";        // Contains Proposal
 export * from "./client";
 export * from "./contact";
 export * from "./service";
@@ -24,7 +23,5 @@ export * from "./integration";
 export type { SpaceBinding } from "./space";
 export type { ServiceType } from "./service";
 
-// Resolve ambiguity by explicitly re-exporting Proposal from the proposal module
-// This avoids the conflict with Proposal from the lead module
-export type { Proposal as ProposalType } from "./proposal";
-
+// If any code relies on the ProposalType from the proposal module, re-export it with a different name
+export type { Proposal as ProposalDetail } from "./proposal";
