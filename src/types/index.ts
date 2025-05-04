@@ -1,4 +1,5 @@
 
+
 // This file re-exports all types from domain-specific files
 // to maintain compatibility with existing imports
 
@@ -15,7 +16,7 @@ export * from "./chart";
 export * from "./space";
 export * from "./pie";
 export * from "./crm";
-export * from "./proposal";
+// export * from "./proposal"; // Removed to avoid duplicate Proposal export
 export * from "./schedule";
 export * from "./integration";
 
@@ -26,3 +27,4 @@ export type { ServiceType } from "./service";
 // Resolve ambiguity by explicitly re-exporting Proposal from the proposal module
 // This avoids the conflict with Proposal from the lead module
 export type { Proposal as ProposalType } from "./proposal";
+
