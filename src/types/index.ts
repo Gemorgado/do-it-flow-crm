@@ -1,4 +1,3 @@
-
 export interface Lead {
   id: string;
   name: string;
@@ -51,6 +50,19 @@ export interface Client {
   updatedAt: string;
   notes?: string;
   assignedTo?: string;
+  isActive: boolean;  // Adding this field to fix the error
+  // Fields for expanded client functionality
+  plan?: ServiceType;
+  contractStart?: string;
+  contractEnd?: string;
+  contractTerm?: number;
+  contractValue?: number;
+  dueDay?: number;
+  privateRoom?: string;
+  billingEmails?: string[];
+  createdBy?: string;
+  lastReadjustDate?: string;
+  readjustIndex?: string;
 }
 
 // Interface para contatos

@@ -60,10 +60,10 @@ export function useLeadToClientConversion() {
           });
           
           // Também podemos atualizar os campos específicos do cliente
-          if ("plan" in newClient) newClient.plan = serviceType;
-          if ("contractValue" in newClient) newClient.contractValue = contractValue;
-          if ("contractStart" in newClient) newClient.contractStart = startDate.toISOString().split('T')[0];
-          if ("contractEnd" in newClient) newClient.contractEnd = endDate.toISOString().split('T')[0];
+          if (serviceType) newClient.plan = serviceType;
+          if (contractValue) newClient.contractValue = contractValue;
+          newClient.contractStart = startDate.toISOString().split('T')[0];
+          newClient.contractEnd = endDate.toISOString().split('T')[0];
         }
         
         // 3. Salvar o novo cliente na persistence layer
