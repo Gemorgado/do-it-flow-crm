@@ -45,7 +45,7 @@ export function LeadForm({
   // Prepare default values for edit mode
   const editModeDefaults = isEditMode ? {
     companyOrPerson: leadToEdit.name,
-    idNumber: leadToEdit.companyId || '',
+    idNumber: leadToEdit.company || '',
     entryDate: leadToEdit.createdAt,
     interestService: leadToEdit.notes || '',
     stageId: leadToEdit.stage.id || "1",

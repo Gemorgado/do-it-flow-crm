@@ -85,3 +85,12 @@ export const useContactModal = () => {
   }
   return context;
 };
+
+// Create a combined provider for convenience
+export const ModalProvider = ({ children }: { children: ReactNode }) => {
+  return (
+    <LeadModalProvider>
+      <ContactModalProvider>{children}</ContactModalProvider>
+    </LeadModalProvider>
+  );
+};

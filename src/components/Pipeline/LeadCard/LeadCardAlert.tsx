@@ -4,14 +4,15 @@ import { isLeadStale, needsFollowUp, getLeadAlertMessage } from "@/utils/pipelin
 import { AlertTriangle } from "lucide-react";
 
 interface LeadCardAlertProps {
-  lead: Lead;
+  message?: string;
+  lead?: Lead;
 }
 
-export function LeadCardAlert({ lead }: LeadCardAlertProps) {
-  const alertMessage = getLeadAlertMessage(lead);
-  const needsAttention = isLeadStale(lead) || needsFollowUp(lead);
+export function LeadCardAlert({ lead, message }: LeadCardAlertProps) {
+  const alertMessage = message || (lead ? getLeadAlertMessage(lead) : "");
+  const needsAttention = lead ? (isLeadStale(lead) || needsFollowUp(lead)) : !!message;
 
-  if (!needsAttention) {
+  if (!needsAttention && !message) {
     return null;
   }
 

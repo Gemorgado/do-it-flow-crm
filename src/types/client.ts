@@ -1,8 +1,22 @@
+
 export type ServiceType = 
   | "sala_privativa" 
   | "estacao" 
   | "endereco_fiscal" 
-  | "sala_reuniao";
+  | "sala_reuniao"
+  | "estacao_flex"
+  | "estacao_fixa"
+  | "auditorio";
+
+export const SERVICE_VALUES: ServiceType[] = [
+  "sala_privativa",
+  "estacao",
+  "estacao_flex",
+  "estacao_fixa", 
+  "endereco_fiscal",
+  "sala_reuniao",
+  "auditorio"
+];
 
 export interface Client {
   id: string;
@@ -15,7 +29,7 @@ export interface Client {
   dueDay?: number;
   privateRoom?: string;
   billingEmails?: string[];
-  createdBy: string;
+  createdBy?: string;
   lastReadjustDate?: string;
   readjustIndex?: string;
   isActive: boolean;

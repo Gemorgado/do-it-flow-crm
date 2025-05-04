@@ -9,11 +9,12 @@ import { useSubmitHandler } from "./useSubmitHandler";
 interface UseLeadFormLogicProps {
   onSubmit: (data: LeadFormValues & { stageId?: string }) => void;
   presetStageId?: string;
+  initialValues?: Partial<LeadFormValues & { stageId?: string }>;
 }
 
-export function useLeadFormLogic({ onSubmit, presetStageId }: UseLeadFormLogicProps) {
-  // Initialize form with default values
-  const defaultValues = useFormInitializer(presetStageId);
+export function useLeadFormLogic({ onSubmit, presetStageId, initialValues }: UseLeadFormLogicProps) {
+  // Initialize form with default values or initialValues if provided
+  const defaultValues = initialValues || useFormInitializer(presetStageId);
   
   // Create the form instance
   const form = useForm<LeadFormValues & { stageId?: string }>({

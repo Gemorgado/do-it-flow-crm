@@ -1,11 +1,11 @@
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 @import './styles/modal.css';
 @import './styles/overlays.css';
 @import './styles/modal-fixes.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer base {
   /* Ensure base elements have full opacity */

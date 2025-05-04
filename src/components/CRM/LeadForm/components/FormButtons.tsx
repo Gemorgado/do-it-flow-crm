@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 interface FormButtonsProps {
   onCancel: () => void;
   isSubmitting: boolean;
+  isEditMode?: boolean;
 }
 
-export const FormButtons = ({ onCancel, isSubmitting }: FormButtonsProps) => {
+export const FormButtons = ({ onCancel, isSubmitting, isEditMode }: FormButtonsProps) => {
   return (
     <div className="flex justify-end space-x-2 pt-6 border-t">
       <Button 
@@ -34,9 +35,9 @@ export const FormButtons = ({ onCancel, isSubmitting }: FormButtonsProps) => {
             </span>
           </>
         ) : (
-          "Salvar"
+          isEditMode ? "Atualizar" : "Salvar"
         )}
       </Button>
     </div>
   );
-};
+}
