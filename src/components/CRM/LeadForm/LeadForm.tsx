@@ -3,10 +3,9 @@ import React, { useState, useEffect } from "react";
 import { FormProvider } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { LeadFormValues } from "@/types/crm";
-import { LeadStatus, PipelineStage, LeadSource } from "@/types";
+import { Lead, PipelineStage } from "@/types";
 import { useLeadFormLogic } from "./hooks/useLeadFormLogic";
-import { v4 as uuidv4 } from 'uuid';
-import { leadPersistence } from "@/integrations/persistence/leadPersistence";
+import { useLeadEditor } from "./hooks/useLeadEditor";
 import { 
   CompanyPersonField,
   IdNumberField,
@@ -21,12 +20,12 @@ import {
   FormButtons,
   FormSectionHeader
 } from "./components";
-import { toast } from "@/hooks/use-toast";
 
 interface LeadFormProps {
   onSubmit: (data: LeadFormValues & { stageId?: string }) => void;
   onCancel: () => void;
   presetStage?: PipelineStage;
+  leadToEdit?: Lead;
   isSubmitting: boolean;
 }
 
@@ -34,69 +33,35 @@ export function LeadForm({
   onSubmit, 
   onCancel, 
   presetStage,
+  leadToEdit,
   isSubmitting 
 }: LeadFormProps) {
   // Get preset stage ID if provided
-  const presetStageId = presetStage?.id;
+  const presetStageId = presetStage?.id || leadToEdit?.stage.id;
+  
+  const { isEditMode, editModeDefaults, handleSubmit: handleLeadSubmit } = useLeadEditor({
+    leadToEdit,
+    presetStage,
+    onSuccess: () => onSubmit({ companyOrPerson: '' })
+  });
 
   const { form, handleSubmit, isValid } = useLeadFormLogic({
     onSubmit: async (data) => {
       try {
-        // Map source category to LeadSource type
-        const sourceMap: Record<string, LeadSource> = {
-          'indicacao': 'indicacao',
-          'rede_social': 'instagram', // Map rede_social to instagram as a valid LeadSource
-          'outro': 'outros' // Map outro to outros
-        };
-        
-        // Criar um novo objeto Lead com os dados do formulário
-        const newLead = {
-          id: uuidv4(),
-          name: data.companyOrPerson || 'Sem nome',
-          company: data.companyOrPerson,
-          email: data.email || 'sem-email@exemplo.com',
-          phone: data.phone || '',
-          status: 'novo' as LeadStatus,
-          source: sourceMap[data.sourceCategory] || 'outros' as LeadSource,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          stage: presetStage || {
-            id: data.stageId || "1",
-            name: "Novo",
-            order: 1,
-            color: "#3b82f6"
-          },
-          value: 0,
-          notes: data.notes || '',
-        };
-        
-        // Salvar o lead no sistema de persistência
-        await leadPersistence.createLead(newLead);
-        
-        // Mostrar mensagem de sucesso
-        toast({
-          title: "Lead criado com sucesso",
-          description: `O lead ${newLead.name} foi adicionado ao sistema`,
-        });
-        
-        // Chamar o callback de sucesso
+        await handleLeadSubmit(data);
         onSubmit(data);
       } catch (error) {
-        console.error("Erro ao criar lead:", error);
-        toast({
-          title: "Erro ao criar lead",
-          description: "Ocorreu um erro ao criar o lead, tente novamente",
-          variant: "destructive"
-        });
+        console.error("Error during form submission:", error);
       }
     },
-    presetStageId
+    presetStageId,
+    initialValues: editModeDefaults,
   });
 
   // Track form submission attempts for showing validation summary
   const [attemptedSubmit, setAttemptedSubmit] = useState(false);
   
-  // Fix: Create a proper submission handler that awaits the async operation
+  // Create a proper submission handler that awaits the async operation
   const onSubmitWithValidation = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setAttemptedSubmit(true);
@@ -126,7 +91,7 @@ export function LeadForm({
       <Form {...form}>
         <form onSubmit={onSubmitWithValidation} className="space-y-4" noValidate>
           <FormSectionHeader 
-            title="Informações básicas" 
+            title={isEditMode ? "Editar Lead" : "Informações básicas"}
             tooltipText="Campos marcados com * são obrigatórios" 
           />
           
@@ -154,7 +119,11 @@ export function LeadForm({
             <FormErrorSummary />
           )}
           
-          <FormButtons onCancel={onCancel} isSubmitting={isSubmitting} />
+          <FormButtons 
+            onCancel={onCancel} 
+            isSubmitting={isSubmitting}
+            isEditMode={isEditMode} 
+          />
         </form>
       </Form>
     </FormProvider>
