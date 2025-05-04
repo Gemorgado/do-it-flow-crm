@@ -60,7 +60,7 @@ export const mockPipelineComponents = () => {
       onSearch, 
       onFilterByUser 
     }: { 
-      onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void; 
+      onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
       onFilterByUser: (value: string) => void;
     }) => (
       <div data-testid="pipeline-search">
