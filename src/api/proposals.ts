@@ -53,9 +53,22 @@ const createProposal = async (data: CreateProposalInput): Promise<Proposal> => {
   
   const proposal: Proposal = {
     id: `proposal-${Date.now()}`,
-    ...data,
+    companyId: data.companyId,
+    serviceType: data.serviceType,
+    amount: data.amount,
+    proposalDate: data.proposalDate,
+    followUpAt: data.followUpAt,
+    followUpNote: data.followUpNote,
     ownerId: data.ownerId || "1", // Default to user 1 if not provided
     createdAt: new Date().toISOString(),
+    title: data.title,
+    leadId: data.leadId,
+    value: data.value,
+    expiresAt: data.expiresAt,
+    status: data.status,
+    notes: data.notes,
+    products: data.products,
+    created_by: data.created_by
   };
 
   // Add to mock data

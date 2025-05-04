@@ -52,7 +52,7 @@ export interface SpaceBinding {
   spaceId: string;
   clientId: string;
   contractId?: string | null;
-  boundAt: string;
+  boundAt: string; // Required property
   startDate: string;
   endDate?: string | null;
   notes?: string;

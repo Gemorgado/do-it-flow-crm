@@ -1,8 +1,8 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Location } from "@/types";
-import { SpaceBinderModalContent } from "./SpaceBinderModalContent";
 import { useSpaceBinderManager } from "@/hooks/useSpaceBinderManager";
+import { SpaceBinderModalContent } from "./SpaceBinderModalContent";
+import { Location } from "@/types";
 
 interface SpaceBinderModalProps {
   isOpen: boolean;
@@ -13,19 +13,40 @@ interface SpaceBinderModalProps {
 export function SpaceBinderModal({ isOpen, onClose, space }: SpaceBinderModalProps) {
   if (!space) return null;
   
-  // Use our specialized hook for space binding management
-  const spaceBindingProps = useSpaceBinderManager(space, onClose);
+  // Use the hook to manage space binding
+  const binderManager = useSpaceBinderManager(space, onClose);
   
   return (
-    <Dialog open={isOpen} onOpenChange={open => !open && onClose()}>
-      <DialogContent className="sm:max-w-[550px]">
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Vincular Espaço a Cliente</DialogTitle>
+          <DialogTitle>Assign {space.name}</DialogTitle>
         </DialogHeader>
+        
         <SpaceBinderModalContent 
-          space={space} 
+          space={space}
+          selectedClientId={binderManager.selectedClientId}
+          setSelectedClientId={binderManager.setSelectedClientId}
+          searchQuery={binderManager.searchQuery}
+          setSearchQuery={binderManager.setSearchQuery}
+          contractId={binderManager.contractId}
+          setContractId={binderManager.setContractId}
+          unitPrice={binderManager.unitPrice}
+          setUnitPrice={binderManager.setUnitPrice}
+          startDate={binderManager.startDate}
+          setStartDate={binderManager.setStartDate}
+          endDate={binderManager.endDate}
+          setEndDate={binderManager.setEndDate}
+          existingBinding={binderManager.existingBinding}
+          isLoading={binderManager.isLoading}
+          isLoadingClients={binderManager.isLoadingClients}
+          isLoadingContract={binderManager.isLoadingContract}
+          activeContract={binderManager.activeContract}
+          clients={binderManager.clients}
+          handleSave={binderManager.handleSave}
+          handleUnbind={binderManager.handleUnbind}
+          canSave={binderManager.canSave}
           onClose={onClose}
-          {...spaceBindingProps}
         />
       </DialogContent>
     </Dialog>

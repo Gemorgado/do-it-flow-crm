@@ -1,7 +1,7 @@
 
 import { useCallback, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Lead, Client, ServiceType } from '@/types';
+import { Lead, Client, ServiceType, ClientService } from '@/types';
 import { persistence } from '@/integrations/persistence';
 import { toast } from 'sonner';
 import { v4 as uuidv4 } from 'uuid';
@@ -36,7 +36,7 @@ export const useLeadToClientConversion = () => {
         
         // 3. Add the service if provided
         if (serviceType && contractValue) {
-          const service = {
+          const service: ClientService = {
             id: uuidv4(),
             clientId: clientResult.id,
             type: serviceType,

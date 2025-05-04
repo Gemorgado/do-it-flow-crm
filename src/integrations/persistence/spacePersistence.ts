@@ -2,6 +2,15 @@
 import { supabase } from '../supabase/client';
 import { Location, SpaceBinding } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
+import { SERVICE_TYPE_MAP } from '@/types/service';
+
+// Helper function to map space types
+const mapSpaceType = (type: string): string => {
+  if (type in SERVICE_TYPE_MAP) {
+    return SERVICE_TYPE_MAP[type as keyof typeof SERVICE_TYPE_MAP];
+  }
+  return type;
+};
 
 export const spacePersistence = {
   getLocations: async (): Promise<Location[]> => {
@@ -18,7 +27,7 @@ export const spacePersistence = {
     return data.map(space => ({
       id: space.id,
       name: space.name,
-      type: space.type,
+      type: mapSpaceType(space.type),
       identifier: space.id, // Use ID as identifier
       available: space.is_active, // Map is_active to available
       floor: space.floor || 1,
@@ -36,7 +45,7 @@ export const spacePersistence = {
       .from('spaces')
       .update({
         name: space.name,
-        type: space.type,
+        type: mapSpaceType(space.type),
         floor: space.floor,
         capacity: space.capacity,
         area: space.area,
@@ -56,7 +65,7 @@ export const spacePersistence = {
     return {
       id: data.id,
       name: data.name,
-      type: data.type,
+      type: mapSpaceType(data.type),
       identifier: data.id, // Use ID as identifier
       available: data.is_active, // Map is_active to available
       floor: data.floor || 1,
@@ -89,7 +98,7 @@ export const spacePersistence = {
       spaceId: allocation.space_id,
       clientId: allocation.client_id,
       contractId: allocation.contract_id,
-      boundAt: new Date(allocation.created_at).toISOString(), // Use created_at as boundAt
+      boundAt: allocation.created_at || new Date().toISOString(), // Use created_at as boundAt
       startDate: allocation.start_date,
       endDate: allocation.end_date,
       notes: allocation.notes,
@@ -97,7 +106,7 @@ export const spacePersistence = {
       space: allocation.spaces ? {
         id: allocation.spaces.id,
         name: allocation.spaces.name,
-        type: allocation.spaces.type,
+        type: mapSpaceType(allocation.spaces.type),
         identifier: allocation.spaces.id, // Use ID as identifier
         available: allocation.spaces.is_active, // Map is_active to available
         floor: allocation.spaces.floor || 1,
@@ -130,7 +139,8 @@ export const spacePersistence = {
         start_date: binding.startDate,
         end_date: binding.endDate,
         notes: binding.notes,
-        unit_price: binding.unitPrice
+        unit_price: binding.unitPrice,
+        created_at: binding.boundAt || new Date().toISOString()
       });
 
     if (error) {
@@ -141,7 +151,7 @@ export const spacePersistence = {
     return {
       ...binding,
       id: bindingId,
-      boundAt: new Date().toISOString() // Set boundAt here for frontend
+      boundAt: binding.boundAt || new Date().toISOString() // Ensure boundAt is set
     };
   },
 

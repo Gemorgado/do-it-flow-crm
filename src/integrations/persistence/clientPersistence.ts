@@ -1,3 +1,9 @@
+
+// Helper functions to map between frontend and backend formats
+import { Client, ClientService, ServiceType, SERVICE_TYPE_MAP } from "@/types";
+import { supabase } from '../supabase/client';
+import { v4 as uuidv4 } from 'uuid';
+
 // Helper function to map client status
 const mapClientStatus = (status: string): string => {
   const statusMap: Record<string, string> = {
@@ -5,13 +11,33 @@ const mapClientStatus = (status: string): string => {
     'inactive': 'inativo',
     'delinquent': 'inadimplente',
     'canceled': 'cancelado',
-    'ativo': 'ativo',
-    'inativo': 'inativo',
-    'inadimplente': 'inadimplente',
-    'cancelado': 'cancelado'
+    'ativo': 'active',
+    'inativo': 'inactive',
+    'inadimplente': 'delinquent',
+    'cancelado': 'canceled'
   };
   
-  return statusMap[status] || 'ativo';
+  return statusMap[status] || status;
+};
+
+// Helper function to map service type
+const mapServiceType = (type: string): string => {
+  if (type in SERVICE_TYPE_MAP) {
+    return SERVICE_TYPE_MAP[type as keyof typeof SERVICE_TYPE_MAP];
+  }
+  return type;
+};
+
+// Helper function to map billing cycle
+const mapBillingCycle = (cycle: string): string => {
+  const cycleMap: Record<string, string> = {
+    'mensal': 'monthly',
+    'anual': 'yearly',
+    'monthly': 'mensal',
+    'yearly': 'anual'
+  };
+  
+  return cycleMap[cycle] || cycle;
 };
 
 export const clientPersistence = {
@@ -45,14 +71,14 @@ export const clientPersistence = {
       servicesByClient[service.client_id].push({
         id: service.id,
         clientId: service.client_id,
-        type: service.type,
+        type: mapServiceType(service.type) as ServiceType,
         description: service.description,
         locationId: service.location_id,
         contractStart: service.contract_start,
         contractEnd: service.contract_end,
         value: service.value,
-        billingCycle: service.billing_cycle,
-        status: service.status,
+        billingCycle: mapBillingCycle(service.billing_cycle) as "mensal" | "anual",
+        status: mapClientStatus(service.status) as "ativo" | "em_renovacao" | "cancelado",
         createdAt: service.created_at,
         updatedAt: service.updated_at
       });
@@ -66,14 +92,14 @@ export const clientPersistence = {
       email: client.email,
       phone: client.phone || '',
       address: client.address || '',
-      status: client.status,
+      status: mapClientStatus(client.status) as "ativo" | "inativo" | "inadimplente" | "cancelado",
       createdAt: client.created_at,
       updatedAt: client.updated_at,
       notes: client.notes || '',
       assignedTo: client.assigned_to || '',
       isActive: client.is_active,
       services: servicesByClient[client.id] || [],
-      plan: client.plan,
+      plan: client.plan ? mapServiceType(client.plan) as ServiceType : undefined,
       contractStart: client.contract_start,
       contractEnd: client.contract_end,
       contractTerm: client.contract_term,
@@ -119,7 +145,7 @@ export const clientPersistence = {
       email: client.email,
       phone: client.phone || '',
       address: client.address || '',
-      status: client.status,
+      status: mapClientStatus(client.status) as "ativo" | "inativo" | "inadimplente" | "cancelado",
       createdAt: client.created_at,
       updatedAt: client.updated_at,
       notes: client.notes || '',
@@ -128,18 +154,18 @@ export const clientPersistence = {
       services: services.map((service: any) => ({
         id: service.id,
         clientId: service.client_id,
-        type: service.type,
+        type: mapServiceType(service.type) as ServiceType,
         description: service.description,
         locationId: service.location_id,
         contractStart: service.contract_start,
         contractEnd: service.contract_end,
         value: service.value,
-        billingCycle: service.billing_cycle,
-        status: service.status,
+        billingCycle: mapBillingCycle(service.billing_cycle) as "mensal" | "anual",
+        status: mapClientStatus(service.status) as "ativo" | "em_renovacao" | "cancelado",
         createdAt: service.created_at,
         updatedAt: service.updated_at
       })),
-      plan: client.plan,
+      plan: client.plan ? mapServiceType(client.plan) as ServiceType : undefined,
       contractStart: client.contract_start,
       contractEnd: client.contract_end,
       contractTerm: client.contract_term,
@@ -165,11 +191,11 @@ export const clientPersistence = {
         email: client.email,
         phone: client.phone,
         address: client.address,
-        status: client.status || 'ativo', // Using the native status
+        status: mapClientStatus(client.status),
         notes: client.notes,
         assigned_to: client.assignedTo,
         is_active: client.isActive !== false,
-        plan: client.plan, // No mapping needed
+        plan: client.plan ? mapServiceType(client.plan) : null,
         contract_start: client.contractStart,
         contract_end: client.contractEnd,
         contract_term: client.contractTerm,
@@ -188,26 +214,26 @@ export const clientPersistence = {
 
     // Insert the client services
     if (client.services?.length) {
-      const servicesToInsert = client.services.map(service => ({
-        id: service.id || uuidv4(),
-        client_id: clientId,
-        type: service.type, // No mapping needed
-        description: service.description,
-        location_id: service.locationId,
-        contract_start: service.contractStart,
-        contract_end: service.contractEnd,
-        value: service.value,
-        billing_cycle: service.billingCycle, // Use directly
-        status: service.status || 'ativo'
-      }));
+      for (const service of client.services) {
+        const { error: serviceError } = await supabase
+          .from('client_services')
+          .insert({
+            id: service.id || uuidv4(),
+            client_id: clientId,
+            type: mapServiceType(service.type),
+            description: service.description,
+            location_id: service.locationId,
+            contract_start: service.contractStart,
+            contract_end: service.contractEnd,
+            value: service.value,
+            billing_cycle: mapBillingCycle(service.billingCycle),
+            status: mapClientStatus(service.status)
+          });
 
-      const { error: servicesError } = await supabase
-        .from('client_services')
-        .insert(servicesToInsert);
-
-      if (servicesError) {
-        console.error('Error creating client services:', servicesError);
-        throw servicesError;
+        if (serviceError) {
+          console.error('Error creating client service:', serviceError);
+          throw serviceError;
+        }
       }
     }
 
@@ -231,7 +257,7 @@ export const clientPersistence = {
         notes: client.notes,
         assigned_to: client.assignedTo,
         is_active: client.isActive,
-        plan: client.plan, // No mapping needed
+        plan: client.plan ? mapServiceType(client.plan) : null,
         contract_start: client.contractStart,
         contract_end: client.contractEnd,
         contract_term: client.contractTerm,
@@ -264,26 +290,26 @@ export const clientPersistence = {
       }
 
       // Insert new services
-      const servicesToInsert = client.services.map(service => ({
-        id: service.id || uuidv4(),
-        client_id: client.id,
-        type: service.type, // No mapping needed
-        description: service.description,
-        location_id: service.locationId,
-        contract_start: service.contractStart,
-        contract_end: service.contractEnd,
-        value: service.value,
-        billing_cycle: service.billingCycle || 'monthly',
-        status: service.status || 'active'
-      }));
+      for (const service of client.services) {
+        const { error: serviceError } = await supabase
+          .from('client_services')
+          .insert({
+            id: service.id || uuidv4(),
+            client_id: client.id,
+            type: mapServiceType(service.type),
+            description: service.description,
+            location_id: service.locationId,
+            contract_start: service.contractStart,
+            contract_end: service.contractEnd,
+            value: service.value,
+            billing_cycle: mapBillingCycle(service.billingCycle),
+            status: mapClientStatus(service.status)
+          });
 
-      const { error: servicesError } = await supabase
-        .from('client_services')
-        .insert(servicesToInsert);
-
-      if (servicesError) {
-        console.error('Error creating client services:', servicesError);
-        throw servicesError;
+        if (serviceError) {
+          console.error('Error creating client service:', serviceError);
+          throw serviceError;
+        }
       }
     }
 
@@ -303,8 +329,3 @@ export const clientPersistence = {
     }
   }
 };
-
-// Add missing import
-import { v4 as uuidv4 } from 'uuid';
-import { Client } from "@/types";
-import { supabase } from '../supabase/client';

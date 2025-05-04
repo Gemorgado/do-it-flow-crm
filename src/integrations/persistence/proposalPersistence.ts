@@ -68,7 +68,7 @@ export const proposalPersistence = {
       value: item.value,
       createdAt: item.created_at,
       expiresAt: item.expires_at,
-      status: mapToFrontendStatus(item.status),
+      status: mapToFrontendStatus(item.status) as any,
       notes: item.notes,
       created_by: item.created_by,
       products: item.proposal_items.map((product: any) => ({
@@ -115,8 +115,9 @@ export const proposalPersistence = {
       value: data.value,
       createdAt: data.created_at,
       expiresAt: data.expires_at,
-      status: data.status,
+      status: mapToFrontendStatus(data.status) as any,
       notes: data.notes,
+      created_by: data.created_by,
       products: data.proposal_items.map((product: any) => ({
         id: product.id,
         name: product.name,
@@ -189,7 +190,7 @@ export const proposalPersistence = {
         title: proposal.title,
         value: proposal.value,
         expires_at: proposal.expiresAt,
-        status: proposal.status,
+        status: mapProposalStatus(proposal.status),
         notes: proposal.notes,
         updated_at: new Date().toISOString()
       })

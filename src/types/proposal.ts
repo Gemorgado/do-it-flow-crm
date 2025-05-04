@@ -33,6 +33,16 @@ export interface CreateProposalInput {
   followUpAt?: string;
   followUpNote?: string;
   ownerId?: string;          // opcional pois pode ser preenchido automaticamente
+  
+  // Additional fields needed for frontend
+  title: string;
+  leadId: string;
+  value: number;
+  expiresAt: string;
+  status: "enviada" | "visualizada" | "aceita" | "rejeitada" | "expirada" | "em_negociacao";
+  notes?: string;
+  products?: any[];
+  created_by?: string; // Add this property for Supabase compatibility
 }
 
 export interface Company {
