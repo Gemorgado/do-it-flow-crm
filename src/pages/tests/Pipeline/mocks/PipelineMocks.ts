@@ -98,9 +98,11 @@ export const mockPipelineComponents = () => {
     }) => (
       <div data-testid="pipeline-board">
         <div>Total stages: {pipelineStages.length}</div>
-        <div data-testid="total-leads">Total leads: {
-          Object.values(leadsByStage).reduce((acc, stageLeads) => acc + stageLeads.length, 0)
-        }</div>
+        <div data-testid="total-leads">
+          Total leads: {
+            Object.values(leadsByStage).reduce((acc, stageLeads) => acc + stageLeads.length, 0)
+          }
+        </div>
         {pipelineStages.map((stage) => (
           <div 
             key={stage.id} 
