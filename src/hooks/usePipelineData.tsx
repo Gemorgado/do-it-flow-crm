@@ -9,6 +9,7 @@ import {
 } from "@/utils/pipelineAutomation";
 import { trackLeadEvent } from "@/utils/trackingUtils";
 import { useQueryClient } from "@tanstack/react-query";
+import { leadPersistence } from "@/integrations/persistence/leadPersistence";
 import { PipelineColumn } from "@/components/Pipeline/PipelineColumn";
 
 export function usePipelineData(initialLeads: Lead[], pipelineStages: PipelineStage[]) {
@@ -43,6 +44,23 @@ export function usePipelineData(initialLeads: Lead[], pipelineStages: PipelineSt
       triggerAutomation(lead);
     });
   }, [filteredLeads]);
+
+  // Add a new function to add a lead to the pipeline
+  const addLeadToPipeline = (lead: Lead) => {
+    // Update the filteredLeads state to include the new lead
+    setFilteredLeads(prevLeads => [lead, ...prevLeads]);
+    
+    // No need to manually update leadsByStage as it's derived from filteredLeads
+    // This will trigger a re-render with the updated leadsByStage
+    
+    // Invalidate relevant queries
+    queryClient.invalidateQueries({ queryKey: ['pipeline', 'leads'] });
+    
+    // Show a success toast
+    toast.success("Lead adicionado ao pipeline", {
+      description: `${lead.name} foi adicionado à coluna ${lead.stage.name}`
+    });
+  };
 
   const handleDragStart = (e: React.DragEvent, lead: Lead) => {
     setDraggedLead(lead);
@@ -141,6 +159,7 @@ export function usePipelineData(initialLeads: Lead[], pipelineStages: PipelineSt
     handleDrop,
     handleSearchLeads,
     handleFilterByUser,
-    updateLeadStage
+    updateLeadStage,
+    addLeadToPipeline // Export the new function
   };
 }

@@ -2,6 +2,7 @@
 import { PipelineHeader } from "@/components/Pipeline/PipelineHeader";
 import { PipelineSearch } from "@/components/Pipeline/PipelineSearch";
 import { PipelineBoard } from "@/components/Pipeline/PipelineBoard";
+import { LeadModal } from "@/components/CRM/LeadModal";
 import { leads, pipelineStages } from "@/data/leadsData";
 import { usePipelineData } from "@/hooks/usePipelineData";
 import { useEffect, useState } from "react";
@@ -42,7 +43,8 @@ export default function Pipeline() {
     handleDrop,
     handleSearchLeads,
     handleFilterByUser,
-    updateLeadStage
+    updateLeadStage,
+    addLeadToPipeline
   } = usePipelineData(initialLeads, stages);
 
   return (
@@ -73,6 +75,9 @@ export default function Pipeline() {
           onStageUpdate={updateLeadStage}
         />
       )}
+      
+      {/* Pass the addLeadToPipeline function to LeadModal */}
+      <LeadModal addLeadToPipeline={addLeadToPipeline} />
     </div>
   );
 }

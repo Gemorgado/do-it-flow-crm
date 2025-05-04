@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   Dialog,
@@ -15,11 +14,17 @@ import { useCreateLead } from "@/api/crm";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { leadPersistence } from "@/integrations/persistence/leadPersistence";
 import { toast } from "sonner";
+import { Lead, PipelineStage } from "@/types";
+import { v4 as uuidv4 } from 'uuid';
+
+interface LeadModalProps {
+  addLeadToPipeline?: (lead: Lead) => void;
+}
 
 /**
  * Modal para criação ou edição de leads
  */
-export function LeadModal() {
+export function LeadModal({ addLeadToPipeline }: LeadModalProps) {
   const { isOpen, close, options } = useLeadModal();
   const createLeadMutation = useCreateLead();
   const isMobile = useMediaQuery("(max-width: 640px)");
@@ -75,24 +80,91 @@ export function LeadModal() {
     }
   });
 
+  // Custom mutation for creating leads with pipeline integration
+  const createLeadWithPipelineIntegration = useMutation({
+    mutationFn: async (data: LeadFormValues & { stageId?: string }) => {
+      try {
+        // Find the correct stage object by ID or use the preset stage
+        let stage: PipelineStage;
+        
+        if (options?.presetStage) {
+          stage = options.presetStage;
+        } else {
+          // Default to stage 1 (New) if not specified
+          stage = {
+            id: data.stageId || "1",
+            name: "Novo",
+            order: 1,
+            color: "#3b82f6"
+          };
+        }
+        
+        // Create a new Lead object with all required fields
+        const newLead: Lead = {
+          id: uuidv4(),
+          name: data.companyOrPerson || 'Sem nome',
+          company: data.companyOrPerson,
+          email: data.email || 'sem-email@exemplo.com',
+          phone: data.phone || '',
+          status: 'novo',
+          source: data.sourceCategory === 'indicacao' ? 'indicacao' : 
+                 data.sourceCategory === 'rede_social' ? 'instagram' : 'outros',
+          sourceDetail: data.sourceDetail,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          stage: stage,
+          notes: data.notes || '',
+        };
+        
+        // Persist the lead
+        await leadPersistence.createLead(newLead);
+        
+        return newLead;
+      } catch (error) {
+        console.error("Erro ao criar lead:", error);
+        throw error;
+      }
+    },
+    onSuccess: (newLead) => {
+      queryClient.invalidateQueries({ queryKey: ['leads'] });
+      queryClient.invalidateQueries({ queryKey: ['pipeline', 'leads'] });
+      
+      // Add the lead to the pipeline immediately if the function is provided
+      if (addLeadToPipeline) {
+        addLeadToPipeline(newLead);
+      }
+      
+      toast.success("Lead criado com sucesso", {
+        description: "O lead foi adicionado ao sistema"
+      });
+      
+      close();
+    },
+    onError: (error) => {
+      toast.error("Erro ao criar lead", {
+        description: error instanceof Error ? error.message : "Não foi possível criar o lead"
+      });
+    }
+  });
+
   const handleSubmit = async (data: LeadFormValues & { stageId?: string }) => {
     try {
       // Se for edição, usar mutation de atualização
       if (options?.leadToEdit) {
         await updateLeadMutation.mutateAsync(data);
       } else {
-        // Caso contrário, criar novo lead
-        await createLeadMutation.mutateAsync(data);
+        // Use our custom mutation for creating leads with pipeline integration
+        await createLeadWithPipelineIntegration.mutateAsync(data);
       }
-      
-      // Close the modal on success
-      close();
     } catch (error) {
       console.error("Error creating/updating lead:", error);
     }
   };
 
-  const isSubmitting = createLeadMutation.isPending || updateLeadMutation.isPending;
+  const isSubmitting = createLeadMutation.isPending || 
+                      updateLeadMutation.isPending || 
+                      createLeadWithPipelineIntegration.isPending;
+                      
   const modalTitle = options?.leadToEdit ? "Editar Lead" : "Novo Lead";
 
   // Use Sheet em dispositivos móveis e Dialog em desktop

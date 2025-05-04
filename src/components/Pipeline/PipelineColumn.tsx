@@ -24,6 +24,7 @@ export function PipelineColumn({
   const leadModal = useLeadModal();
 
   const handleAddLead = () => {
+    // When adding a new lead, pass the current stage to pre-select it in the form
     leadModal.open({ presetStage: stage });
   };
 
@@ -32,6 +33,7 @@ export function PipelineColumn({
       className="flex-1 min-w-[300px] max-w-[320px]"
       onDragOver={onDragOver}
       onDrop={onDrop}
+      data-testid={`stage-${stage.id}`}
     >
       <div className="flex items-center justify-between mb-3 px-2">
         <h3 className="font-medium flex items-center gap-2">
@@ -63,6 +65,7 @@ export function PipelineColumn({
         <button 
           onClick={handleAddLead}
           className="w-full border border-dashed border-gray-200 rounded-md p-3 text-gray-500 flex items-center justify-center hover:bg-gray-50 transition-colors bg-white"
+          data-testid={`add-lead-to-${stage.id}`}
         >
           <Plus className="h-4 w-4 mr-1" /> Adicionar Lead
         </button>
