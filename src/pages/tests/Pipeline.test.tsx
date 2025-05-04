@@ -55,7 +55,7 @@ vi.mock('@/components/Pipeline/PipelineBoard', () => ({
       <div data-testid="total-leads">Total leads: {
         Object.values(leadsByStage).reduce((acc: number, stageLeads: any[]) => acc + stageLeads.length, 0)
       }</div>
-      {pipelineStages.map(stage => (
+      {pipelineStages.map((stage) => (
         <div 
           key={stage.id} 
           data-testid={`stage-${stage.id}`}
@@ -189,3 +189,4 @@ describe('Pipeline Page', () => {
     expect(mockUsePipelineDataReturn.updateLeadStage).toHaveBeenCalledWith('1', '3');
   });
 });
+
