@@ -116,7 +116,8 @@ export const clients: Client[] = [
     createdAt: "2023-12-20",
     updatedAt: "2024-01-15",
     notes: "Cliente desde 2023",
-    assignedTo: "1"
+    assignedTo: "1",
+    isActive: true
   },
   {
     id: "2",
@@ -128,7 +129,8 @@ export const clients: Client[] = [
     status: "ativo",
     createdAt: "2024-02-28",
     updatedAt: "2024-03-10",
-    assignedTo: "2"
+    assignedTo: "2",
+    isActive: true
   },
   {
     id: "3",
@@ -142,7 +144,8 @@ export const clients: Client[] = [
     createdAt: "2023-10-25",
     updatedAt: "2024-04-10",
     notes: "Pagamento em atraso",
-    assignedTo: "3"
+    assignedTo: "3",
+    isActive: false
   },
   {
     id: "4",
@@ -154,7 +157,8 @@ export const clients: Client[] = [
     status: "ativo",
     createdAt: "2023-08-10",
     updatedAt: "2024-02-15",
-    assignedTo: "1"
+    assignedTo: "1",
+    isActive: true
   },
   {
     id: "5",
@@ -168,6 +172,7 @@ export const clients: Client[] = [
     createdAt: "2024-01-25",
     updatedAt: "2024-05-10",
     notes: "Cancelou após 3 meses",
-    assignedTo: "2"
+    assignedTo: "2",
+    isActive: false
   }
 ];
