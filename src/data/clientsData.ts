@@ -34,7 +34,7 @@ export const clientServices: ClientService[] = [
   {
     id: "srv-003",
     clientId: "2",
-    type: "estacao" as ServiceType,
+    type: "estacao_flex" as ServiceType, // Changed from "estacao" to "estacao_flex"
     description: "Estação Flexível - Mensal",
     locationId: "est-01",
     contractStart: "2024-03-10",
@@ -62,7 +62,7 @@ export const clientServices: ClientService[] = [
   {
     id: "srv-005",
     clientId: "4",
-    type: "estacao" as ServiceType,
+    type: "estacao_fixa" as ServiceType, // Changed from "estacao" to "estacao_fixa"
     description: "Estação Dedicada - Anual",
     locationId: "est-02",
     contractStart: "2023-08-15",
