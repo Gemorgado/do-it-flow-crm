@@ -1,6 +1,7 @@
 
 import { vi } from 'vitest';
 import { Lead, PipelineStage } from '@/types';
+import React from 'react';
 
 // Common mock factory functions to be reused across the pipeline tests
 export const createMockLocalStorage = () => {
@@ -47,7 +48,7 @@ export const createMockPipelineData = (leads: Lead[], stages: PipelineStage[]) =
 // Mock components that are commonly used in tests
 export const mockPipelineComponents = () => {
   vi.mock('@/components/Pipeline/PipelineHeader', () => ({
-    PipelineHeader: ({ leadsNeedingAttention }) => (
+    PipelineHeader: ({ leadsNeedingAttention }: { leadsNeedingAttention: Lead[] }) => (
       <div data-testid="pipeline-header">
         Pipeline Header (Leads needing attention: {leadsNeedingAttention.length})
       </div>
@@ -55,7 +56,10 @@ export const mockPipelineComponents = () => {
   }));
 
   vi.mock('@/components/Pipeline/PipelineSearch', () => ({
-    PipelineSearch: ({ onSearch, onFilterByUser }) => (
+    PipelineSearch: ({ onSearch, onFilterByUser }: { 
+      onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void, 
+      onFilterByUser: (value: string) => void 
+    }) => (
       <div data-testid="pipeline-search">
         <input 
           data-testid="search-input" 
@@ -81,6 +85,13 @@ export const mockPipelineComponents = () => {
       onDragOver, 
       onDrop, 
       onStageUpdate 
+    }: { 
+      pipelineStages: PipelineStage[],
+      leadsByStage: Record<string, Lead[]>,
+      onDragStart: (e: React.DragEvent, lead: Lead) => void,
+      onDragOver: (e: React.DragEvent) => void,
+      onDrop: (e: React.DragEvent, stageId: string) => void,
+      onStageUpdate: (leadId: string, stageId: string) => void
     }) => (
       <div data-testid="pipeline-board">
         <div>Total stages: {pipelineStages.length}</div>
