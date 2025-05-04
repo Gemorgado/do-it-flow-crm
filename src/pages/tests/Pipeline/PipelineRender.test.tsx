@@ -4,6 +4,7 @@ import { render, screen, waitFor } from '@/test/utils';
 import Pipeline from '@/pages/Pipeline';
 import { usePipelineData } from '@/hooks/usePipelineData';
 import { leads, pipelineStages } from '@/data/leadsData';
+import { Lead } from '@/types';
 
 // Mock dependencies
 vi.mock('@/hooks/usePipelineData', () => ({
@@ -11,7 +12,7 @@ vi.mock('@/hooks/usePipelineData', () => ({
 }));
 
 vi.mock('@/components/Pipeline/PipelineHeader', () => ({
-  PipelineHeader: ({ leadsNeedingAttention }) => (
+  PipelineHeader: ({ leadsNeedingAttention }: { leadsNeedingAttention: Lead[] }) => (
     <div data-testid="pipeline-header">
       Pipeline Header (Leads needing attention: {leadsNeedingAttention.length})
     </div>
@@ -19,7 +20,10 @@ vi.mock('@/components/Pipeline/PipelineHeader', () => ({
 }));
 
 vi.mock('@/components/Pipeline/PipelineSearch', () => ({
-  PipelineSearch: ({ onSearch, onFilterByUser }) => (
+  PipelineSearch: ({ onSearch, onFilterByUser }: { 
+    onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void, 
+    onFilterByUser: (value: string) => void 
+  }) => (
     <div data-testid="pipeline-search">
       <input 
         data-testid="search-input" 
@@ -45,6 +49,13 @@ vi.mock('@/components/Pipeline/PipelineBoard', () => ({
     onDragOver, 
     onDrop, 
     onStageUpdate 
+  }: { 
+    pipelineStages: any[], 
+    leadsByStage: Record<string, any[]>,
+    onDragStart: (e: any, lead: any) => void,
+    onDragOver: (e: any) => void,
+    onDrop: (e: any, stageId: string) => void,
+    onStageUpdate: (leadId: string, newStageId: string) => void
   }) => (
     <div data-testid="pipeline-board">
       <div>Total stages: {pipelineStages.length}</div>

@@ -54,6 +54,13 @@ export function mockPipelineBoard() {
         onDragOver,
         onDrop,
         onStageUpdate 
+      }: {
+        pipelineStages: PipelineStage[],
+        leadsByStage: Record<string, Lead[]>,
+        onDragStart: (e: React.DragEvent<HTMLDivElement>, lead: Lead) => void,
+        onDragOver: (e: React.DragEvent<HTMLDivElement>) => void,
+        onDrop: (e: React.DragEvent<HTMLDivElement>, stageId: string) => void,
+        onStageUpdate: (leadId: string, newStageId: string) => void
       }) => {
         const MockComponent = () => null; // Simple mock component that renders nothing
         MockComponent.displayName = 'MockPipelineBoard';
@@ -69,7 +76,13 @@ export function mockPipelineBoard() {
 export function mockPipelineSearch() {
   vi.mock('@/components/Pipeline/PipelineSearch', () => {
     return {
-      PipelineSearch: ({ onSearch, onFilterByUser }) => {
+      PipelineSearch: ({ 
+        onSearch, 
+        onFilterByUser 
+      }: { 
+        onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void,
+        onFilterByUser: (userId: string) => void
+      }) => {
         const MockComponent = () => null;
         MockComponent.displayName = 'MockPipelineSearch';
         return MockComponent;
@@ -84,7 +97,11 @@ export function mockPipelineSearch() {
 export function mockPipelineHeader() {
   vi.mock('@/components/Pipeline/PipelineHeader', () => {
     return {
-      PipelineHeader: ({ leadsNeedingAttention }) => {
+      PipelineHeader: ({ 
+        leadsNeedingAttention 
+      }: { 
+        leadsNeedingAttention: Lead[] 
+      }) => {
         const MockComponent = () => null;
         MockComponent.displayName = 'MockPipelineHeader';
         return MockComponent;
