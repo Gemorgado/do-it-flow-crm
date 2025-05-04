@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Client, ServiceType } from "@/types/client";
+import { Client, ServiceType } from "@/types";
 import { FileText, MessageSquare, MoreHorizontal, Mail, Phone, Building, Briefcase, MapPin, Calendar, Edit } from "lucide-react";
 
 interface ClientRowProps {

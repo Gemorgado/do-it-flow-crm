@@ -22,3 +22,7 @@ export * from "./integration";
 // For backward compatibility, also re-export these types which were imported in the original file
 export type { SpaceBinding } from "./space";
 export type { ServiceType } from "./service";
+
+// Resolve ambiguity by explicitly re-exporting Proposal from the proposal module
+// This avoids the conflict with Proposal from the lead module
+export type { Proposal as ProposalType } from "./proposal";

@@ -49,3 +49,6 @@ export type ServiceStatus =
   | "ativo" 
   | "em_renovacao" 
   | "cancelado";
+
+// Export ServiceType to make it available to modules importing from client.ts
+export { ServiceType };
