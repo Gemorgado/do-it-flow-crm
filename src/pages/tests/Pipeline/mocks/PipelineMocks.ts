@@ -1,6 +1,6 @@
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { vi } from 'vitest';
+import { Lead, PipelineStage } from '@/types';
 import React from 'react';
 
 /**
@@ -23,13 +23,13 @@ export function createMockLocalStorage() {
 export function createMockPipelineData() {
   return {
     leadsByStage: {
-      '1': [{ id: '1', name: 'Test Lead 1', stage: { id: '1' } }],
-      '2': [{ id: '2', name: 'Test Lead 2', stage: { id: '2' } }]
+      '1': [{ id: '1', name: 'Test Lead 1', stage: { id: '1' } } as Lead],
+      '2': [{ id: '2', name: 'Test Lead 2', stage: { id: '2' } } as Lead]
     },
-    leadsNeedingAttention: [{ id: '1', name: 'Test Lead 1' }],
+    leadsNeedingAttention: [{ id: '1', name: 'Test Lead 1' } as Lead],
     filteredLeads: [
-      { id: '1', name: 'Test Lead 1', stage: { id: '1' } },
-      { id: '2', name: 'Test Lead 2', stage: { id: '2' } }
+      { id: '1', name: 'Test Lead 1', stage: { id: '1' } } as Lead,
+      { id: '2', name: 'Test Lead 2', stage: { id: '2' } } as Lead
     ],
     handleDragStart: vi.fn(),
     handleDragOver: vi.fn(),
@@ -46,16 +46,21 @@ export function createMockPipelineData() {
  */
 export function mockPipelineBoard() {
   vi.mock('@/components/Pipeline/PipelineBoard', () => ({
-    PipelineBoard: (props: {
-      pipelineStages: { id: string; name: string }[];
-      leadsByStage: Record<string, any[]>;
-      onDragStart: (e: React.DragEvent, lead: any) => void;
+    PipelineBoard: ({
+      pipelineStages,
+      leadsByStage,
+      onDragStart,
+      onDragOver,
+      onDrop,
+      onStageUpdate
+    }: {
+      pipelineStages: PipelineStage[];
+      leadsByStage: Record<string, Lead[]>;
+      onDragStart: (e: React.DragEvent, lead: Lead) => void;
       onDragOver: (e: React.DragEvent) => void;
       onDrop: (e: React.DragEvent, stageId: string) => void;
       onStageUpdate: (leadId: string, stageId: string) => void;
     }) => {
-      const { pipelineStages, leadsByStage, onDragStart, onDragOver, onDrop, onStageUpdate } = props;
-      
       return (
         <div data-testid="pipeline-board">
           <div>Total stages: {pipelineStages.length}</div>
@@ -98,12 +103,13 @@ export function mockPipelineBoard() {
  */
 export function mockPipelineSearch() {
   vi.mock('@/components/Pipeline/PipelineSearch', () => ({
-    PipelineSearch: (props: {
+    PipelineSearch: ({
+      onSearch,
+      onFilterByUser
+    }: {
       onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
       onFilterByUser: (userId: string) => void;
     }) => {
-      const { onSearch, onFilterByUser } = props;
-      
       return (
         <div data-testid="pipeline-search">
           <input 
@@ -129,11 +135,11 @@ export function mockPipelineSearch() {
  */
 export function mockPipelineHeader() {
   vi.mock('@/components/Pipeline/PipelineHeader', () => ({
-    PipelineHeader: (props: { 
-      leadsNeedingAttention: any[] 
+    PipelineHeader: ({ 
+      leadsNeedingAttention 
+    }: { 
+      leadsNeedingAttention: Lead[] 
     }) => {
-      const { leadsNeedingAttention } = props;
-      
       return (
         <div data-testid="pipeline-header">
           Pipeline Header (Leads needing attention: {leadsNeedingAttention.length})
