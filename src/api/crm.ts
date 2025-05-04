@@ -1,7 +1,8 @@
+
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { LeadFormValues, ContactFormValues } from "@/types/crm";
 import { toast } from "sonner";
-import { Lead, PipelineStage } from "@/types";
+import { Lead, PipelineStage, LeadSource } from "@/types";
 import { leadPersistence } from "@/integrations/persistence/leadPersistence";
 import { v4 as uuidv4 } from 'uuid';
 
@@ -36,10 +37,11 @@ export const useCreateLead = () => {
         };
         
         // Map source category to valid source type
-        const sourceMap = {
-          'indicacao': 'indicacao',
-          'rede_social': 'instagram',
-          'outro': 'outros'
+        // Fix TypeScript error by ensuring we only use valid LeadSource values
+        const sourceMap: Record<string, LeadSource> = {
+          'indicacao': 'indicacao' as LeadSource,
+          'rede_social': 'instagram' as LeadSource,
+          'outro': 'outros' as LeadSource
         };
         
         // Create new lead with all required fields
@@ -50,7 +52,7 @@ export const useCreateLead = () => {
           email: data.email || 'sem-email@exemplo.com',
           phone: data.phone || '',
           status: 'novo',
-          source: sourceMap[data.sourceCategory] || 'outros',
+          source: (sourceMap[data.sourceCategory] || 'outros') as LeadSource,
           sourceDetail: data.sourceDetail,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
