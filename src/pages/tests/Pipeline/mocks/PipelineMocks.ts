@@ -3,7 +3,7 @@ import { vi } from 'vitest';
 import { Lead, PipelineStage } from '@/types';
 import React from 'react';
 
-// Common mock factory functions to be reused across the pipeline tests
+// Common mock factory functions to be reused across pipeline tests
 export const createMockLocalStorage = () => {
   let store: Record<string, string> = {};
   return {
