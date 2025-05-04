@@ -1,36 +1,70 @@
+
 import { supabase } from '../supabase/client';
 import { Lead, LeadStatus, LeadSource, PipelineStage } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
 
+// Define mapping objects for lead status and source conversions
+const LEAD_STATUS_FRONTEND_TO_DB: Record<string, string> = {
+  'novo': 'new',
+  'contatado': 'contacted',
+  'qualificado': 'qualified',
+  'proposta': 'proposal',
+  'negociação': 'negotiation',
+  'fechado': 'closed_won',
+  'perdido': 'closed_lost'
+};
+
+const LEAD_STATUS_DB_TO_FRONTEND: Record<string, LeadStatus> = {
+  'new': 'novo',
+  'contacted': 'contatado',
+  'qualified': 'qualificado',
+  'proposal': 'proposta',
+  'negotiation': 'negociação',
+  'closed_won': 'fechado',
+  'closed_lost': 'perdido',
+  'converted': 'fechado' // Map converted to fechado in frontend
+};
+
+const LEAD_SOURCE_FRONTEND_TO_DB: Record<string, string> = {
+  'site_organico': 'site_organic',
+  'google_ads': 'google_ads',
+  'meta_ads': 'meta_ads',
+  'instagram': 'instagram',
+  'indicacao': 'referral',
+  'visita_presencial': 'in_person_visit',
+  'eventos': 'events',
+  'outros': 'other'
+};
+
+const LEAD_SOURCE_DB_TO_FRONTEND: Record<string, LeadSource> = {
+  'site_organic': 'site_organico',
+  'google_ads': 'google_ads',
+  'meta_ads': 'meta_ads',
+  'instagram': 'instagram',
+  'referral': 'indicacao',
+  'in_person_visit': 'visita_presencial',
+  'events': 'eventos',
+  'other': 'outros'
+};
+
 // Helper function to map frontend status to database status
-const mapLeadStatus = (status: LeadStatus): string => {
-  const statusMap: Record<string, string> = {
-    'novo': 'new',
-    'contatado': 'contacted',
-    'qualificado': 'qualified',
-    'proposta': 'proposal',
-    'negociação': 'negotiation',
-    'fechado': 'closed_won',
-    'perdido': 'closed_lost'
-  };
-  
-  return statusMap[status] || 'new';
+const mapLeadStatus = (status: LeadStatus | string): string => {
+  return LEAD_STATUS_FRONTEND_TO_DB[status] || status;
 };
 
 // Helper function to map frontend source to database source
-const mapLeadSource = (source: LeadSource): string => {
-  const sourceMap: Record<string, string> = {
-    'site_organico': 'site_organic',
-    'google_ads': 'google_ads',
-    'meta_ads': 'meta_ads',
-    'instagram': 'instagram',
-    'indicacao': 'referral',
-    'visita_presencial': 'in_person_visit',
-    'eventos': 'events',
-    'outros': 'other'
-  };
-  
-  return sourceMap[source] || 'other';
+const mapLeadSource = (source: LeadSource | string): string => {
+  return LEAD_SOURCE_FRONTEND_TO_DB[source] || source;
+};
+
+// Helper function to map database status to frontend status
+const mapDbStatusToFrontend = (status: string): LeadStatus => {
+  return LEAD_STATUS_DB_TO_FRONTEND[status] || 'novo';
+};
+
+// Helper function to map database source to frontend source
+const mapDbSourceToFrontend = (source: string): LeadSource => {
+  return LEAD_SOURCE_DB_TO_FRONTEND[source] || 'outros';
 };
 
 export const leadPersistence = {
@@ -153,10 +187,12 @@ export const leadPersistence = {
     }
 
     const leadId = lead.id || uuidv4();
+    const now = new Date().toISOString();
     
     const { data, error } = await supabase
       .from('leads')
-      .insert({
+      .insert([{
+        id: leadId,
         name: lead.name,
         company: lead.company,
         email: lead.email,
@@ -170,8 +206,9 @@ export const leadPersistence = {
         last_contact: lead.lastContact,
         next_follow_up: lead.nextFollowUp,
         meeting_scheduled: lead.meetingScheduled,
-        id: leadId // Include the ID at the end of the object
-      })
+        created_at: now,
+        updated_at: now
+      }])
       .select()
       .single();
 

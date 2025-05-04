@@ -1,7 +1,7 @@
 
 import { useCallback, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Lead, Client, ServiceType, ClientService } from '@/types';
+import { Lead, Client, ServiceType, ClientService, BillingCycle, ClientStatus, ServiceStatus } from '@/types';
 import { persistence } from '@/integrations/persistence';
 import { toast } from 'sonner';
 import { v4 as uuidv4 } from 'uuid';
@@ -21,7 +21,7 @@ export const useLeadToClientConversion = () => {
           company: lead.company || '',
           email: lead.email,
           phone: lead.phone || '',
-          status: 'ativo', // Using the correct "ativo" value from enum
+          status: 'active' as ClientStatus, // Using the correct "active" value from enum
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
           assignedTo: lead.assignedTo,
@@ -45,8 +45,8 @@ export const useLeadToClientConversion = () => {
             contractStart: new Date().toISOString(),
             contractEnd: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString(),
             value: contractValue,
-            billingCycle: 'mensal', // Using the correct "mensal" value
-            status: 'ativo',
+            billingCycle: 'monthly' as BillingCycle, // Using the correct "monthly" value
+            status: 'active' as ServiceStatus, // Using the correct "active" value
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
           };

@@ -1,42 +1,35 @@
-
 import { supabase } from '../supabase/client';
 import { Proposal, ProposalItem } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
+import { 
+  PT_BR_TO_PROPOSAL_STATUS, 
+  PROPOSAL_STATUS_TO_PT_BR,
+  ProposalStatus 
+} from '@/types/proposal';
 
 // Helper function to map frontend status to database status
 const mapProposalStatus = (status: string): string => {
-  const statusMap: Record<string, string> = {
-    'enviada': 'sent',
-    'visualizada': 'viewed',
-    'aceita': 'accepted',
-    'rejeitada': 'rejected',
-    'expirada': 'expired',
-    'em_negociacao': 'negotiating',
-    'draft': 'draft',
-    'sent': 'sent',
-    'viewed': 'viewed',
-    'accepted': 'accepted',
-    'rejected': 'rejected',
-    'expired': 'expired',
-    'negotiating': 'negotiating'
-  };
-  
-  return statusMap[status] || 'draft';
+  if (status in PT_BR_TO_PROPOSAL_STATUS) {
+    return PT_BR_TO_PROPOSAL_STATUS[status as keyof typeof PT_BR_TO_PROPOSAL_STATUS];
+  } else if (Object.values(PT_BR_TO_PROPOSAL_STATUS).includes(status as ProposalStatus)) {
+    return status;
+  }
+  return status || 'draft';
 };
 
 // Helper function to map database status to frontend status
-const mapToFrontendStatus = (status: string): string => {
-  const statusMap: Record<string, string> = {
-    'draft': 'enviada', // Assuming drafts are mapped to "enviada" for frontend
-    'sent': 'enviada',
-    'viewed': 'visualizada',
-    'accepted': 'aceita',
-    'rejected': 'rejeitada',
-    'expired': 'expirada',
-    'negotiating': 'em_negociacao'
-  };
-  
-  return statusMap[status] || 'enviada';
+const mapToFrontendStatus = (status: string): ProposalStatus => {
+  if (status in PROPOSAL_STATUS_TO_PT_BR) {
+    return status as ProposalStatus;
+  } else if (Object.values(PROPOSAL_STATUS_TO_PT_BR).includes(status)) {
+    // Find key by value
+    for (const [key, value] of Object.entries(PROPOSAL_STATUS_TO_PT_BR)) {
+      if (value === status) {
+        return key as ProposalStatus;
+      }
+    }
+  }
+  return 'draft';
 };
 
 export const proposalPersistence = {
@@ -68,7 +61,7 @@ export const proposalPersistence = {
       value: item.value,
       createdAt: item.created_at,
       expiresAt: item.expires_at,
-      status: mapToFrontendStatus(item.status) as any,
+      status: mapToFrontendStatus(item.status),
       notes: item.notes,
       created_by: item.created_by,
       products: item.proposal_items.map((product: any) => ({
@@ -115,7 +108,7 @@ export const proposalPersistence = {
       value: data.value,
       createdAt: data.created_at,
       expiresAt: data.expires_at,
-      status: mapToFrontendStatus(data.status) as any,
+      status: mapToFrontendStatus(data.status),
       notes: data.notes,
       created_by: data.created_by,
       products: data.proposal_items.map((product: any) => ({
