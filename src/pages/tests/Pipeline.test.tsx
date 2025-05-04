@@ -1,4 +1,3 @@
-
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@/test/utils';
 import Pipeline from '@/pages/Pipeline';
@@ -49,11 +48,25 @@ vi.mock('@/components/Pipeline/PipelineSearch', () => ({
 }));
 
 vi.mock('@/components/Pipeline/PipelineBoard', () => ({
-  PipelineBoard: ({ pipelineStages, leadsByStage, onDragStart, onDragOver, onDrop, onStageUpdate }) => (
+  PipelineBoard: ({ 
+    pipelineStages, 
+    leadsByStage, 
+    onDragStart, 
+    onDragOver, 
+    onDrop, 
+    onStageUpdate 
+  }: {
+    pipelineStages: { id: string; name: string }[];
+    leadsByStage: Record<string, any[]>; // Explicitamente tipando para resolver o erro
+    onDragStart: (e: React.DragEvent, lead: any) => void;
+    onDragOver: (e: React.DragEvent) => void;
+    onDrop: (e: React.DragEvent, stageId: string) => void;
+    onStageUpdate: (leadId: string, stageId: string) => void;
+  }) => (
     <div data-testid="pipeline-board">
       <div>Total stages: {pipelineStages.length}</div>
       <div data-testid="total-leads">Total leads: {
-        Object.values(leadsByStage).reduce((acc: number, stageLeads: any[]) => acc + stageLeads.length, 0)
+        Object.values(leadsByStage).reduce((acc, stageLeads) => acc + stageLeads.length, 0)
       }</div>
       {pipelineStages.map((stage) => (
         <div 
@@ -189,4 +202,3 @@ describe('Pipeline Page', () => {
     expect(mockUsePipelineDataReturn.updateLeadStage).toHaveBeenCalledWith('1', '3');
   });
 });
-
