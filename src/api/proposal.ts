@@ -1,6 +1,6 @@
 
 import axios from "axios";
-import { Proposal } from "@/types";
+import { Proposal, ProposalStatus, PT_BR_TO_PROPOSAL_STATUS } from "@/types";
 import { toast } from "@/hooks/use-toast";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
@@ -16,6 +16,11 @@ export const getProposal = (id: string): Promise<Proposal> =>
 
 export const updateProposal = (id: string, data: Partial<Proposal>): Promise<Proposal> => 
   api.put(`/proposals/${id}`, data).then(r => r.data);
+
+// Helper function to convert old PT status to new English status
+const convertPtStatusToEnglish = (ptStatus: string): ProposalStatus => {
+  return PT_BR_TO_PROPOSAL_STATUS[ptStatus as keyof typeof PT_BR_TO_PROPOSAL_STATUS] || "draft";
+};
 
 // Mock para desenvolvimento
 const mockGetProposal = (id: string): Promise<Proposal> => {
@@ -85,7 +90,8 @@ const mockProposals: Proposal[] = [
     value: 15000,
     createdAt: "2023-04-10T15:30:00Z",
     expiresAt: "2023-05-10T23:59:59Z",
-    status: "enviada",
+    status: "sent",
+    serviceType: "private_office",
     products: [
       { id: "p1", name: "Implantação ERP", quantity: 1, unitPrice: 10000, total: 10000 },
       { id: "p2", name: "Treinamento", quantity: 5, unitPrice: 1000, total: 5000 }
@@ -98,7 +104,8 @@ const mockProposals: Proposal[] = [
     value: 8500,
     createdAt: "2023-04-12T10:15:00Z",
     expiresAt: "2023-05-12T23:59:59Z",
-    status: "visualizada",
+    status: "viewed",
+    serviceType: "flex_desk",
     products: [
       { id: "p3", name: "Diagnóstico Empresarial", quantity: 1, unitPrice: 3500, total: 3500 },
       { id: "p4", name: "Plano de Ação", quantity: 1, unitPrice: 5000, total: 5000 }
@@ -111,7 +118,8 @@ const mockProposals: Proposal[] = [
     value: 12000,
     createdAt: "2023-04-15T09:00:00Z",
     expiresAt: "2023-05-15T23:59:59Z",
-    status: "aceita",
+    status: "accepted",
+    serviceType: "fiscal_address",
     products: [
       { id: "p5", name: "Design UX/UI", quantity: 1, unitPrice: 4000, total: 4000 },
       { id: "p6", name: "Desenvolvimento Frontend", quantity: 1, unitPrice: 5000, total: 5000 },
@@ -125,7 +133,8 @@ const mockProposals: Proposal[] = [
     value: 6500,
     createdAt: "2023-04-18T14:20:00Z",
     expiresAt: "2023-05-18T23:59:59Z",
-    status: "rejeitada",
+    status: "rejected",
+    serviceType: "meeting_room",
     products: [
       { id: "p8", name: "Análise de Mercado", quantity: 1, unitPrice: 2000, total: 2000 },
       { id: "p9", name: "Estratégia de Conteúdo", quantity: 1, unitPrice: 1500, total: 1500 },
@@ -139,7 +148,8 @@ const mockProposals: Proposal[] = [
     value: 9600,
     createdAt: "2023-04-20T11:30:00Z",
     expiresAt: "2023-05-20T23:59:59Z",
-    status: "em_negociacao",
+    status: "negotiating",
+    serviceType: "fixed_desk",
     products: [
       { id: "p11", name: "Hospedagem em Cloud", quantity: 12, unitPrice: 500, total: 6000 },
       { id: "p12", name: "Suporte Técnico", quantity: 12, unitPrice: 300, total: 3600 }

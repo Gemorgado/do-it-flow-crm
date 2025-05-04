@@ -3,6 +3,8 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Client, ServiceType } from "@/types";
 import { FileText, MessageSquare, MoreHorizontal, Mail, Phone, Building, Briefcase, MapPin, Calendar, Edit } from "lucide-react";
+import { SERVICE_DISPLAY_LABELS } from "@/types/service";
+import { CLIENT_STATUS_DISPLAY_LABELS } from "@/types/client";
 
 interface ClientRowProps {
   client: Client;
@@ -12,10 +14,10 @@ interface ClientRowProps {
 export function ClientRow({ client, onEdit }: ClientRowProps) {
   function getStatusColor(status: Client["status"]): string {
     switch (status) {
-      case "ativo": return "bg-green-100 text-green-800";
-      case "inativo": return "bg-gray-100 text-gray-800";
-      case "inadimplente": return "bg-red-100 text-red-800";
-      case "cancelado": return "bg-red-100 text-red-800";
+      case "active": return "bg-green-100 text-green-800";
+      case "inactive": return "bg-gray-100 text-gray-800";
+      case "delinquent": return "bg-red-100 text-red-800";
+      case "canceled": return "bg-red-100 text-red-800";
       default: return "bg-gray-100 text-gray-800";
     }
   }
@@ -33,18 +35,11 @@ export function ClientRow({ client, onEdit }: ClientRowProps) {
 
   const getServiceTypeName = (type?: ServiceType): string => {
     if (!type) return "-";
-    switch (type) {
-      case "endereco_fiscal": return "Endereço Fiscal";
-      case "estacao_flex": return "Estação Flex";
-      case "estacao_fixa": return "Estação Fixa";
-      case "sala_privativa": return "Sala Privativa";
-      case "sala_reuniao": return "Sala de Reunião";
-      case "auditorio": return "Auditório";
-      default: return "-";
-    }
+    return SERVICE_DISPLAY_LABELS[type] || "-";
   };
 
-  const activeStatus = client.isActive === false ? "inativo" : client.status;
+  const activeStatus = client.isActive === false ? "inactive" : client.status;
+  const statusLabel = activeStatus ? CLIENT_STATUS_DISPLAY_LABELS[activeStatus] : "";
 
   return (
     <tr className="border-b hover:bg-gray-50">
@@ -69,7 +64,7 @@ export function ClientRow({ client, onEdit }: ClientRowProps) {
       </td>
       <td className="p-3">
         <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(activeStatus)}`}>
-          {client.isActive === false ? "Inativo" : activeStatus.charAt(0).toUpperCase() + activeStatus.slice(1)}
+          {client.isActive === false ? "Inativo" : statusLabel}
         </span>
       </td>
       <td className="p-3">

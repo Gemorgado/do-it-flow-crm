@@ -1,9 +1,12 @@
+
 import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Plus, FileText, Edit, Trash2, AlertCircle } from "lucide-react";
 import { ClientService, ServiceType, ServiceStatus } from "@/types";
+import { SERVICE_DISPLAY_LABELS } from "@/types/service";
+import { SERVICE_STATUS_TO_PT_BR } from "@/types/client";
 
 interface ClientServicesProps {
   services: ClientService[];
@@ -21,24 +24,16 @@ export function ClientServices({
   const [expandedServiceId, setExpandedServiceId] = useState<string | null>(null);
 
   const getServiceTypeName = (type: ServiceType): string => {
-    switch (type) {
-      case "sala_privativa": return "Sala Privativa";
-      case "estacao_flex": return "Estação Flex";
-      case "estacao_fixa": return "Estação Fixa";
-      case "endereco_fiscal": return "Endereço Fiscal";
-      case "sala_reuniao": return "Sala de Reunião";
-      case "auditorio": return "Auditório";
-      default: return "Desconhecido";
-    }
+    return SERVICE_DISPLAY_LABELS[type] || "Desconhecido";
   };
   
   const getStatusBadge = (status: ServiceStatus) => {
     switch (status) {
-      case "ativo":
+      case "active":
         return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Ativo</Badge>;
-      case "em_renovacao":
+      case "renewal":
         return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">Em Renovação</Badge>;
-      case "cancelado":
+      case "canceled":
         return <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">Cancelado</Badge>;
       default:
         return <Badge variant="outline">Desconhecido</Badge>;
@@ -118,7 +113,7 @@ export function ClientServices({
                     <div className="flex flex-col">
                       <span>{formatCurrency(service.value)}</span>
                       <span className="text-xs text-gray-500">
-                        {service.billingCycle === "mensal" ? "Mensal" : "Anual"}
+                        {service.billingCycle === "monthly" ? "Mensal" : "Anual"}
                       </span>
                     </div>
                   </TableCell>

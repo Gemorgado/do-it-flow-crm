@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { useState, useEffect } from "react";
 import { useGetProposal, useUpdateProposal } from "@/api/proposal";
-import { Proposal } from "@/types";
+import { Proposal, ProposalStatus, PROPOSAL_STATUS_VALUES, PROPOSAL_STATUS_DISPLAY_LABELS } from "@/types";
 
 interface ProposalEditDialogProps {
   open: boolean;
@@ -21,7 +21,7 @@ export function ProposalEditDialog({ open, id, onClose }: ProposalEditDialogProp
   const [formData, setFormData] = useState<Partial<Proposal>>({
     title: "",
     value: 0,
-    status: "enviada",
+    status: "draft",
     expiresAt: ""
   });
 
@@ -30,7 +30,7 @@ export function ProposalEditDialog({ open, id, onClose }: ProposalEditDialogProp
       setFormData({
         title: proposal.title,
         value: proposal.value,
-        status: proposal.status,
+        status: proposal.status as ProposalStatus,
         expiresAt: proposal.expiresAt
       });
     }
@@ -82,19 +82,18 @@ export function ProposalEditDialog({ open, id, onClose }: ProposalEditDialogProp
             <div className="grid gap-2">
               <Label htmlFor="status">Status</Label>
               <Select 
-                value={formData.status} 
-                onValueChange={(value) => handleChange("status", value as Proposal["status"])}
+                value={formData.status as string} 
+                onValueChange={(value) => handleChange("status", value as ProposalStatus)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione o status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="enviada">Enviada</SelectItem>
-                  <SelectItem value="visualizada">Visualizada</SelectItem>
-                  <SelectItem value="aceita">Aceita</SelectItem>
-                  <SelectItem value="rejeitada">Rejeitada</SelectItem>
-                  <SelectItem value="expirada">Expirada</SelectItem>
-                  <SelectItem value="em_negociacao">Em Negociação</SelectItem>
+                  {PROPOSAL_STATUS_VALUES.map((status) => (
+                    <SelectItem key={status} value={status}>
+                      {PROPOSAL_STATUS_DISPLAY_LABELS[status]}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

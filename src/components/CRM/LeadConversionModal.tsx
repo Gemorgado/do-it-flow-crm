@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Lead, ServiceType } from "@/types";
 import { useLeadToClientConversion } from "@/hooks/useLeadToClientConversion";
-import { SERVICE_VALUES } from "@/types/service";
+import { SERVICE_VALUES, SERVICE_DISPLAY_LABELS } from "@/types/service";
 
 interface LeadConversionModalProps {
   lead: Lead | null;
@@ -101,12 +101,7 @@ export function LeadConversionModal({ lead, isOpen, onClose }: LeadConversionMod
                       <SelectItem value="">Sem serviço</SelectItem>
                       {SERVICE_VALUES.map((service) => (
                         <SelectItem key={service} value={service}>
-                          {service === "endereco_fiscal" && "Endereço Fiscal"}
-                          {service === "estacao_flex" && "Estação Flexível"}
-                          {service === "estacao_fixa" && "Estação Fixa"}
-                          {service === "sala_privativa" && "Sala Privativa"}
-                          {service === "sala_reuniao" && "Sala de Reunião"}
-                          {service === "auditorio" && "Auditório"}
+                          {SERVICE_DISPLAY_LABELS[service]}
                         </SelectItem>
                       ))}
                     </SelectContent>

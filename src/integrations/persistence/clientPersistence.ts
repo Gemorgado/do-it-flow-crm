@@ -3,10 +3,13 @@
 import { Client, ClientService, ServiceType, ServiceStatus, BillingCycle } from "@/types";
 import { 
   PT_BR_TO_CLIENT_STATUS, CLIENT_STATUS_TO_PT_BR,
-  PT_BR_TO_SERVICE_TYPE, SERVICE_TYPE_TO_PT_BR,
-  PT_BR_TO_BILLING_CYCLE, BILLING_CYCLE_TO_PT_BR,
-  PT_BR_TO_SERVICE_STATUS, SERVICE_STATUS_TO_PT_BR
+  PT_BR_TO_SERVICE_STATUS, SERVICE_STATUS_TO_PT_BR,
+  PT_BR_TO_BILLING_CYCLE, BILLING_CYCLE_TO_PT_BR
 } from "@/types/client";
+import { 
+  PT_BR_TO_SERVICE_TYPE, 
+  SERVICE_TYPE_TO_PT_BR 
+} from "@/types/service";
 import { supabase } from '../supabase/client';
 import { v4 as uuidv4 } from 'uuid';
 

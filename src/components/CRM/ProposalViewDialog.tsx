@@ -1,6 +1,6 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Proposal } from "@/types";
+import { Proposal, ProposalStatus, PROPOSAL_STATUS_DISPLAY_LABELS } from "@/types";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useGetProposal } from "@/api/proposal";
@@ -33,28 +33,16 @@ export function ProposalViewDialog({ open, id, onClose }: ProposalViewDialogProp
     }
   }
 
-  // Função para obter o label do status
-  function getStatusLabel(status: Proposal["status"]): string {
-    switch (status) {
-      case "enviada": return "Enviada";
-      case "visualizada": return "Visualizada";
-      case "aceita": return "Aceita";
-      case "rejeitada": return "Rejeitada";
-      case "expirada": return "Expirada";
-      case "em_negociacao": return "Em Negociação";
-      default: return "Desconhecido";
-    }
-  }
-
   // Função para obter cor do status
-  function getStatusColor(status: Proposal["status"]): string {
+  function getStatusColor(status: ProposalStatus): string {
     switch (status) {
-      case "enviada": return "bg-blue-100 text-blue-800";
-      case "visualizada": return "bg-purple-100 text-purple-800";
-      case "aceita": return "bg-green-100 text-green-800";
-      case "rejeitada": return "bg-red-100 text-red-800";
-      case "expirada": return "bg-gray-100 text-gray-800";
-      case "em_negociacao": return "bg-amber-100 text-amber-800";
+      case "sent": return "bg-blue-100 text-blue-800";
+      case "viewed": return "bg-purple-100 text-purple-800";
+      case "accepted": return "bg-green-100 text-green-800";
+      case "rejected": return "bg-red-100 text-red-800";
+      case "expired": return "bg-gray-100 text-gray-800";
+      case "negotiating": return "bg-amber-100 text-amber-800";
+      case "draft": return "bg-gray-100 text-gray-800";
       default: return "bg-gray-100 text-gray-800";
     }
   }
@@ -89,8 +77,8 @@ export function ProposalViewDialog({ open, id, onClose }: ProposalViewDialogProp
               </div>
               <div>
                 <h4 className="text-sm font-medium text-gray-500">Status</h4>
-                <Badge className={`${getStatusColor(proposal.status)}`}>
-                  {getStatusLabel(proposal.status)}
+                <Badge className={`${getStatusColor(proposal.status as ProposalStatus)}`}>
+                  {PROPOSAL_STATUS_DISPLAY_LABELS[proposal.status as ProposalStatus]}
                 </Badge>
               </div>
             </div>
@@ -108,7 +96,7 @@ export function ProposalViewDialog({ open, id, onClose }: ProposalViewDialogProp
                     </tr>
                   </thead>
                   <tbody>
-                    {proposal.products.map((product) => (
+                    {proposal.products?.map((product) => (
                       <tr key={product.id} className="border-t">
                         <td className="py-2 px-4">{product.name}</td>
                         <td className="py-2 px-4 text-center">{product.quantity}</td>
