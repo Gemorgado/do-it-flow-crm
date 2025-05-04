@@ -1,19 +1,9 @@
+
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@/test/utils';
 import Pipeline from '@/pages/Pipeline';
-import userEvent from '@testing-library/user-event';
 import { usePipelineData } from '@/hooks/usePipelineData';
 import { leads, pipelineStages } from '@/data/leadsData';
-import React from 'react'; // Add React import for ReactNode type
-
-// DIAGNOSTIC BEFORE FIX:
-// vi.mock('@/components/Pipeline/PipelineBoard', () => ({
-//   PipelineBoard: ({ pipelineStages, leadsByStage, onDragStart, onDragOver, onDrop, onStageUpdate }) => (
-//     <div data-testid="pipeline-board">
-//       <div>Total stages: {pipelineStages.length}</div>
-//       <div data-testid="total-leads">Total leads: {
-//         Object.values(leadsByStage).reduce((acc, stageLeads) => acc + stageLeads.length, 0)
-//       }</div>
 
 // Mock dependencies
 vi.mock('@/hooks/usePipelineData', () => ({
@@ -55,13 +45,6 @@ vi.mock('@/components/Pipeline/PipelineBoard', () => ({
     onDragOver, 
     onDrop, 
     onStageUpdate 
-  }: {
-    pipelineStages: { id: string; name: string }[];
-    leadsByStage: Record<string, any[]>; // Explicitamente tipando para resolver o erro
-    onDragStart: (e: React.DragEvent, lead: any) => void;
-    onDragOver: (e: React.DragEvent) => void;
-    onDrop: (e: React.DragEvent, stageId: string) => void;
-    onStageUpdate: (leadId: string, stageId: string) => void;
   }) => (
     <div data-testid="pipeline-board">
       <div>Total stages: {pipelineStages.length}</div>
@@ -77,7 +60,7 @@ vi.mock('@/components/Pipeline/PipelineBoard', () => ({
         >
           <h3>{stage.name} ({leadsByStage[stage.id]?.length || 0})</h3>
           <div>
-            {leadsByStage[stage.id]?.map((lead: any) => (
+            {leadsByStage[stage.id]?.map((lead) => (
               <div 
                 key={lead.id}
                 data-testid={`lead-${lead.id}`}
@@ -95,7 +78,7 @@ vi.mock('@/components/Pipeline/PipelineBoard', () => ({
   )
 }));
 
-describe('Pipeline Page', () => {
+describe('Pipeline Page Rendering', () => {
   // Mock return value for usePipelineData
   const mockUsePipelineDataReturn = {
     leadsByStage: {
@@ -111,7 +94,8 @@ describe('Pipeline Page', () => {
     handleDrop: vi.fn(),
     handleSearchLeads: vi.fn(),
     handleFilterByUser: vi.fn(),
-    updateLeadStage: vi.fn()
+    updateLeadStage: vi.fn(),
+    addLeadToPipeline: vi.fn()
   };
   
   beforeEach(() => {
@@ -166,39 +150,5 @@ describe('Pipeline Page', () => {
     const [calledLeads, calledStages] = (usePipelineData as jest.Mock).mock.calls[0];
     expect(calledLeads.length).toBe(3); // We stored 3 leads
     expect(calledStages.length).toBe(3); // We stored 3 stages
-  });
-  
-  it('handles searching for leads', async () => {
-    render(<Pipeline />);
-    
-    // Find search input and type in it
-    const searchInput = screen.getByTestId('search-input');
-    await userEvent.type(searchInput, 'test search');
-    
-    // Check that handleSearchLeads was called
-    expect(mockUsePipelineDataReturn.handleSearchLeads).toHaveBeenCalled();
-  });
-  
-  it('handles filtering by user', async () => {
-    render(<Pipeline />);
-    
-    // Find user filter and select an option
-    const userFilter = screen.getByTestId('user-filter');
-    await userEvent.selectOptions(userFilter, 'user1');
-    
-    // Check that handleFilterByUser was called with the correct value
-    expect(mockUsePipelineDataReturn.handleFilterByUser).toHaveBeenCalledWith('user1');
-  });
-  
-  // Business Rule 2: Pipeline → Proposal test
-  it('moves lead to different stage when clicked', async () => {
-    render(<Pipeline />);
-    
-    // Find a lead element and click it
-    const lead = screen.getByTestId('lead-1');
-    await userEvent.click(lead);
-    
-    // Check that updateLeadStage was called with the correct parameters
-    expect(mockUsePipelineDataReturn.updateLeadStage).toHaveBeenCalledWith('1', '3');
   });
 });
