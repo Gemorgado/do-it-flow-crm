@@ -2,24 +2,7 @@
 import { store, saveToStorage } from "./store";
 import { v4 as uuidv4 } from "uuid";
 import { ContactModalValues } from "@/schemas/contactFormSchemas";
-import { Lead } from "@/types";
-import { pipelineStages } from "@/data/leadsData";
-
-// Interface para o objeto de contato no armazenamento
-interface Contact {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  company?: string;
-  idNumber?: string;
-  entryDate: string;
-  interestService?: string;
-  sourceCategory: "indicacao" | "rede_social" | "outro";
-  sourceDetail?: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import { Contact } from "@/types/contact";
 
 // Inicializar o armazenamento de contatos se ainda não existir
 if (!store.contacts) {
@@ -52,29 +35,9 @@ export const contactPersistence = {
       updatedAt: now
     };
     
+    console.log("Creating new contact:", contact);
+    
     store.contacts.push(contact);
-    saveToStorage();
-    
-    // SEMPRE criar um lead associado ao contato para o pipeline
-    const lead: Lead = {
-      id: uuidv4(),
-      name: contact.name,
-      company: contact.company || "",
-      email: contact.email,
-      phone: contact.phone,
-      status: "novo",
-      source: mapSourceCategoryToLeadSource(contact.sourceCategory),
-      createdAt: now,
-      updatedAt: now,
-      stage: pipelineStages[0],
-      notes: contact.interestService || ""
-    };
-    
-    // Adicionar o novo lead ao store.leads
-    if (!store.leads) {
-      store.leads = [];
-    }
-    store.leads.push(lead);
     saveToStorage();
     
     return Promise.resolve(contact);
@@ -97,16 +60,3 @@ export const contactPersistence = {
     return Promise.resolve();
   }
 };
-
-// Função auxiliar para mapear a categoria de origem para o tipo de origem do lead
-function mapSourceCategoryToLeadSource(sourceCategory: "indicacao" | "rede_social" | "outro"): any {
-  switch (sourceCategory) {
-    case "indicacao":
-      return "indicacao";
-    case "rede_social":
-      return "instagram"; // Mapeando para um valor existente em LeadSource
-    case "outro":
-    default:
-      return "outros";
-  }
-}
