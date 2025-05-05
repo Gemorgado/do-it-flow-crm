@@ -51,8 +51,15 @@ export function useSpaceBindingActions({
       return;
     }
     
+    if (!startDate) {
+      toast.error("Dados incompletos", {
+        description: "Data de início é obrigatória"
+      });
+      return;
+    }
+    
     const binding: SpaceBinding = {
-      id: uuidv4(), // Adding required ID property
+      id: uuidv4(),
       spaceId: space.id,
       clientId: selectedClientId,
       contractId: contractId,
@@ -79,6 +86,6 @@ export function useSpaceBindingActions({
     bindSpace,
     unbindSpace,
     // Helper to determine if form can be saved
-    canSave: !!space && !!selectedClientId && !!contractId
+    canSave: !!space && !!selectedClientId && !!contractId && !!startDate
   };
 }

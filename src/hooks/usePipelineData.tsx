@@ -4,6 +4,7 @@ import { Lead, PipelineStage } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
 import { persistence } from '@/integrations/persistence';
 import { toast } from 'sonner';
+import { trackLeadEvent } from '@/utils/trackingUtils';
 
 // Convert Supabase lead format to application format
 const mapLeadFromSupabase = (lead: any, stages: Record<string, PipelineStage>): Lead => {
@@ -35,6 +36,7 @@ export const usePipelineData = (initialLeads: Lead[] = [], initialStages: Pipeli
   const [userFilter, setUserFilter] = useState('all');
   const [isLoading, setIsLoading] = useState(true);
   const [draggedLead, setDraggedLead] = useState<Lead | null>(null);
+  const [stagesLookup, setStagesLookup] = useState<Record<string, PipelineStage>>({});
   
   // Compute leads by stage
   const leadsByStage = pipelineStages.reduce<Record<string, Lead[]>>((acc, stage) => {
@@ -70,6 +72,13 @@ export const usePipelineData = (initialLeads: Lead[] = [], initialStages: Pipeli
         
         setPipelineStages(stages);
         
+        // Create a stages lookup object for efficient access
+        const stageLookup: Record<string, PipelineStage> = {};
+        stages.forEach(stage => {
+          stageLookup[stage.id] = stage;
+        });
+        setStagesLookup(stageLookup);
+        
         // Fetch leads
         const { data: leadsData, error: leadsError } = await supabase
           .from('leads')
@@ -78,15 +87,15 @@ export const usePipelineData = (initialLeads: Lead[] = [], initialStages: Pipeli
           
         if (leadsError) throw leadsError;
         
-        // Create a stages lookup object
-        const stagesLookup: Record<string, PipelineStage> = {};
-        stages.forEach(stage => {
-          stagesLookup[stage.id] = stage;
-        });
-        
-        const mappedLeads = leadsData.map(lead => mapLeadFromSupabase(lead, stagesLookup));
+        const mappedLeads = leadsData.map(lead => mapLeadFromSupabase(lead, stageLookup));
         setLeads(mappedLeads);
         setFilteredLeads(mappedLeads);
+
+        // Track view event
+        trackLeadEvent('pipeline_view', {
+          leads_count: mappedLeads.length,
+          page_name: 'Pipeline de Vendas'
+        });
       } catch (error) {
         console.error('Error loading pipeline data:', error);
         toast.error('Failed to load pipeline data');
@@ -97,22 +106,84 @@ export const usePipelineData = (initialLeads: Lead[] = [], initialStages: Pipeli
     
     loadData();
     
-    // Subscribe to changes using Supabase realtime
+    // Subscribe to changes using Supabase realtime with optimized updates
     const pipelineChannel = supabase.channel('pipeline_changes')
       .on('postgres_changes', 
-        { event: '*', schema: 'public', table: 'leads' },
+        { event: 'INSERT', schema: 'public', table: 'leads' },
         payload => {
-          console.log('Lead change received:', payload);
-          // Reload data when any lead changes
-          loadData();
+          console.log('Lead inserted:', payload);
+          // Add the new lead to our state
+          const newLead = mapLeadFromSupabase(payload.new, stagesLookup);
+          setLeads(currentLeads => [...currentLeads, newLead]);
+        }
+      )
+      .on('postgres_changes', 
+        { event: 'UPDATE', schema: 'public', table: 'leads' },
+        payload => {
+          console.log('Lead updated:', payload);
+          // Update the specific lead in our state
+          const updatedLead = mapLeadFromSupabase(payload.new, stagesLookup);
+          setLeads(currentLeads => 
+            currentLeads.map(lead => 
+              lead.id === updatedLead.id ? updatedLead : lead
+            )
+          );
+        }
+      )
+      .on('postgres_changes', 
+        { event: 'DELETE', schema: 'public', table: 'leads' },
+        payload => {
+          console.log('Lead deleted:', payload);
+          // Remove the lead from our state
+          setLeads(currentLeads => 
+            currentLeads.filter(lead => lead.id !== payload.old.id)
+          );
         }
       )
       .on('postgres_changes',
-        { event: '*', schema: 'public', table: 'pipeline_stages' },
+        { event: 'INSERT', schema: 'public', table: 'pipeline_stages' },
         payload => {
-          console.log('Stage change received:', payload);
-          // Reload data when any stage changes
-          loadData();
+          console.log('Pipeline stage inserted:', payload);
+          const newStage = {
+            id: payload.new.id,
+            name: payload.new.name,
+            order: payload.new.order_number,
+            color: payload.new.color
+          };
+          setPipelineStages(currentStages => [...currentStages, newStage]);
+          setStagesLookup(current => ({...current, [newStage.id]: newStage}));
+        }
+      )
+      .on('postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'pipeline_stages' },
+        payload => {
+          console.log('Pipeline stage updated:', payload);
+          const updatedStage = {
+            id: payload.new.id,
+            name: payload.new.name,
+            order: payload.new.order_number,
+            color: payload.new.color
+          };
+          setPipelineStages(currentStages => 
+            currentStages.map(stage => 
+              stage.id === updatedStage.id ? updatedStage : stage
+            )
+          );
+          setStagesLookup(current => ({...current, [updatedStage.id]: updatedStage}));
+        }
+      )
+      .on('postgres_changes',
+        { event: 'DELETE', schema: 'public', table: 'pipeline_stages' },
+        payload => {
+          console.log('Pipeline stage deleted:', payload);
+          setPipelineStages(currentStages => 
+            currentStages.filter(stage => stage.id !== payload.old.id)
+          );
+          setStagesLookup(current => {
+            const updated = {...current};
+            delete updated[payload.old.id];
+            return updated;
+          });
         }
       )
       .subscribe();
@@ -197,14 +268,29 @@ export const usePipelineData = (initialLeads: Lead[] = [], initialStages: Pipeli
         
       if (error) throw error;
       
-      // No need to update local state as the realtime subscription will handle it
+      // For optimistic updates, we also update local state
+      // This prevents UI lag while waiting for the realtime update
+      setLeads(currentLeads => 
+        currentLeads.map(lead => {
+          if (lead.id === leadId) {
+            const updatedStage = stagesLookup[stageId];
+            return {
+              ...lead,
+              stage: updatedStage,
+              updatedAt: new Date().toISOString()
+            };
+          }
+          return lead;
+        })
+      );
+      
       toast.success('Lead stage updated');
       
     } catch (error) {
       console.error('Error updating lead stage:', error);
       toast.error('Failed to update lead stage');
     }
-  }, []);
+  }, [stagesLookup]);
 
   // Handle search
   const handleSearchLeads = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -227,7 +313,9 @@ export const usePipelineData = (initialLeads: Lead[] = [], initialStages: Pipeli
       
       const createdLead = await persistence.createLead(lead);
       
-      // No need to update local state as the realtime subscription will handle it
+      // Optimistic update for immediate UI feedback
+      setLeads(currentLeads => [...currentLeads, {...lead, id: createdLead.id}]);
+      
       toast.success('Lead added to pipeline');
       
       return createdLead;

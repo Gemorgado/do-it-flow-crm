@@ -1,128 +1,146 @@
 
-import { LeadStatus, LeadSource } from '@/types/lead';
-import { ServiceType } from '@/types/service';
-import { ProposalStatus } from '@/types/proposal';
-import { BillingCycle, ClientStatus, ServiceStatus } from '@/types/client';
+import { LeadSource, LeadStatus } from '@/types/lead';
+import { ServiceType, PT_BR_TO_SERVICE_TYPE, SERVICE_VALUES } from '@/types/service';
+import { ProposalStatus, PT_BR_TO_PROPOSAL_STATUS, PROPOSAL_STATUS_VALUES } from '@/types/proposal';
+import { 
+  ClientStatus, 
+  SERVICE_STATUS_VALUES, 
+  BillingCycle,
+  ServiceStatus,
+  PT_BR_TO_CLIENT_STATUS,
+  PT_BR_TO_BILLING_CYCLE,
+  PT_BR_TO_SERVICE_STATUS,
+  CLIENT_STATUS_VALUES,
+  BILLING_CYCLE_VALUES
+} from '@/types/client';
 
-// Service Type mappings
-export const toServiceType = (raw: string): ServiceType => {
-  const map: Record<string, ServiceType> = {
-    endereco_fiscal: 'fiscal_address',
-    estacao_flex: 'flex_desk',
-    estacao_fixa: 'fixed_desk',
-    sala_privativa: 'private_office',
-    sala_reuniao: 'meeting_room',
-    auditorio: 'auditorium',
-  };
-  return (map[raw] || raw) as ServiceType;
-};
+/**
+ * Converts any service type value to the correct enum value
+ * Handles both English and Portuguese legacy values
+ */
+export function toServiceType(value: string | undefined | null): ServiceType {
+  if (!value) return 'private_office'; // Default value
+  
+  // If it's already a valid service type, return it
+  if (SERVICE_VALUES.includes(value as ServiceType)) {
+    return value as ServiceType;
+  }
+  
+  // Check if it's a legacy Portuguese value
+  const mapped = PT_BR_TO_SERVICE_TYPE[value];
+  if (mapped) {
+    return mapped;
+  }
+  
+  // Return default if nothing found
+  console.warn(`Unknown service type value: ${value}. Using default.`);
+  return 'private_office';
+}
 
-// Lead Status mappings
-export const toLeadStatus = (raw: string): LeadStatus => {
-  const map: Record<string, LeadStatus> = {
-    novo: 'novo',
-    contatado: 'contatado',
-    qualificado: 'qualificado',
-    proposta: 'proposta',
-    'negociação': 'negociação',
-    fechado: 'fechado',
-    perdido: 'perdido',
-    convertido: 'novo', // Map to existing value
-    // Map English values from the database to Portuguese types
-    new: 'novo',
-    contacted: 'contatado',
-    qualified: 'qualificado',
-    proposal: 'proposta',
-    negotiation: 'negociação',
-    closed_won: 'fechado',
-    closed_lost: 'perdido',
-    converted: 'novo' // Map to existing value
-  };
-  return (map[raw] || raw) as LeadStatus;
-};
+/**
+ * Converts any proposal status value to the correct enum value
+ * Handles both English and Portuguese legacy values
+ */
+export function toProposalStatus(value: string | undefined | null): ProposalStatus {
+  if (!value) return 'draft'; // Default value
+  
+  // If it's already a valid proposal status, return it
+  if (PROPOSAL_STATUS_VALUES.includes(value as ProposalStatus)) {
+    return value as ProposalStatus;
+  }
+  
+  // Check if it's a legacy Portuguese value
+  const mapped = PT_BR_TO_PROPOSAL_STATUS[value];
+  if (mapped) {
+    return mapped;
+  }
+  
+  // Return default if nothing found
+  console.warn(`Unknown proposal status value: ${value}. Using default.`);
+  return 'draft';
+}
 
-// Lead Source mappings
-export const toLeadSource = (raw: string): LeadSource => {
-  const map: Record<string, LeadSource> = {
-    site_organico: 'site_organico',
-    google_ads: 'google_ads',
-    meta_ads: 'meta_ads',
-    instagram: 'instagram',
-    indicacao: 'indicacao',
-    visita_presencial: 'visita_presencial',
-    eventos: 'eventos',
-    outros: 'outros',
-    // Map English values from the database to Portuguese types
-    site_organic: 'site_organico',
-    referral: 'indicacao',
-    in_person_visit: 'visita_presencial',
-    events: 'eventos',
-    other: 'outros'
-  };
-  return (map[raw] || raw) as LeadSource;
-};
+/**
+ * Converts any client status value to the correct enum value
+ * Handles both English and Portuguese legacy values
+ */
+export function toClientStatus(value: string | undefined | null): ClientStatus {
+  if (!value) return 'active'; // Default value
+  
+  // If it's already a valid client status, return it
+  if (CLIENT_STATUS_VALUES.includes(value as ClientStatus)) {
+    return value as ClientStatus;
+  }
+  
+  // Check if it's a legacy Portuguese value
+  const mapped = PT_BR_TO_CLIENT_STATUS[value];
+  if (mapped) {
+    return mapped;
+  }
+  
+  // Return default if nothing found
+  console.warn(`Unknown client status value: ${value}. Using default.`);
+  return 'active';
+}
 
-// Proposal Status mappings
-export const toProposalStatus = (raw: string): ProposalStatus => {
-  const map: Record<string, ProposalStatus> = {
-    // Convert Portuguese values to English keys defined in types
-    'enviada': 'sent',
-    'visualizada': 'viewed',
-    'aceita': 'accepted',
-    'rejeitada': 'rejected',
-    'expirada': 'expired',
-    'em_negociacao': 'negotiating',
-    'rascunho': 'draft',
-    // Map English values directly
-    'draft': 'draft',
-    'sent': 'sent',
-    'viewed': 'viewed',
-    'accepted': 'accepted',
-    'rejected': 'rejected',
-    'expired': 'expired',
-    'negotiating': 'negotiating'
-  };
-  return (map[raw] || raw) as ProposalStatus;
-};
+/**
+ * Converts any billing cycle value to the correct enum value
+ * Handles both English and Portuguese legacy values
+ */
+export function toBillingCycle(value: string | undefined | null): BillingCycle {
+  if (!value) return 'monthly'; // Default value
+  
+  // If it's already a valid billing cycle, return it
+  if (BILLING_CYCLE_VALUES.includes(value as BillingCycle)) {
+    return value as BillingCycle;
+  }
+  
+  // Check if it's a legacy Portuguese value
+  const mapped = PT_BR_TO_BILLING_CYCLE[value];
+  if (mapped) {
+    return mapped;
+  }
+  
+  // Return default if nothing found
+  console.warn(`Unknown billing cycle value: ${value}. Using default.`);
+  return 'monthly';
+}
 
-// Client Status mappings
-export const toClientStatus = (raw: string): ClientStatus => {
-  const map: Record<string, ClientStatus> = {
-    'ativo': 'active',
-    'inativo': 'inactive',
-    'inadimplente': 'delinquent',
-    'cancelado': 'canceled',
-    // Map English values directly
-    'active': 'active',
-    'inactive': 'inactive',
-    'delinquent': 'delinquent',
-    'canceled': 'canceled'
-  };
-  return (map[raw] || raw) as ClientStatus;
-};
+/**
+ * Converts any service status value to the correct enum value
+ * Handles both English and Portuguese legacy values
+ */
+export function toServiceStatus(value: string | undefined | null): ServiceStatus {
+  if (!value) return 'active'; // Default value
+  
+  // If it's already a valid service status, return it
+  if (SERVICE_STATUS_VALUES.includes(value as ServiceStatus)) {
+    return value as ServiceStatus;
+  }
+  
+  // Check if it's a legacy Portuguese value
+  const mapped = PT_BR_TO_SERVICE_STATUS[value];
+  if (mapped) {
+    return mapped;
+  }
+  
+  // Return default if nothing found
+  console.warn(`Unknown service status value: ${value}. Using default.`);
+  return 'active';
+}
 
-// Billing Cycle mappings
-export const toBillingCycle = (raw: string): BillingCycle => {
-  const map: Record<string, BillingCycle> = {
-    'mensal': 'monthly',
-    'anual': 'yearly',
-    // Map English values directly
-    'monthly': 'monthly',
-    'yearly': 'yearly'
-  };
-  return (map[raw] || raw) as BillingCycle;
-};
+/**
+ * Convert any lead source value to the correct enum value
+ */
+export function toLeadSource(value: string | undefined | null): LeadSource {
+  if (!value) return 'outros'; // Default value
+  return value as LeadSource; 
+}
 
-// Service Status mappings
-export const toServiceStatus = (raw: string): ServiceStatus => {
-  const map: Record<string, ServiceStatus> = {
-    'ativo': 'active',
-    'em_renovacao': 'renewal',
-    'cancelado': 'canceled',
-    // Map English values directly
-    'active': 'active',
-    'renewal': 'renewal',
-    'canceled': 'canceled'
-  };
-  return (map[raw] || raw) as ServiceStatus;
-};
+/**
+ * Convert any lead status value to the correct enum value
+ */
+export function toLeadStatus(value: string | undefined | null): LeadStatus {
+  if (!value) return 'novo'; // Default value
+  return value as LeadStatus;
+}
