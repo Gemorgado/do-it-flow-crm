@@ -1,5 +1,5 @@
 
-import { supabase } from '../../infra/supabase/client';
+import { supabase } from '../../integrations/supabase/client';
 import { Lead, NewLead } from '../../domain/models/Lead';
 import { LeadRepository } from '../../domain/repositories/LeadRepository';
 import { toDbLead, toDomainLead } from '../mappers/LeadMappers';

@@ -1,5 +1,5 @@
 
-import { supabase } from '../../infra/supabase/client';
+import { supabase } from '../../integrations/supabase/client';
 import { Client, NewClient, ClientService } from '../../domain/models/Client';
 import { ClientRepository } from '../../domain/repositories/ClientRepository';
 import { toDbClient, toDomainClient, toDbClientService, toDomainClientService } from '../mappers/ClientMappers';

@@ -1,5 +1,5 @@
 
-import { supabase } from '../../infra/supabase/client';
+import { supabase } from '../../integrations/supabase/client';
 import { SpaceAllocation, NewSpaceAllocation } from '../../domain/models/Allocation';
 import { AllocationRepository } from '../../domain/repositories/AllocationRepository';
 import { toDbAllocation, toDomainAllocation } from '../mappers/AllocationMappers';
