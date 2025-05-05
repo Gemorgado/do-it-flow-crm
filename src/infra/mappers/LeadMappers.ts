@@ -4,6 +4,9 @@ import { Lead, NewLead, LeadStatus, LeadSource, PipelineStage } from '../../doma
 // Define the database-specific source types
 type DbLeadSource = 'site_organic' | 'google_ads' | 'meta_ads' | 'instagram' | 'referral' | 'in_person_visit' | 'events' | 'other';
 
+// Define the database-specific status types
+type DbLeadStatus = 'new' | 'contacted' | 'qualified' | 'proposal' | 'negotiation' | 'converted' | 'closed_won' | 'closed_lost';
+
 // Map domain LeadSource values to database values
 const mapSourceToDB = (source: LeadSource): DbLeadSource => {
   const sourceMap: Record<LeadSource, DbLeadSource> = {
@@ -36,13 +39,45 @@ const mapSourceFromDB = (dbSource: string): LeadSource => {
   return sourceMap[dbSource] || 'other';
 };
 
+// Map domain LeadStatus values to database values
+const mapStatusToDB = (status: LeadStatus): DbLeadStatus => {
+  const statusMap: Record<LeadStatus, DbLeadStatus> = {
+    'new': 'new',
+    'contacted': 'contacted',
+    'qualified': 'qualified',
+    'proposal': 'proposal',
+    'negotiation': 'negotiation',
+    'won': 'closed_won',
+    'lost': 'closed_lost',
+    'converted': 'converted'
+  };
+  
+  return statusMap[status] || 'new';
+};
+
+// Map database status values to domain LeadStatus
+const mapStatusFromDB = (dbStatus: string): LeadStatus => {
+  const statusMap: Record<string, LeadStatus> = {
+    'new': 'new',
+    'contacted': 'contacted',
+    'qualified': 'qualified',
+    'proposal': 'proposal',
+    'negotiation': 'negotiation',
+    'closed_won': 'won',
+    'closed_lost': 'lost',
+    'converted': 'converted'
+  };
+  
+  return statusMap[dbStatus] || 'new';
+};
+
 export const toDbLead = (lead: NewLead) => {
   return {
     name: lead.name,
     company: lead.company,
     email: lead.email,
     phone: lead.phone,
-    status: lead.status,
+    status: mapStatusToDB(lead.status),
     source: mapSourceToDB(lead.source),
     source_detail: lead.sourceDetail,
     stage_id: lead.stageId,
@@ -62,7 +97,7 @@ export const toDomainLead = (dbLead: any): Lead => {
     company: dbLead.company || '',
     email: dbLead.email,
     phone: dbLead.phone || '',
-    status: dbLead.status as LeadStatus,
+    status: mapStatusFromDB(dbLead.status),
     source: mapSourceFromDB(dbLead.source),
     sourceDetail: dbLead.source_detail,
     createdAt: dbLead.created_at,
