@@ -1,35 +1,24 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react-hooks';
-import { useLeadToClientConversion } from '../useLeadToClientConversion';
-import { persistence } from '@/integrations/persistence';
-import { supabase } from '@/integrations/supabase/client';
+import { useLeadToClientConversion } from '@/presentation/hooks/useLeadToClientConversion';
 import { toast } from 'sonner';
-import { Lead } from '@/types';
+import { Lead } from '@/domain/models/Lead';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
+import { UseCaseFactory } from '@/usecases/factory/UseCaseFactory';
 
 // Mock dependencies
-vi.mock('@/integrations/persistence', () => ({
-  persistence: {
-    createClient: vi.fn().mockImplementation((client) => Promise.resolve({...client})),
-  }
-}));
-
-vi.mock('@/integrations/supabase/client', () => ({
-  supabase: {
-    from: vi.fn().mockReturnValue({
-      update: vi.fn().mockReturnValue({
-        eq: vi.fn().mockReturnValue(Promise.resolve({ error: null }))
-      })
-    })
-  }
-}));
-
 vi.mock('sonner', () => ({
   toast: {
     success: vi.fn(),
     error: vi.fn()
+  }
+}));
+
+vi.mock('@/usecases/factory/UseCaseFactory', () => ({
+  UseCaseFactory: {
+    getConvertLeadToClientUseCase: vi.fn()
   }
 }));
 
@@ -48,18 +37,41 @@ describe('useLeadToClientConversion Hook', () => {
     company: 'Test Company',
     email: 'test@example.com',
     phone: '123456789',
-    status: 'qualificado' as any,
-    source: 'site_organico' as any,
+    status: 'qualified' as any,
+    source: 'website_organic' as any,
     createdAt: '2023-01-10T12:00:00Z',
     updatedAt: '2023-01-12T12:00:00Z',
-    stage: { id: '1', name: 'Qualificado', order: 2, color: '#8b5cf6' },
+    stageId: '1',
+    stage: { id: '1', name: 'Qualified', order: 2, color: '#8b5cf6' },
     assignedTo: 'user1',
     notes: 'Test notes'
+  };
+
+  // Mock client result
+  const mockClient = {
+    id: 'client-1',
+    name: 'Test Lead',
+    email: 'test@example.com',
+    status: 'active',
+    services: [
+      {
+        type: 'fiscal_address',
+        value: 500000,
+        billingCycle: 'monthly',
+        status: 'active'
+      }
+    ]
+  };
+
+  // Mock use case
+  const mockConvertUseCase = {
+    execute: vi.fn().mockResolvedValue({ client: mockClient, success: true })
   };
 
   beforeEach(() => {
     vi.clearAllMocks();
     queryClient.clear();
+    vi.mocked(UseCaseFactory.getConvertLeadToClientUseCase).mockReturnValue(mockConvertUseCase as any);
   });
 
   it('converts a lead to client successfully', async () => {
@@ -74,25 +86,15 @@ describe('useLeadToClientConversion Hook', () => {
       convertedClient = await result.current.convertLeadToClient(mockLead, 'fiscal_address', 500000);
     });
     
-    // Assert: Check persistence.createClient was called with correct data
-    expect(persistence.createClient).toHaveBeenCalledTimes(1);
-    expect(persistence.createClient).toHaveBeenCalledWith(expect.objectContaining({
-      name: mockLead.name,
-      company: mockLead.company,
-      email: mockLead.email,
-      phone: mockLead.phone,
-      status: 'active',
-      assignedTo: mockLead.assignedTo,
-      notes: mockLead.notes
-    }));
-    
-    // Assert: Check supabase update was called to mark lead as converted
-    expect(supabase.from).toHaveBeenCalledWith('leads');
-    expect(supabase.from().update).toHaveBeenCalledWith(expect.objectContaining({
-      status: 'converted',
-      stage_id: null
-    }));
-    expect(supabase.from().update().eq).toHaveBeenCalledWith('id', mockLead.id);
+    // Assert: Check use case was called with the correct params
+    expect(UseCaseFactory.getConvertLeadToClientUseCase).toHaveBeenCalled();
+    expect(mockConvertUseCase.execute).toHaveBeenCalledWith(
+      'test-lead-id', 
+      expect.objectContaining({
+        serviceType: 'fiscal_address',
+        contractValue: 500000
+      })
+    );
     
     // Assert: Check success toast was shown with the correct message
     expect(toast.success).toHaveBeenCalledWith('Lead successfully converted to client');
@@ -118,8 +120,8 @@ describe('useLeadToClientConversion Hook', () => {
   });
 
   it('handles errors during conversion', async () => {
-    // Setup persistence to throw an error
-    vi.mocked(persistence.createClient).mockRejectedValueOnce(new Error('Database error'));
+    // Setup use case to throw an error
+    mockConvertUseCase.execute.mockRejectedValueOnce(new Error('Database error'));
     
     const { result } = renderHook(() => useLeadToClientConversion(), { wrapper });
     
