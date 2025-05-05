@@ -5,7 +5,7 @@ import { taskPersistence } from "./taskPersistence";
 import { interactionPersistence } from "./interactionPersistence";
 import { spacePersistence } from "./spacePersistence";
 import { snapshotPersistence } from "./snapshotPersistence";
-import { proposalPersistence } from "./proposalPersistence";
+import { proposalPersistence } from "./proposals";
 import { bindingPersistence } from "./bindingPersistence";
 import type { PersistenceAdapter } from "./types";
 

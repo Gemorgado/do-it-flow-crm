@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { LeadFormValues, ContactFormValues } from "@/types/crm";
 import { toast } from "sonner";
 import { Lead, PipelineStage, LeadSource } from "@/types";
-import { leadPersistence } from "@/integrations/persistence/leadPersistence";
+import { persistence } from "@/integrations/persistence";
 import { v4 as uuidv4 } from 'uuid';
 
 /**
@@ -61,7 +61,7 @@ export const useCreateLead = () => {
         };
         
         // Store the lead in persistence
-        await leadPersistence.createLead(newLead);
+        await persistence.createLead(newLead);
         
         return newLead;
       } catch (error) {

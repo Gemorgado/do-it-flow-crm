@@ -1,117 +1,86 @@
-
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import Pipeline from '@/pages/Pipeline';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { LeadModalProvider } from '@/components/CRM/hooks/useModalContext';
-import { toast } from 'sonner';
-import { leadPersistence } from '@/integrations/persistence/leadPersistence';
+import userEvent from '@testing-library/user-event';
+import { BrowserRouter } from 'react-router-dom';
+import Pipeline from '@/pages/Pipeline';
+import { mockedLeads, mockedPipelineStages } from './mocks/PipelineMocks';
+import { persistence } from '@/integrations/persistence';
 
-// Mock dependencies
-vi.mock('sonner', () => ({
-  toast: {
-    success: vi.fn(),
-    error: vi.fn()
-  }
-}));
+// Mock the persistence module
+vi.mock('@/integrations/persistence', () => {
+  const leads = [...mockedLeads]; // Create a mutable copy
+  
+  return {
+    persistence: {
+      listLeads: vi.fn(() => Promise.resolve(leads)),
+      updateLead: vi.fn((updatedLead) => {
+        const index = leads.findIndex(lead => lead.id === updatedLead.id);
+        if (index !== -1) {
+          leads[index] = updatedLead;
+        }
+        return Promise.resolve(updatedLead);
+      }),
+    },
+  };
+});
 
-vi.mock('@/integrations/persistence/leadPersistence', () => ({
-  leadPersistence: {
-    createLead: vi.fn().mockResolvedValue({}),
-    listLeads: vi.fn().mockResolvedValue([]),
-    updateLead: vi.fn().mockResolvedValue({})
-  }
-}));
-
-vi.mock('@/components/CRM/LeadForm', () => ({
-  LeadForm: ({ onSubmit }) => (
-    <form
-      data-testid="lead-form"
-      onSubmit={(e) => {
-        e.preventDefault();
-        onSubmit({
-          companyOrPerson: "Test Company",
-          idNumber: "123456789",
-          entryDate: new Date().toISOString(),
-          sourceCategory: "outro",
-          stageId: "1",
-          email: "test@example.com",
-          phone: "1234567890"
-        });
-      }}
-    >
-      <input type="text" placeholder="Company Name" />
-      <button type="submit" data-testid="submit-lead-form">
-        Submit
-      </button>
-    </form>
-  )
-}));
-
-const renderWithProviders = (component: React.ReactElement) => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: false
-      }
-    }
-  });
-
-  return render(
-    <QueryClientProvider client={queryClient}>
-      <LeadModalProvider>
-        {component}
-      </LeadModalProvider>
-    </QueryClientProvider>
-  );
-};
-
-describe('Pipeline Integration Tests', () => {
+describe('Pipeline Integration', () => {
+  let queryClient: QueryClient;
+  
   beforeEach(() => {
+    queryClient = new QueryClient();
+  });
+  
+  afterEach(() => {
+    queryClient.clear();
     vi.clearAllMocks();
+  });
+  
+  it('should render the pipeline stages and leads', async () => {
+    render(
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <Pipeline />
+        </BrowserRouter>
+      </QueryClientProvider>
+    );
     
-    // Mock localStorage
-    const mockLocalStorage = {
-      getItem: vi.fn(),
-      setItem: vi.fn(),
-      removeItem: vi.fn(),
-      clear: vi.fn(),
-      length: 0,
-      key: vi.fn()
-    };
-    
-    Object.defineProperty(window, 'localStorage', {
-      value: mockLocalStorage
-    });
-    
-    // Mock persistence.createLead to return a proper lead object
-    vi.mocked(leadPersistence.createLead).mockImplementation(async (lead) => {
-      return lead;
+    // Wait for the data to load
+    await waitFor(() => {
+      expect(screen.getByText(mockedPipelineStages[0].name)).toBeInTheDocument();
+      expect(screen.getByText(mockedLeads[0].name)).toBeInTheDocument();
     });
   });
-
-  it('adds new lead to pipeline after creation', async () => {
-    // Arrange
-    renderWithProviders(<Pipeline />);
+  
+  it('should allow dragging and dropping a lead to a different stage', async () => {
+    render(
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <Pipeline />
+        </BrowserRouter>
+      </QueryClientProvider>
+    );
     
-    // Look for "Add Lead" button in first column
-    const addLeadButton = await screen.findByTestId('add-lead-to-1');
-    
-    // Act - open the modal and submit the form
-    await userEvent.click(addLeadButton);
-    
-    // Submit the form
-    const submitButton = await screen.findByTestId('submit-lead-form');
-    fireEvent.click(submitButton);
-    
-    // Assert
+    // Wait for the data to load
     await waitFor(() => {
-      // Check that leadPersistence.createLead was called
-      expect(leadPersistence.createLead).toHaveBeenCalled();
-      
-      // Check that success toast was displayed
-      expect(toast.success).toHaveBeenCalled();
+      expect(screen.getByText(mockedPipelineStages[0].name)).toBeInTheDocument();
+      expect(screen.getByText(mockedLeads[0].name)).toBeInTheDocument();
+    });
+    
+    const leadElement = screen.getByText(mockedLeads[0].name);
+    const targetStageElement = screen.getByText(mockedPipelineStages[1].name);
+    
+    // Mock the drag and drop events
+    fireEvent.dragStart(leadElement);
+    fireEvent.dragEnter(targetStageElement);
+    fireEvent.dragOver(targetStageElement);
+    fireEvent.drop(targetStageElement);
+    fireEvent.dragEnd(leadElement);
+    
+    // Wait for the update to complete
+    await waitFor(() => {
+      expect(persistence.updateLead).toHaveBeenCalledTimes(1);
     });
   });
 });

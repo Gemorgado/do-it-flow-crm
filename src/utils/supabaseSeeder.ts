@@ -1,4 +1,3 @@
-
 import { supabase } from '../integrations/supabase/client';
 import { LeadStatus, LeadSource } from '@/types/lead';
 import { ProposalStatus } from '@/types/proposal';
@@ -165,7 +164,8 @@ export async function seedDatabase() {
           updatedAt: ''
         };
         
-        await persistence.createSpace(space);
+        // Using the spaces insertion method from spacePersistence, not createSpace directly
+        await persistence.updateSpace(space);
       }
       
       console.log('  ✅ Spaces seeded');
