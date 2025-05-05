@@ -4,6 +4,7 @@ import { Location, Client } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
 import { persistence } from '@/integrations/persistence';
 import { toast } from 'sonner';
+import { SpaceBinding } from '@/data/types'; // Use correct import
 
 export const useSpaceBinderManager = (space: Location, onClose: () => void) => {
   // State for the form
@@ -64,8 +65,8 @@ export const useSpaceBinderManager = (space: Location, onClose: () => void) => {
     try {
       setIsLoading(true);
       
-      const bindingData = {
-        id: existingBinding?.id || uuidv4(),
+      const bindingData: SpaceBinding = {
+        id: existingBinding?.id || uuidv4(), // Add required id
         spaceId: space.id,
         clientId: selectedClientId,
         contractId: contractId || null,

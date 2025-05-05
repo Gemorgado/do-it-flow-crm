@@ -1,8 +1,9 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { persistence } from "@/integrations/persistence";
-import type { SpaceBinding } from "@/types";
+import { SpaceBinding } from "@/data/types"; // Use the correct import
 import { toast } from "sonner";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * Hook to get all space bindings
@@ -26,8 +27,13 @@ export function useBindSpace() {
   
   return useMutation({
     mutationFn: async (binding: SpaceBinding) => {
-      await persistence.bindSpace(binding);
-      return binding;
+      // Make sure binding has an id
+      const bindingWithId = {
+        ...binding,
+        id: binding.id || uuidv4()
+      };
+      await persistence.bindSpace(bindingWithId);
+      return bindingWithId;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["spaces", "bindings"] });

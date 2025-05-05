@@ -3,6 +3,25 @@ import type { ConexaSnapshot } from "../conexa/types";
 import { store, saveToStorage } from "./store";
 
 export const snapshotPersistence = {
+  getSnapshot: async (): Promise<any> => {
+    // Legacy method - returns raw snapshot data
+    return Promise.resolve(store.snapshots[0] || null);
+  },
+
+  saveSnapshot: async (data: any): Promise<void> => {
+    // Legacy method - saves raw snapshot data
+    store.snapshots = [data];
+    saveToStorage();
+    return Promise.resolve();
+  },
+
+  clearSnapshot: async (): Promise<void> => {
+    // Legacy method - clears all snapshots
+    store.snapshots = [];
+    saveToStorage();
+    return Promise.resolve();
+  },
+  
   upsertSnapshot: async (snapshot: ConexaSnapshot): Promise<void> => {
     // Adiciona ou atualiza o snapshot
     const syncDate = snapshot.syncedAt;

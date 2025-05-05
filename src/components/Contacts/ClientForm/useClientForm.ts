@@ -6,7 +6,8 @@ import { ClientFormValues, clientFormSchema, defaultValues } from "./schemas";
 import { useClientFormEnhancements } from "@/hooks/useClientFormEnhancements";
 import { persistence } from "@/integrations/persistence";
 import { ServiceType } from "@/types/service";
-import { Location, SpaceBinding } from "@/types";
+import { Location } from "@/types";
+import { SpaceBinding } from "@/data/types"; // <-- Use the correct type import
 import { toast } from "@/hooks/use-toast";
 import { v4 as uuidv4 } from "uuid";
 import { format } from "date-fns";
@@ -64,12 +65,13 @@ export function useClientForm({ onSuccess, initialData }: UseClientFormProps) {
         try {
           // Create a binding between client and space
           const binding: SpaceBinding = {
+            id: uuidv4(), // Add required id
             spaceId: data.selectedSpaceId,
             clientId: formattedData.id,
             contractId: uuidv4(),
             boundAt: new Date().toISOString(),
             unitPrice: data.contractValue || null,
-            startDate: data.contractStart ? format(data.contractStart, 'yyyy-MM-dd') : null,
+            startDate: data.contractStart ? format(data.contractStart, 'yyyy-MM-dd') : new Date().toISOString(),
             endDate: data.contractEnd ? format(data.contractEnd, 'yyyy-MM-dd') : null
           };
           

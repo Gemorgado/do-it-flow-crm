@@ -1,6 +1,6 @@
 
 import { supabase } from '../supabase/client';
-import { SpaceBinding } from '@/types';
+import { SpaceBinding } from '@/data/types';
 import { v4 as uuidv4 } from 'uuid';
 
 // Helper functions to convert between database and domain models
@@ -39,6 +39,25 @@ export const bindingPersistence = {
     }
 
     return data.map(fromDbBinding);
+  },
+
+  // Get a specific binding by ID
+  getBinding: async (id: string): Promise<SpaceBinding | null> => {
+    const { data, error } = await supabase
+      .from('space_allocations')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        return null; // Not found
+      }
+      console.error('Error fetching space binding:', error);
+      throw error;
+    }
+
+    return fromDbBinding(data);
   },
 
   // Bind a space to a client

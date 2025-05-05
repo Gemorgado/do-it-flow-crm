@@ -1,9 +1,11 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Location, SpaceBinding } from "@/types";
+import { Location } from "@/types";
+import { SpaceBinding } from "@/data/types"; // Use correct import
 import { persistence } from "@/integrations/persistence";
 import { toast } from "sonner";
 import { useEffect } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 interface SpaceUpdateData {
   space: Location;
@@ -42,7 +44,12 @@ export function useUpdateSpace() {
         
         // Se houver um binding para atualizar
         if (binding) {
-          await persistence.updateBinding(binding);
+          // Make sure binding has an id
+          const bindingWithId = {
+            ...binding,
+            id: binding.id || uuidv4()
+          };
+          await persistence.updateBinding(bindingWithId);
         }
         
         return { space, binding };

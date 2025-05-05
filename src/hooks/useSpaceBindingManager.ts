@@ -1,7 +1,8 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { persistence } from '@/integrations/persistence';
-import { Client, ClientService, Location, SpaceBinding } from '@/types';
+import { Client, Location } from '@/types';
+import { SpaceBinding } from '@/data/types'; // Use correct import
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { v4 as uuidv4 } from 'uuid';
@@ -76,7 +77,7 @@ export const useSpaceBindingManager = (initialBindings: SpaceBinding[] = []) => 
 
   // Allocate space to a client
   const allocateSpace = useCallback(
-    async (space: Location, client: Client, service: ClientService): Promise<boolean> => {
+    async (space: Location, client: Client, service: any): Promise<boolean> => {
       try {
         if (isSpaceAllocated(space.id)) {
           toast.error('This space is already allocated');
@@ -84,13 +85,13 @@ export const useSpaceBindingManager = (initialBindings: SpaceBinding[] = []) => 
         }
 
         const newBinding: SpaceBinding = {
-          id: uuidv4(),
+          id: uuidv4(), // Add required id
           spaceId: space.id,
           clientId: client.id,
           contractId: service.id,
           startDate: service.contractStart,
           endDate: service.contractEnd,
-          boundAt: new Date().toISOString(), // Add the required boundAt property
+          boundAt: new Date().toISOString(),
           notes: ''
         };
 
@@ -137,7 +138,13 @@ export const useSpaceBindingManager = (initialBindings: SpaceBinding[] = []) => 
   const updateSpaceBinding = useCallback(
     async (binding: SpaceBinding): Promise<boolean> => {
       try {
-        await persistence.updateBinding(binding);
+        // Make sure binding has an id
+        const bindingWithId = {
+          ...binding,
+          id: binding.id || uuidv4()
+        };
+        
+        await persistence.updateBinding(bindingWithId);
         
         // No need to update local state as the realtime subscription will handle it
         toast.success('Space allocation updated successfully');

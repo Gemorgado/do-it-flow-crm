@@ -2,7 +2,7 @@
 import { ServiceType } from "./service";
 
 export interface SpaceBinding {
-  id?: string;            
+  id: string;            // Making id required to match the type in data/types
   spaceId: string;        // id do elemento no mapa (sala ou desk)
   clientId: string;
   contractId?: string | null;

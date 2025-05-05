@@ -5,6 +5,7 @@ import { SpaceBinding } from "@/data/types";
 import { Location } from "@/types";
 import { Contact } from "@/types/contact";
 import { ContactModalValues } from "@/schemas/contactFormSchemas";
+import { ConexaSnapshot } from "@/integrations/conexa/types";
 
 export interface PersistenceAdapter {
   // Lead methods
@@ -48,6 +49,8 @@ export interface PersistenceAdapter {
   getSnapshot: () => Promise<any>;
   saveSnapshot: (data: any) => Promise<void>;
   clearSnapshot: () => Promise<void>;
+  getLastSnapshot: () => Promise<ConexaSnapshot | null>;
+  upsertSnapshot: (snapshot: ConexaSnapshot) => Promise<void>;
   
   // Proposal methods
   listProposals: () => Promise<any[]>;
@@ -61,6 +64,7 @@ export interface PersistenceAdapter {
   unbindSpace: (bindingId: string) => Promise<void>;
   listBindings: () => Promise<SpaceBinding[]>;
   getBinding: (id: string) => Promise<SpaceBinding | null>;
+  updateBinding: (binding: SpaceBinding) => Promise<SpaceBinding>;
   
   // Contact methods
   listContacts: () => Promise<Contact[]>;

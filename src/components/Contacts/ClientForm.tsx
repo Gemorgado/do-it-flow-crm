@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller } from "react-hook-form";
@@ -36,7 +35,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 import { v4 as uuidv4 } from "uuid";
 import { useClientFormEnhancements } from "@/hooks/useClientFormEnhancements";
-import { Location, SpaceBinding } from "@/types";
+import { Location, SpaceBinding } from "@/data/types";
 import { persistence } from "@/integrations/persistence";
 
 const clientFormSchema = z.object({
@@ -140,24 +139,25 @@ export function ClientForm({ onSuccess, onCancel, initialData }: ClientFormProps
         try {
           // Create a binding between client and space
           const binding: SpaceBinding = {
+            id: uuidv4(), // Add required ID field
             spaceId: data.selectedSpaceId,
             clientId: formattedData.id,
             contractId: uuidv4(),
             boundAt: new Date().toISOString(),
-            startDate: data.contractStart ? format(data.contractStart, 'yyyy-MM-dd') : undefined,
-            endDate: data.contractEnd ? format(data.contractEnd, 'yyyy-MM-dd') : undefined,
+            startDate: data.contractStart ? format(data.contractStart, 'yyyy-MM-dd') : new Date().toISOString(),
+            endDate: data.contractEnd ? format(data.contractEnd, 'yyyy-MM-dd') : null,
             unitPrice: data.contractValue || null
           };
-          
+        
           await persistence.bindSpace(binding);
-          
+        
           console.log("Space binding created successfully");
         } catch (error) {
           console.error("Error binding space to client:", error);
           // Continue with client creation even if binding fails
         }
       }
-
+    
       // In a real application, this would make an API call to save the client
       console.log("Client form submitted:", formattedData);
       
