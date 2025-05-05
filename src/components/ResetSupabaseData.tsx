@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { ReloadIcon } from "lucide-react";
+import { Loader } from "lucide-react";
 import { seedDatabase } from "@/utils/supabaseSeeder";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -34,7 +34,7 @@ export function ResetSupabaseData() {
     >
       {isResetting ? (
         <>
-          <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+          <Loader className="mr-2 h-4 w-4 animate-spin" />
           Resetting...
         </>
       ) : (
