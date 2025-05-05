@@ -38,8 +38,8 @@ export interface PersistenceAdapter {
 
   // Space bindings methods
   listBindings: () => Promise<SpaceBinding[]>;
-  bindSpace: (binding: SpaceBinding) => Promise<void>;  // Changed return type to void
-  updateBinding: (binding: SpaceBinding) => Promise<void>;  // Changed return type to void
+  bindSpace: (binding: SpaceBinding) => Promise<SpaceBinding>;  // Fixed return type to SpaceBinding
+  updateBinding: (binding: SpaceBinding) => Promise<SpaceBinding>;  // Fixed return type to SpaceBinding
   unbindSpace: (spaceId: string) => Promise<void>;
 
   // Proposal methods

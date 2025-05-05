@@ -2,6 +2,7 @@
 import { supabase } from '../supabase/client';
 import { Lead, LeadSource, LeadStatus, PipelineStage } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
+import { toLeadSource, toLeadStatus } from '@/utils/enumMappers';
 
 // Helper function to map from database representation to app representation
 const mapLeadFromDatabase = (
@@ -14,8 +15,8 @@ const mapLeadFromDatabase = (
     company: lead.company || undefined,
     email: lead.email,
     phone: lead.phone || '',
-    status: lead.status as LeadStatus,
-    source: lead.source as LeadSource,
+    status: toLeadStatus(lead.status) as LeadStatus,
+    source: toLeadSource(lead.source) as LeadSource,
     sourceDetail: lead.source_detail,
     createdAt: lead.created_at,
     updatedAt: lead.updated_at,
@@ -31,6 +32,26 @@ const mapLeadFromDatabase = (
     lastContact: lead.last_contact,
     nextFollowUp: lead.next_follow_up,
     meetingScheduled: lead.meeting_scheduled
+  };
+};
+
+// Helper to convert from domain model to database model
+const mapLeadToDatabase = (lead: Lead) => {
+  return {
+    name: lead.name,
+    company: lead.company,
+    email: lead.email,
+    phone: lead.phone,
+    status: lead.status,
+    source: lead.source,
+    source_detail: lead.sourceDetail,
+    stage_id: lead.stage?.id,
+    assigned_to: lead.assignedTo,
+    notes: lead.notes,
+    value: lead.value,
+    last_contact: lead.lastContact,
+    next_follow_up: lead.nextFollowUp,
+    meeting_scheduled: lead.meetingScheduled
   };
 };
 
@@ -135,20 +156,7 @@ export const leadPersistence = {
       .from('leads')
       .insert({
         id: leadId,
-        name: lead.name,
-        company: lead.company,
-        email: lead.email,
-        phone: lead.phone,
-        status: lead.status as LeadStatus,
-        source: lead.source as LeadSource,
-        source_detail: lead.sourceDetail,
-        stage_id: lead.stage?.id,
-        assigned_to: lead.assignedTo,
-        notes: lead.notes,
-        value: lead.value,
-        last_contact: lead.lastContact,
-        next_follow_up: lead.nextFollowUp,
-        meeting_scheduled: lead.meetingScheduled
+        ...mapLeadToDatabase(lead)
       });
     
     if (error) {
@@ -167,20 +175,7 @@ export const leadPersistence = {
     const { error } = await supabase
       .from('leads')
       .update({
-        name: lead.name,
-        company: lead.company,
-        email: lead.email,
-        phone: lead.phone,
-        status: lead.status as LeadStatus,
-        source: lead.source as LeadSource,
-        source_detail: lead.sourceDetail,
-        stage_id: lead.stage?.id,
-        assigned_to: lead.assignedTo,
-        notes: lead.notes,
-        value: lead.value,
-        last_contact: lead.lastContact,
-        next_follow_up: lead.nextFollowUp,
-        meeting_scheduled: lead.meetingScheduled,
+        ...mapLeadToDatabase(lead),
         updated_at: new Date().toISOString()
       })
       .eq('id', lead.id);
@@ -211,25 +206,11 @@ export const leadPersistence = {
     if (!leads.length) return;
     
     // Convert leads to the format required by the database
-    const dbLeads = leads.map(lead => ({
-      id: lead.id || uuidv4(),
-      name: lead.name,
-      company: lead.company,
-      email: lead.email,
-      phone: lead.phone,
-      status: lead.status as LeadStatus,
-      source: lead.source as LeadSource,
-      source_detail: lead.sourceDetail,
-      stage_id: lead.stage?.id,
-      assigned_to: lead.assignedTo,
-      notes: lead.notes,
-      value: lead.value,
-      last_contact: lead.lastContact,
-      next_follow_up: lead.nextFollowUp,
-      meeting_scheduled: lead.meetingScheduled
-    }));
+    const dbLeads = leads.map(lead => mapLeadToDatabase(lead));
     
-    const { error } = await supabase.from('leads').insert(dbLeads);
+    const { error } = await supabase
+      .from('leads')
+      .insert(dbLeads);
     
     if (error) {
       console.error('Error creating multiple leads:', error);
