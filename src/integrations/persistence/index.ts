@@ -3,7 +3,7 @@ import { leadPersistence } from "./leads";
 import { clientPersistence } from "./clients";
 import { taskPersistence } from "./taskPersistence";
 import { interactionPersistence } from "./interactionPersistence";
-import { spacePersistence } from "./spacePersistence";
+import { spacePersistence } from "./spaces";
 import { snapshotPersistence } from "./snapshotPersistence";
 import { proposalPersistence } from "./proposals";
 import { bindingPersistence } from "./bindingPersistence";
