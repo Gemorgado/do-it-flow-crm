@@ -126,7 +126,7 @@ describe('useLeadToClientConversion Hook', () => {
     // Act: Try to convert the lead
     let convertedClient;
     await act(async () => {
-      convertedClient = await result.current.convertLeadToClient(mockLead);
+      convertedClient = await result.current.convertLeadToClient(mockLead, 'fiscal_address', 500000);
     });
     
     // Assert: Check that error handling worked correctly
