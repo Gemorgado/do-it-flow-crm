@@ -1,9 +1,12 @@
 
 import { Lead, NewLead, LeadStatus, LeadSource, PipelineStage } from '../../domain/models/Lead';
 
+// Define the database-specific source types
+type DbLeadSource = 'site_organic' | 'google_ads' | 'meta_ads' | 'instagram' | 'referral' | 'in_person_visit' | 'events' | 'other';
+
 // Map domain LeadSource values to database values
-const mapSourceToDB = (source: LeadSource): string => {
-  const sourceMap: Record<string, string> = {
+const mapSourceToDB = (source: LeadSource): DbLeadSource => {
+  const sourceMap: Record<LeadSource, DbLeadSource> = {
     'website_organic': 'site_organic',
     'google_ads': 'google_ads',
     'meta_ads': 'meta_ads',
