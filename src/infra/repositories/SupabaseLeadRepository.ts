@@ -31,9 +31,11 @@ export class SupabaseLeadRepository implements LeadRepository {
   }
 
   async create(lead: NewLead): Promise<Lead> {
+    const dbLead = toDbLead(lead);
+    
     const { data, error } = await supabase
       .from('leads')
-      .insert(toDbLead(lead))
+      .insert(dbLead)
       .select('*, stage:pipeline_stages(*)')
       .single();
 
@@ -42,9 +44,14 @@ export class SupabaseLeadRepository implements LeadRepository {
   }
 
   async update(lead: Lead): Promise<Lead> {
+    const dbLead = toDbLead(lead);
+    
     const { data, error } = await supabase
       .from('leads')
-      .update({ ...toDbLead(lead), updated_at: new Date().toISOString() })
+      .update({ 
+        ...dbLead,
+        updated_at: new Date().toISOString() 
+      })
       .eq('id', lead.id)
       .select('*, stage:pipeline_stages(*)')
       .single();

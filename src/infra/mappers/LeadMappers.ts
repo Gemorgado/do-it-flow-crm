@@ -1,6 +1,38 @@
 
 import { Lead, NewLead, LeadStatus, LeadSource, PipelineStage } from '../../domain/models/Lead';
 
+// Map domain LeadSource values to database values
+const mapSourceToDB = (source: LeadSource): string => {
+  const sourceMap: Record<string, string> = {
+    'website_organic': 'site_organic',
+    'google_ads': 'google_ads',
+    'meta_ads': 'meta_ads',
+    'instagram': 'instagram',
+    'referral': 'referral',
+    'in_person_visit': 'in_person_visit',
+    'events': 'events',
+    'other': 'other'
+  };
+  
+  return sourceMap[source] || 'other';
+};
+
+// Map database source values to domain LeadSource
+const mapSourceFromDB = (dbSource: string): LeadSource => {
+  const sourceMap: Record<string, LeadSource> = {
+    'site_organic': 'website_organic',
+    'google_ads': 'google_ads',
+    'meta_ads': 'meta_ads',
+    'instagram': 'instagram',
+    'referral': 'referral',
+    'in_person_visit': 'in_person_visit',
+    'events': 'events',
+    'other': 'other'
+  };
+  
+  return sourceMap[dbSource] || 'other';
+};
+
 export const toDbLead = (lead: NewLead) => {
   return {
     name: lead.name,
@@ -8,7 +40,7 @@ export const toDbLead = (lead: NewLead) => {
     email: lead.email,
     phone: lead.phone,
     status: lead.status,
-    source: lead.source,
+    source: mapSourceToDB(lead.source),
     source_detail: lead.sourceDetail,
     stage_id: lead.stageId,
     assigned_to: lead.assignedTo,
@@ -28,7 +60,7 @@ export const toDomainLead = (dbLead: any): Lead => {
     email: dbLead.email,
     phone: dbLead.phone || '',
     status: dbLead.status as LeadStatus,
-    source: dbLead.source as LeadSource,
+    source: mapSourceFromDB(dbLead.source),
     sourceDetail: dbLead.source_detail,
     createdAt: dbLead.created_at,
     updatedAt: dbLead.updated_at,
