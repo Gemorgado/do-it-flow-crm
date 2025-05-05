@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { ReloadIcon } from "@radix-ui/react-icons";
+import { ReloadIcon } from "lucide-react";
 import { seedDatabase } from "@/utils/supabaseSeeder";
 import { useState } from "react";
 import { toast } from "sonner";

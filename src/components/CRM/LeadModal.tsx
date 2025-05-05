@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -8,30 +9,30 @@ import { useAuth } from '@/modules/auth/AuthProvider';
 import { persistence } from '@/integrations/persistence';
 import { toast } from 'sonner';
 import { v4 as uuidv4 } from 'uuid';
+import { useLeadModal } from './hooks/useModalContext';
 
 interface LeadModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  presetStage?: PipelineStage;
-  leadToEdit?: Lead;
+  addLeadToPipeline?: (lead: Lead) => Promise<Lead>;
 }
 
-export function LeadModal({ isOpen, onClose, presetStage, leadToEdit }: LeadModalProps) {
+export function LeadModal({ addLeadToPipeline }: LeadModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useAuth();
+  const { isOpen, options, close } = useLeadModal();
   
   const handleSubmit = async (data: LeadFormValues & { stageId?: string }) => {
     setIsSubmitting(true);
     
     try {
-      if (leadToEdit) {
+      if (options?.leadToEdit) {
         // Update existing lead
         const updatedLead: Lead = {
-          ...leadToEdit,
+          ...options.leadToEdit,
           name: data.companyOrPerson || 'Sem nome',
           company: data.companyOrPerson,
           email: data.email || 'sem-email@exemplo.com',
           phone: data.phone || '',
+          source: options.leadToEdit.source,
           sourceDetail: data.sourceDetail,
           updatedAt: new Date().toISOString(),
           notes: data.notes || '',
@@ -51,10 +52,12 @@ export function LeadModal({ isOpen, onClose, presetStage, leadToEdit }: LeadModa
           email: data.email || 'sem-email@exemplo.com',
           phone: data.phone || '',
           status: 'novo',
+          source: data.sourceCategory === 'indicacao' ? 'indicacao' : 
+                 data.sourceCategory === 'rede_social' ? 'instagram' : 'outros',
           sourceDetail: data.sourceDetail,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-          stage: presetStage || {
+          stage: options?.presetStage || {
             id: '1',
             name: 'Novo',
             order: 1,
@@ -63,14 +66,18 @@ export function LeadModal({ isOpen, onClose, presetStage, leadToEdit }: LeadModa
           notes: data.notes || '',
         };
         
-        await persistence.createLead(newLead);
+        if (addLeadToPipeline) {
+          await addLeadToPipeline(newLead);
+        } else {
+          await persistence.createLead(newLead);
+        }
         
         toast.success("Lead criado com sucesso", {
           description: "O lead foi adicionado ao sistema"
         });
       }
       
-      onClose();
+      close();
     } catch (error) {
       console.error("Erro ao salvar lead:", error);
       toast.error("Erro ao salvar lead", {
@@ -82,22 +89,22 @@ export function LeadModal({ isOpen, onClose, presetStage, leadToEdit }: LeadModa
   };
   
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={close}>
       <DialogContent className="sm:max-w-[625px]">
         <DialogHeader>
-          <DialogTitle>{leadToEdit ? "Editar Lead" : "Novo Lead"}</DialogTitle>
+          <DialogTitle>{options?.leadToEdit ? "Editar Lead" : "Novo Lead"}</DialogTitle>
         </DialogHeader>
         
         <LeadForm 
           onSubmit={handleSubmit} 
-          onCancel={onClose} 
-          presetStage={presetStage}
-          leadToEdit={leadToEdit}
+          onCancel={close} 
+          presetStage={options?.presetStage}
+          leadToEdit={options?.leadToEdit}
           isSubmitting={isSubmitting}
         />
         
         <div className="mt-4 flex justify-end">
-          <Button type="button" variant="secondary" onClick={onClose}>
+          <Button type="button" variant="secondary" onClick={close}>
             Cancelar
           </Button>
         </div>
