@@ -71,6 +71,7 @@ describe('useLeadToClientConversion Hook', () => {
     // Act: Convert the lead to a client
     let convertedClient;
     await act(async () => {
+      // Fix: Pass all required arguments to convertLeadToClient
       convertedClient = await result.current.convertLeadToClient(mockLead, 'fiscal_address', 500000);
     });
     
@@ -126,6 +127,7 @@ describe('useLeadToClientConversion Hook', () => {
     // Act: Try to convert the lead
     let convertedClient;
     await act(async () => {
+      // Fix: Pass all required arguments to convertLeadToClient
       convertedClient = await result.current.convertLeadToClient(mockLead, 'fiscal_address', 500000);
     });
     
