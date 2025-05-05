@@ -37,7 +37,17 @@ export const persistence: PersistenceAdapter = {
   ...bindingPersistence,
   
   // Contact methods
-  ...contactPersistence
+  ...contactPersistence,
+  
+  // Ensuring createClients is properly defined if missing from clientPersistence
+  createClients: clientPersistence.createClients || (async (clients) => {
+    console.log("Creating multiple clients:", clients.length);
+    // Implementation to add multiple clients
+    for (const client of clients) {
+      await clientPersistence.createClient(client);
+    }
+    return Promise.resolve();
+  })
 };
 
 // Re-export for convenience

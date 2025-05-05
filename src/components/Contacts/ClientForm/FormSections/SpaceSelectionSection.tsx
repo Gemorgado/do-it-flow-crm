@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { UseFormReturn } from "react-hook-form";
-import { Location } from "@/types";
+import { Location } from "@/types"; // Importing from types instead of data/types
 import { ClientFormValues } from "../schemas";
 import { ServiceType } from "@/types/service";
 

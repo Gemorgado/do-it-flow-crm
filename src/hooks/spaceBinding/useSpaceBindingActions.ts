@@ -2,6 +2,7 @@
 import { SpaceBinding, Location } from "@/types";
 import { useBindSpace, useUnbindSpace } from "@/hooks/useSpaceBindings";
 import { toast } from "sonner";
+import { v4 as uuidv4 } from "uuid";
 
 interface SpaceBindingActionsProps {
   space: Location | null;
@@ -51,10 +52,11 @@ export function useSpaceBindingActions({
     }
     
     const binding: SpaceBinding = {
+      id: uuidv4(), // Adding required ID property
       spaceId: space.id,
       clientId: selectedClientId,
       contractId: contractId,
-      boundAt: new Date().toISOString(),
+      boundAt: new Date().toISOString(), // Ensure this is always set
       unitPrice,
       startDate,
       endDate

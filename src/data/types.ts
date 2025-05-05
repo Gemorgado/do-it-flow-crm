@@ -66,4 +66,6 @@ export interface SpaceBinding {
   } | null;
 }
 
-export type { ChartData };
+// Re-export the Location type to solve the import error
+export type { ChartData, Location };
+
