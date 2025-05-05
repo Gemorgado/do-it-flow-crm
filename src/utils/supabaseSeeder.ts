@@ -1,6 +1,8 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { ServiceType } from '@/types/service';
+import { LeadStatus, LeadSource } from '@/types/lead';
+import { ProposalStatus } from '@/types/proposal';
 
 function generateMockPipelineStages() {
   return [
@@ -49,16 +51,16 @@ function generateMockLeads() {
       name: 'João Silva',
       company: 'Empresa ABC',
       phone: '(11) 98765-4321',
-      status: 'new', // Using backend enum value
-      source: 'site_organic', // Using backend enum value
+      status: 'new' as LeadStatus, // Using backend enum value
+      source: 'site_organic' as LeadSource, // Using backend enum value
     },
     {
       email: 'maria.oliveira@exemplo.com',
       name: 'Maria Oliveira',
       company: 'Startup XYZ',
       phone: '(11) 91234-5678',
-      status: 'contacted', // Using backend enum value
-      source: 'referral', // Using backend enum value
+      status: 'contacted' as LeadStatus, // Using backend enum value
+      source: 'referral' as LeadSource, // Using backend enum value
     }
   ];
 }
@@ -67,7 +69,7 @@ function generateMockSpaces() {
   return [
     {
       name: 'Sala Executiva A',
-      type: 'private_office', // Using correct enum value directly
+      type: 'private_office' as ServiceType, // Using correct enum value directly
       description: 'Sala privativa para até 4 pessoas',
       floor: 2,
       area: 15,
@@ -76,7 +78,7 @@ function generateMockSpaces() {
     },
     {
       name: 'Estação Flex 01',
-      type: 'flex_desk', // Using correct enum value directly
+      type: 'flex_desk' as ServiceType, // Using correct enum value directly
       description: 'Estação de trabalho flexível',
       floor: 1,
       area: 2,
@@ -110,16 +112,19 @@ export async function seedDatabase() {
       .select('*');
     
     if (!existingLeads?.length) {
+      // Map leads to proper database structure
+      const leadsToInsert = generateMockLeads().map(lead => ({
+        email: lead.email,
+        name: lead.name,
+        company: lead.company,
+        phone: lead.phone,
+        status: lead.status,
+        source: lead.source
+      }));
+
       const { error: leadsError } = await supabase
         .from('leads')
-        .upsert(generateMockLeads().map(lead => ({
-          email: lead.email,
-          name: lead.name,
-          company: lead.company,
-          phone: lead.phone,
-          status: lead.status,
-          source: lead.source
-        })));
+        .insert(leadsToInsert);
       
       if (leadsError) throw leadsError;
       console.log('  ✅ Leads seeded');
@@ -133,9 +138,20 @@ export async function seedDatabase() {
       .select('*');
     
     if (!existingSpaces?.length) {
+      // Map spaces to proper database structure
+      const spacesToInsert = generateMockSpaces().map(space => ({
+        name: space.name,
+        type: space.type,
+        description: space.description,
+        floor: space.floor,
+        area: space.area,
+        capacity: space.capacity,
+        is_active: space.is_active
+      }));
+
       const { error: spacesError } = await supabase
         .from('spaces')
-        .upsert(generateMockSpaces());
+        .upsert(spacesToInsert);
       
       if (spacesError) throw spacesError;
       console.log('  ✅ Spaces seeded');

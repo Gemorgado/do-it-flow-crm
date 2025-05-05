@@ -1,109 +1,62 @@
 
 import { supabase } from '../supabase/client';
-import { Proposal, ProposalItem } from '@/types';
+import { Proposal, ProposalStatus } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
-import { 
-  PT_BR_TO_PROPOSAL_STATUS, 
-  PROPOSAL_STATUS_TO_PT_BR,
-  ProposalStatus 
-} from '@/types/proposal';
-
-// Helper function to map frontend status to database status
-const mapProposalStatus = (status: string): ProposalStatus => {
-  if (status in PT_BR_TO_PROPOSAL_STATUS) {
-    return PT_BR_TO_PROPOSAL_STATUS[status as keyof typeof PT_BR_TO_PROPOSAL_STATUS];
-  } else if (Object.values(PT_BR_TO_PROPOSAL_STATUS).includes(status as ProposalStatus)) {
-    return status as ProposalStatus;
-  }
-  return 'draft'; // Default to draft
-};
-
-// Helper function to map database status to frontend status
-const mapToFrontendStatus = (status: string): ProposalStatus => {
-  if (status in PROPOSAL_STATUS_TO_PT_BR) {
-    return status as ProposalStatus;
-  } else if (Object.values(PROPOSAL_STATUS_TO_PT_BR).includes(status)) {
-    // Find key by value
-    for (const [key, value] of Object.entries(PROPOSAL_STATUS_TO_PT_BR)) {
-      if (value === status) {
-        return key as ProposalStatus;
-      }
-    }
-  }
-  return 'draft';
-};
+import { ServiceType } from '@/types/service';
 
 export const proposalPersistence = {
+  // List all proposals
   listProposals: async (): Promise<Proposal[]> => {
-    const { data, error } = await supabase
+    const { data: proposalsData, error: proposalsError } = await supabase
       .from('proposals')
-      .select(`
-        id, 
-        lead_id,
-        title,
-        value,
-        created_at,
-        expires_at, 
-        status,
-        notes,
-        created_by,
-        proposal_items(*)
-      `);
+      .select('*, proposal_items(*)');
 
-    if (error) {
-      console.error('Error fetching proposals:', error);
-      throw error;
+    if (proposalsError) {
+      console.error('Error fetching proposals:', proposalsError);
+      throw proposalsError;
     }
 
-    return data.map(item => ({
-      id: item.id,
-      leadId: item.lead_id,
-      title: item.title,
-      value: item.value,
-      createdAt: item.created_at,
-      expiresAt: item.expires_at,
-      status: mapToFrontendStatus(item.status),
-      notes: item.notes,
-      created_by: item.created_by,
-      // Provide a default serviceType
-      serviceType: 'private_office', // Default value, may need to be updated based on actual data
-      products: item.proposal_items.map((product: any) => ({
-        id: product.id,
-        name: product.name,
-        quantity: product.quantity,
-        unitPrice: product.unit_price,
-        total: product.total
-      }))
-    }));
+    // Convert database format to application format
+    return proposalsData.map(proposal => {
+      // Default to a service type if not available
+      const serviceType = 'private_office' as ServiceType;
+      
+      return {
+        id: proposal.id,
+        leadId: proposal.lead_id,
+        title: proposal.title,
+        value: proposal.value,
+        createdAt: proposal.created_at,
+        expiresAt: proposal.expires_at,
+        status: proposal.status as ProposalStatus,
+        notes: proposal.notes,
+        created_by: proposal.created_by,
+        serviceType: serviceType, // Add default service type
+        products: proposal.proposal_items || []
+      };
+    });
   },
 
+  // Get a single proposal
   getProposal: async (id: string): Promise<Proposal | undefined> => {
     const { data, error } = await supabase
       .from('proposals')
-      .select(`
-        id, 
-        lead_id,
-        title,
-        value,
-        created_at,
-        expires_at, 
-        status,
-        notes,
-        created_by,
-        proposal_items(*)
-      `)
+      .select('*, proposal_items(*)')
       .eq('id', id)
       .single();
 
     if (error) {
       if (error.code === 'PGRST116') {
-        // Record not found
+        // Not found
         return undefined;
       }
       console.error('Error fetching proposal:', error);
       throw error;
     }
 
+    // Default to a service type if not available
+    const serviceType = 'private_office' as ServiceType;
+    
     return {
       id: data.id,
       leadId: data.lead_id,
@@ -111,27 +64,20 @@ export const proposalPersistence = {
       value: data.value,
       createdAt: data.created_at,
       expiresAt: data.expires_at,
-      status: mapToFrontendStatus(data.status),
+      status: data.status as ProposalStatus,
       notes: data.notes,
       created_by: data.created_by,
-      // Provide a default serviceType
-      serviceType: 'private_office', // Default value, may need to be updated based on actual data
-      products: data.proposal_items.map((product: any) => ({
-        id: product.id,
-        name: product.name,
-        quantity: product.quantity,
-        unitPrice: product.unit_price,
-        total: product.total
-      }))
+      serviceType: serviceType, // Add default service type
+      products: data.proposal_items || []
     };
   },
 
+  // Create a new proposal
   createProposal: async (proposal: Proposal): Promise<Proposal> => {
     const proposalId = proposal.id || uuidv4();
-    const proposalStatus = mapProposalStatus(proposal.status);
 
-    // Start a transaction to insert both the proposal and its items
-    const { data: proposalData, error: proposalError } = await supabase
+    // First create the proposal
+    const { error: proposalError } = await supabase
       .from('proposals')
       .insert({
         id: proposalId,
@@ -139,27 +85,24 @@ export const proposalPersistence = {
         title: proposal.title,
         value: proposal.value,
         expires_at: proposal.expiresAt,
-        status: proposalStatus,
+        status: proposal.status as ProposalStatus,
         notes: proposal.notes,
         created_by: proposal.created_by
-      })
-      .select()
-      .single();
+      });
 
     if (proposalError) {
       console.error('Error creating proposal:', proposalError);
       throw proposalError;
     }
 
-    // Insert proposal items
-    if (proposal.products?.length) {
-      const proposalItems = proposal.products.map(product => ({
-        id: product.id || uuidv4(),
+    // Now create proposal items if any
+    if (proposal.products && proposal.products.length > 0) {
+      const proposalItems = proposal.products.map(item => ({
         proposal_id: proposalId,
-        name: product.name,
-        quantity: product.quantity,
-        unit_price: product.unitPrice,
-        total: product.total
+        name: item.name,
+        quantity: item.quantity,
+        unit_price: item.unitPrice,
+        total: item.total
       }));
 
       const { error: itemsError } = await supabase
@@ -172,20 +115,15 @@ export const proposalPersistence = {
       }
     }
 
-    // Return created proposal with products
     return {
       ...proposal,
-      id: proposalId,
-      createdAt: proposalData.created_at,
-      // Add default serviceType for compatibility with Proposal type
-      serviceType: proposal.serviceType || 'private_office',
+      id: proposalId
     };
   },
 
+  // Update an existing proposal
   updateProposal: async (proposal: Proposal): Promise<Proposal> => {
-    // Update the proposal with the correct status
-    const proposalStatus = mapProposalStatus(proposal.status);
-    
+    // Update the main proposal
     const { error: proposalError } = await supabase
       .from('proposals')
       .update({
@@ -193,9 +131,8 @@ export const proposalPersistence = {
         title: proposal.title,
         value: proposal.value,
         expires_at: proposal.expiresAt,
-        status: proposalStatus,
-        notes: proposal.notes,
-        updated_at: new Date().toISOString()
+        status: proposal.status as ProposalStatus,
+        notes: proposal.notes
       })
       .eq('id', proposal.id);
 
@@ -204,9 +141,9 @@ export const proposalPersistence = {
       throw proposalError;
     }
 
-    // Handle proposal items (delete and re-create for simplicity)
-    if (proposal.products?.length) {
-      // Delete existing items
+    // Handle proposal items (delete and recreate)
+    if (proposal.products && proposal.products.length > 0) {
+      // First delete existing items
       const { error: deleteError } = await supabase
         .from('proposal_items')
         .delete()
@@ -217,14 +154,13 @@ export const proposalPersistence = {
         throw deleteError;
       }
 
-      // Insert new items
-      const proposalItems = proposal.products.map(product => ({
-        id: product.id || uuidv4(),
+      // Then create new items
+      const proposalItems = proposal.products.map(item => ({
         proposal_id: proposal.id,
-        name: product.name,
-        quantity: product.quantity,
-        unit_price: product.unitPrice,
-        total: product.total
+        name: item.name,
+        quantity: item.quantity,
+        unit_price: item.unitPrice,
+        total: item.total
       }));
 
       const { error: itemsError } = await supabase
@@ -240,16 +176,28 @@ export const proposalPersistence = {
     return proposal;
   },
 
+  // Delete a proposal
   deleteProposal: async (id: string): Promise<void> => {
-    // Delete proposal (will cascade delete items due to foreign key constraint)
-    const { error } = await supabase
+    // First delete related proposal items
+    const { error: itemsError } = await supabase
+      .from('proposal_items')
+      .delete()
+      .eq('proposal_id', id);
+
+    if (itemsError) {
+      console.error('Error deleting proposal items:', itemsError);
+      throw itemsError;
+    }
+
+    // Then delete the proposal itself
+    const { error: proposalError } = await supabase
       .from('proposals')
       .delete()
       .eq('id', id);
 
-    if (error) {
-      console.error('Error deleting proposal:', error);
-      throw error;
+    if (proposalError) {
+      console.error('Error deleting proposal:', proposalError);
+      throw proposalError;
     }
   }
 };
