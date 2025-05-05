@@ -1,7 +1,7 @@
 
 import { Lead, LeadSource, LeadStatus, PipelineStage } from "@/types";
 import { LeadFormValues } from "@/types/crm";
-import { leadPersistence } from "@/integrations/persistence/leadPersistence";
+import { persistence } from "@/integrations/persistence";
 import { toast } from "@/hooks/use-toast";
 import { v4 as uuidv4 } from 'uuid';
 
@@ -46,7 +46,7 @@ export function useLeadEditor({ leadToEdit, presetStage, onSuccess }: UseLeadEdi
         updatedLead.stage = newStage;
       }
       
-      await leadPersistence.updateLead(updatedLead);
+      await persistence.updateLead(updatedLead);
       
       toast({
         title: "Lead atualizado com sucesso",
@@ -92,7 +92,7 @@ export function useLeadEditor({ leadToEdit, presetStage, onSuccess }: UseLeadEdi
         notes: data.notes || '',
       };
       
-      await leadPersistence.createLead(newLead);
+      await persistence.createLead(newLead);
       
       toast({
         title: "Lead criado com sucesso",

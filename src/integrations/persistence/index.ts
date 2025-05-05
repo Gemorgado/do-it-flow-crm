@@ -1,6 +1,6 @@
 
 import { leadPersistence } from "./leads";
-import { clientPersistence } from "./clientPersistence";
+import { clientPersistence } from "./clients";
 import { taskPersistence } from "./taskPersistence";
 import { interactionPersistence } from "./interactionPersistence";
 import { spacePersistence } from "./spacePersistence";

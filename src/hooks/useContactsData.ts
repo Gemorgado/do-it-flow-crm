@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Client } from "@/types/client";
 import { useCustomers } from "@/hooks/conexaData";
-import { leadPersistence } from "@/integrations/persistence/leadPersistence";
+import { persistence } from "@/integrations/persistence";
 import { Lead } from "@/types";
 
 export function useContactsData() {
@@ -23,7 +23,7 @@ export function useContactsData() {
     async function loadLeads() {
       try {
         setIsLoading(true);
-        const storedLeads = await leadPersistence.listLeads();
+        const storedLeads = await persistence.listLeads();
         setLeads(storedLeads);
       } catch (e) {
         console.error("Failed to load leads:", e);

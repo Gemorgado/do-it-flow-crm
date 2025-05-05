@@ -1,8 +1,9 @@
 
-import { Lead } from '@/types';
+import { Lead, LeadStatus, LeadSource } from '@/types';
 import { supabase } from '../../supabase/client';
-import { mapLeadToDatabase } from './leadMappers';
+import { mapLeadToDatabase, mapLeadSourceToDb, mapLeadStatusToDb } from './leadMappers';
 import { v4 as uuidv4 } from 'uuid';
+import { toLeadSource, toLeadStatus } from '@/utils/enumMappers';
 
 // Create a new lead
 export const createLead = async (lead: Lead): Promise<Lead> => {
@@ -11,6 +12,10 @@ export const createLead = async (lead: Lead): Promise<Lead> => {
     ...mapLeadToDatabase(lead),
     id: leadId
   };
+  
+  // Make sure we're using supported enum values for source and status
+  leadToInsert.source = mapLeadSourceToDb(lead.source);
+  leadToInsert.status = mapLeadStatusToDb(lead.status);
   
   delete leadToInsert.stage_id; // Remove stage_id to avoid issues if it's null
   
@@ -36,6 +41,10 @@ export const createLead = async (lead: Lead): Promise<Lead> => {
 // Update an existing lead
 export const updateLead = async (lead: Lead): Promise<Lead> => {
   const leadToUpdate = mapLeadToDatabase(lead);
+  
+  // Make sure we're using supported enum values for source and status
+  leadToUpdate.source = mapLeadSourceToDb(lead.source);
+  leadToUpdate.status = mapLeadStatusToDb(lead.status);
   
   const { error } = await supabase
     .from('leads')

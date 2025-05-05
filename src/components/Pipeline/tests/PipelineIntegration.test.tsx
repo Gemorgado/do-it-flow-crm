@@ -1,4 +1,3 @@
-
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -6,7 +5,7 @@ import Pipeline from '@/pages/Pipeline';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { LeadModalProvider } from '@/components/CRM/hooks/useModalContext';
 import { toast } from 'sonner';
-import { leadPersistence } from '@/integrations/persistence/leadPersistence';
+import { persistence } from '@/integrations/persistence';
 
 // Mock dependencies
 vi.mock('sonner', () => ({
@@ -16,8 +15,8 @@ vi.mock('sonner', () => ({
   }
 }));
 
-vi.mock('@/integrations/persistence/leadPersistence', () => ({
-  leadPersistence: {
+vi.mock('@/integrations/persistence', () => ({
+  persistence: {
     createLead: vi.fn().mockResolvedValue({}),
     listLeads: vi.fn().mockResolvedValue([]),
     updateLead: vi.fn().mockResolvedValue({})
@@ -86,7 +85,7 @@ describe('Pipeline Integration Tests', () => {
     });
     
     // Mock persistence.createLead to return a proper lead object
-    vi.mocked(leadPersistence.createLead).mockImplementation(async (lead) => {
+    vi.mocked(persistence.createLead).mockImplementation(async (lead) => {
       return lead;
     });
   });
@@ -108,7 +107,7 @@ describe('Pipeline Integration Tests', () => {
     // Assert
     await waitFor(() => {
       // Check that leadPersistence.createLead was called
-      expect(leadPersistence.createLead).toHaveBeenCalled();
+      expect(persistence.createLead).toHaveBeenCalled();
       
       // Check that success toast was displayed
       expect(toast.success).toHaveBeenCalled();

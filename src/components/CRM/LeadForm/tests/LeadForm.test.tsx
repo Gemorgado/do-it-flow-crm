@@ -1,15 +1,14 @@
-
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@/test/utils';
 import userEvent from '@testing-library/user-event';
 import { LeadForm } from '../LeadForm';
-import { leadPersistence } from '@/integrations/persistence/leadPersistence';
+import { persistence } from '@/integrations/persistence';
 import { toast } from '@/hooks/use-toast';
 import { pipelineStages } from '@/data/leadsData';
 
 // Mock dependencies
-vi.mock('@/integrations/persistence/leadPersistence', () => ({
-  leadPersistence: {
+vi.mock('@/integrations/persistence', () => ({
+  persistence: {
     createLead: vi.fn().mockResolvedValue(true),
   },
 }));
@@ -116,7 +115,7 @@ describe('LeadForm Component', () => {
     
     // Wait for form submission
     await waitFor(() => {
-      expect(leadPersistence.createLead).toHaveBeenCalled();
+      expect(persistence.createLead).toHaveBeenCalled();
     });
     
     // Check that the form submission went through
@@ -145,11 +144,11 @@ describe('LeadForm Component', () => {
     
     // Wait for form submission
     await waitFor(() => {
-      expect(leadPersistence.createLead).toHaveBeenCalled();
+      expect(persistence.createLead).toHaveBeenCalled();
     });
     
     // Check that the lead was created with the first pipeline stage (id: "1", Novos)
-    const createdLeadCall = (leadPersistence.createLead as any).mock.calls[0][0];
+    const createdLeadCall = (persistence.createLead as any).mock.calls[0][0];
     expect(createdLeadCall.stage.id).toBe("1");
     expect(createdLeadCall.stage.name).toBe("Novo");
     expect(createdLeadCall.stage.order).toBe(1);
@@ -175,11 +174,11 @@ describe('LeadForm Component', () => {
     
     // Wait for form submission
     await waitFor(() => {
-      expect(leadPersistence.createLead).toHaveBeenCalled();
+      expect(persistence.createLead).toHaveBeenCalled();
     });
     
     // Check that the lead was created with the preset stage
-    const createdLeadCall = (leadPersistence.createLead as any).mock.calls[0][0];
+    const createdLeadCall = (persistence.createLead as any).mock.calls[0][0];
     expect(createdLeadCall.stage.id).toBe(mockPresetStage.id);
     expect(createdLeadCall.stage.name).toBe(mockPresetStage.name);
     expect(createdLeadCall.stage.order).toBe(mockPresetStage.order);
