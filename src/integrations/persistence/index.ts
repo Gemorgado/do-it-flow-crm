@@ -6,6 +6,7 @@ import { interactionPersistence } from "./interactionPersistence";
 import { spacePersistence } from "./spacePersistence";
 import { snapshotPersistence } from "./snapshotPersistence";
 import { proposalPersistence } from "./proposalPersistence";
+import { bindingPersistence } from "./bindingPersistence";
 import type { PersistenceAdapter } from "./types";
 
 // Combine all persistence methods into a single interface
@@ -29,7 +30,10 @@ export const persistence: PersistenceAdapter = {
   ...snapshotPersistence,
   
   // Proposal methods
-  ...proposalPersistence
+  ...proposalPersistence,
+  
+  // Binding methods (for space allocation)
+  ...bindingPersistence
 };
 
 // Re-export for convenience

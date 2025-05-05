@@ -68,7 +68,7 @@ export const spacePersistence = {
       .insert({
         id: spaceId,
         name: space.name,
-        type: space.type as ServiceType,
+        type: space.type,
         description: space.description,
         floor: space.floor,
         area: space.area,

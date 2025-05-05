@@ -1,3 +1,4 @@
+
 import { supabase } from '../supabase/client';
 import { Lead, LeadStatus, LeadSource, PipelineStage } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
@@ -48,22 +49,34 @@ const LEAD_SOURCE_DB_TO_FRONTEND: Record<string, LeadSource> = {
 
 // Helper function to map frontend status to database status
 const mapLeadStatus = (status: LeadStatus | string): string => {
-  return LEAD_STATUS_FRONTEND_TO_DB[status] || status;
+  if (status in LEAD_STATUS_FRONTEND_TO_DB) {
+    return LEAD_STATUS_FRONTEND_TO_DB[status as keyof typeof LEAD_STATUS_FRONTEND_TO_DB];
+  }
+  return status;
 };
 
 // Helper function to map frontend source to database source
 const mapLeadSource = (source: LeadSource | string): string => {
-  return LEAD_SOURCE_FRONTEND_TO_DB[source] || source;
+  if (source in LEAD_SOURCE_FRONTEND_TO_DB) {
+    return LEAD_SOURCE_FRONTEND_TO_DB[source as keyof typeof LEAD_SOURCE_FRONTEND_TO_DB];
+  }
+  return source;
 };
 
 // Helper function to map database status to frontend status
 const mapDbStatusToFrontend = (status: string): LeadStatus => {
-  return LEAD_STATUS_DB_TO_FRONTEND[status] || 'novo';
+  if (status in LEAD_STATUS_DB_TO_FRONTEND) {
+    return LEAD_STATUS_DB_TO_FRONTEND[status as keyof typeof LEAD_STATUS_DB_TO_FRONTEND];
+  }
+  return 'novo';
 };
 
 // Helper function to map database source to frontend source
 const mapDbSourceToFrontend = (source: string): LeadSource => {
-  return LEAD_SOURCE_DB_TO_FRONTEND[source] || 'outros';
+  if (source in LEAD_SOURCE_DB_TO_FRONTEND) {
+    return LEAD_SOURCE_DB_TO_FRONTEND[source as keyof typeof LEAD_SOURCE_DB_TO_FRONTEND];
+  }
+  return 'outros';
 };
 
 export const leadPersistence = {
@@ -188,16 +201,20 @@ export const leadPersistence = {
     const leadId = lead.id || uuidv4();
     const now = new Date().toISOString();
     
+    // Map lead status and source to database values
+    const dbStatus = mapLeadStatus(lead.status);
+    const dbSource = mapLeadSource(lead.source);
+    
     const { data, error } = await supabase
       .from('leads')
-      .insert([{
+      .insert({
         id: leadId,
         name: lead.name,
         company: lead.company,
         email: lead.email,
         phone: lead.phone,
-        status: mapLeadStatus(lead.status),
-        source: mapLeadSource(lead.source),
+        status: dbStatus as any,
+        source: dbSource as any,
         stage_id: stageId,
         assigned_to: lead.assignedTo,
         notes: lead.notes,
@@ -207,7 +224,7 @@ export const leadPersistence = {
         meeting_scheduled: lead.meetingScheduled,
         created_at: now,
         updated_at: now
-      }])
+      })
       .select()
       .single();
 
@@ -238,6 +255,10 @@ export const leadPersistence = {
   },
 
   updateLead: async (lead: Lead): Promise<Lead> => {
+    // Map lead status and source to database values
+    const dbStatus = mapLeadStatus(lead.status);
+    const dbSource = mapLeadSource(lead.source);
+    
     const { error } = await supabase
       .from('leads')
       .update({
@@ -245,8 +266,8 @@ export const leadPersistence = {
         company: lead.company,
         email: lead.email,
         phone: lead.phone,
-        status: mapLeadStatus(lead.status),
-        source: mapLeadSource(lead.source),
+        status: dbStatus as any,
+        source: dbSource as any,
         stage_id: lead.stage?.id || null,
         assigned_to: lead.assignedTo,
         notes: lead.notes,

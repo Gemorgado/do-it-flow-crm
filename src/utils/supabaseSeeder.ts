@@ -49,16 +49,16 @@ function generateMockLeads() {
       name: 'João Silva',
       company: 'Empresa ABC',
       phone: '(11) 98765-4321',
-      status: 'new',
-      source: 'site_organic',
+      status: 'new', // Using backend enum value
+      source: 'site_organic', // Using backend enum value
     },
     {
       email: 'maria.oliveira@exemplo.com',
       name: 'Maria Oliveira',
       company: 'Startup XYZ',
       phone: '(11) 91234-5678',
-      status: 'contacted',
-      source: 'referral',
+      status: 'contacted', // Using backend enum value
+      source: 'referral', // Using backend enum value
     }
   ];
 }
@@ -67,7 +67,7 @@ function generateMockSpaces() {
   return [
     {
       name: 'Sala Executiva A',
-      type: 'private_office' as ServiceType,
+      type: 'private_office', // Using correct enum value directly
       description: 'Sala privativa para até 4 pessoas',
       floor: 2,
       area: 15,
@@ -76,7 +76,7 @@ function generateMockSpaces() {
     },
     {
       name: 'Estação Flex 01',
-      type: 'flex_desk' as ServiceType,
+      type: 'flex_desk', // Using correct enum value directly
       description: 'Estação de trabalho flexível',
       floor: 1,
       area: 2,
@@ -112,7 +112,14 @@ export async function seedDatabase() {
     if (!existingLeads?.length) {
       const { error: leadsError } = await supabase
         .from('leads')
-        .insert(generateMockLeads());
+        .upsert(generateMockLeads().map(lead => ({
+          email: lead.email,
+          name: lead.name,
+          company: lead.company,
+          phone: lead.phone,
+          status: lead.status,
+          source: lead.source
+        })));
       
       if (leadsError) throw leadsError;
       console.log('  ✅ Leads seeded');
@@ -128,7 +135,7 @@ export async function seedDatabase() {
     if (!existingSpaces?.length) {
       const { error: spacesError } = await supabase
         .from('spaces')
-        .insert(generateMockSpaces());
+        .upsert(generateMockSpaces());
       
       if (spacesError) throw spacesError;
       console.log('  ✅ Spaces seeded');

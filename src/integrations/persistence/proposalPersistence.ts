@@ -9,13 +9,13 @@ import {
 } from '@/types/proposal';
 
 // Helper function to map frontend status to database status
-const mapProposalStatus = (status: string): string => {
+const mapProposalStatus = (status: string): ProposalStatus => {
   if (status in PT_BR_TO_PROPOSAL_STATUS) {
     return PT_BR_TO_PROPOSAL_STATUS[status as keyof typeof PT_BR_TO_PROPOSAL_STATUS];
   } else if (Object.values(PT_BR_TO_PROPOSAL_STATUS).includes(status as ProposalStatus)) {
-    return status;
+    return status as ProposalStatus;
   }
-  return status || 'draft';
+  return 'draft'; // Default to draft
 };
 
 // Helper function to map database status to frontend status
@@ -176,12 +176,16 @@ export const proposalPersistence = {
     return {
       ...proposal,
       id: proposalId,
-      createdAt: proposalData.created_at
+      createdAt: proposalData.created_at,
+      // Add default serviceType for compatibility with Proposal type
+      serviceType: proposal.serviceType || 'private_office',
     };
   },
 
   updateProposal: async (proposal: Proposal): Promise<Proposal> => {
-    // Update the proposal
+    // Update the proposal with the correct status
+    const proposalStatus = mapProposalStatus(proposal.status);
+    
     const { error: proposalError } = await supabase
       .from('proposals')
       .update({
@@ -189,7 +193,7 @@ export const proposalPersistence = {
         title: proposal.title,
         value: proposal.value,
         expires_at: proposal.expiresAt,
-        status: mapProposalStatus(proposal.status),
+        status: proposalStatus,
         notes: proposal.notes,
         updated_at: new Date().toISOString()
       })
