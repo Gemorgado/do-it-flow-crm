@@ -1,9 +1,10 @@
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '../integrations/supabase/client';
 import { LeadStatus, LeadSource } from '@/types/lead';
 import { ProposalStatus } from '@/types/proposal';
 import { ServiceType } from '@/types/service';
 import { toLeadSource, toLeadStatus, toServiceType } from './enumMappers';
+import { persistence } from '@/integrations/persistence';
 
 function generateMockPipelineStages() {
   return [
@@ -52,16 +53,16 @@ function generateMockLeads() {
       name: 'João Silva',
       company: 'Empresa ABC',
       phone: '(11) 98765-4321',
-      status: 'new' as LeadStatus,
-      source: 'site_organic' as LeadSource,
+      status: 'novo' as LeadStatus,
+      source: 'site_organico' as LeadSource,
     },
     {
       email: 'maria.oliveira@exemplo.com',
       name: 'Maria Oliveira',
       company: 'Startup XYZ',
       phone: '(11) 91234-5678',
-      status: 'contacted' as LeadStatus,
-      source: 'referral' as LeadSource,
+      status: 'contatado' as LeadStatus,
+      source: 'indicacao' as LeadSource,
     }
   ];
 }
@@ -113,20 +114,29 @@ export async function seedDatabase() {
       .select('*');
     
     if (!existingLeads?.length) {
-      // Map leads to proper database structure with correct enum values
-      const leadsToInsert = generateMockLeads().map(lead => ({
-        email: lead.email,
-        name: lead.name,
-        company: lead.company,
-        phone: lead.phone,
-        status: lead.status,
-        source: lead.source
-      }));
-
-      // Insert one by one to avoid array type issues
-      for (const lead of leadsToInsert) {
-        const { error } = await supabase.from('leads').insert(lead);
-        if (error) throw error;
+      // Create leads one by one using the lead persistence layer
+      const leadsToCreate = generateMockLeads();
+      for (const leadData of leadsToCreate) {
+        // Create a proper Lead object with default values
+        const lead = {
+          id: '',
+          name: leadData.name,
+          company: leadData.company,
+          email: leadData.email,
+          phone: leadData.phone,
+          status: leadData.status,
+          source: leadData.source,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          stage: {
+            id: '',
+            name: '',
+            order: 0,
+            color: ''
+          }
+        };
+        
+        await persistence.createLead(lead);
       }
       
       console.log('  ✅ Leads seeded');
@@ -140,19 +150,22 @@ export async function seedDatabase() {
       .select('*');
     
     if (!existingSpaces?.length) {
-      // Insert spaces one by one to avoid array type issues
-      for (const space of generateMockSpaces()) {
-        const { error } = await supabase.from('spaces').insert({
-          name: space.name,
-          type: space.type,
-          description: space.description,
-          floor: space.floor,
-          area: space.area,
-          capacity: space.capacity,
-          is_active: space.is_active
-        });
+      // Insert spaces one by one
+      for (const spaceData of generateMockSpaces()) {
+        const space = {
+          id: '',
+          name: spaceData.name,
+          type: spaceData.type,
+          description: spaceData.description,
+          floor: spaceData.floor,
+          area: spaceData.area,
+          capacity: spaceData.capacity,
+          isActive: spaceData.is_active,
+          createdAt: '',
+          updatedAt: ''
+        };
         
-        if (error) throw error;
+        await persistence.createSpace(space);
       }
       
       console.log('  ✅ Spaces seeded');

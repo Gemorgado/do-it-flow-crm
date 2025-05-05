@@ -20,14 +20,23 @@ export const toServiceType = (raw: string): ServiceType => {
 // Lead Status mappings
 export const toLeadStatus = (raw: string): LeadStatus => {
   const map: Record<string, LeadStatus> = {
-    novo: 'new',
-    contatado: 'contacted',
-    qualificado: 'qualified',
-    proposta: 'proposal',
-    negociação: 'negotiation',
-    fechado: 'closed_won',
-    perdido: 'closed_lost',
-    convertido: 'converted',
+    novo: 'novo',
+    contatado: 'contatado',
+    qualificado: 'qualificado',
+    proposta: 'proposta',
+    negociação: 'negociação',
+    fechado: 'fechado',
+    perdido: 'perdido',
+    convertido: 'convertido',
+    // Map English values from the database to Portuguese types
+    new: 'novo',
+    contacted: 'contatado',
+    qualified: 'qualificado',
+    proposal: 'proposta',
+    negotiation: 'negociação',
+    closed_won: 'fechado',
+    closed_lost: 'perdido',
+    converted: 'convertido'
   };
   return (map[raw] || raw) as LeadStatus;
 };
@@ -35,14 +44,20 @@ export const toLeadStatus = (raw: string): LeadStatus => {
 // Lead Source mappings
 export const toLeadSource = (raw: string): LeadSource => {
   const map: Record<string, LeadSource> = {
-    site_organico: 'site_organic',
+    site_organico: 'site_organico',
     google_ads: 'google_ads',
     meta_ads: 'meta_ads',
     instagram: 'instagram',
-    indicacao: 'referral',
-    visita_presencial: 'in_person_visit',
-    eventos: 'events',
-    outros: 'other',
+    indicacao: 'indicacao',
+    visita_presencial: 'visita_presencial',
+    eventos: 'eventos',
+    outros: 'outros',
+    // Map English values from the database to Portuguese types
+    site_organic: 'site_organico',
+    referral: 'indicacao',
+    in_person_visit: 'visita_presencial',
+    events: 'eventos',
+    other: 'outros'
   };
   return (map[raw] || raw) as LeadSource;
 };
@@ -50,13 +65,21 @@ export const toLeadSource = (raw: string): LeadSource => {
 // Proposal Status mappings
 export const toProposalStatus = (raw: string): ProposalStatus => {
   const map: Record<string, ProposalStatus> = {
-    enviada: 'sent',
-    visualizada: 'viewed',
-    aceita: 'accepted',
-    rejeitada: 'rejected',
-    expirada: 'expired',
-    em_negociacao: 'negotiating',
-    rascunho: 'draft',
+    enviada: 'enviada',
+    visualizada: 'visualizada',
+    aceita: 'aceita',
+    rejeitada: 'rejeitada',
+    expirada: 'expirada',
+    em_negociacao: 'em_negociacao',
+    rascunho: 'rascunho',
+    // Map English values to Portuguese types
+    draft: 'rascunho',
+    sent: 'enviada',
+    viewed: 'visualizada',
+    accepted: 'aceita',
+    rejected: 'rejeitada',
+    expired: 'expirada',
+    negotiating: 'em_negociacao'
   };
   return (map[raw] || raw) as ProposalStatus;
 };
@@ -64,10 +87,15 @@ export const toProposalStatus = (raw: string): ProposalStatus => {
 // Client Status mappings
 export const toClientStatus = (raw: string): ClientStatus => {
   const map: Record<string, ClientStatus> = {
-    ativo: 'active',
-    inativo: 'inactive',
-    inadimplente: 'delinquent',
-    cancelado: 'canceled',
+    ativo: 'ativo',
+    inativo: 'inativo',
+    inadimplente: 'inadimplente',
+    cancelado: 'cancelado',
+    // Map English values to Portuguese types
+    active: 'ativo',
+    inactive: 'inativo',
+    delinquent: 'inadimplente',
+    canceled: 'cancelado'
   };
   return (map[raw] || raw) as ClientStatus;
 };
@@ -75,8 +103,11 @@ export const toClientStatus = (raw: string): ClientStatus => {
 // Billing Cycle mappings
 export const toBillingCycle = (raw: string): BillingCycle => {
   const map: Record<string, BillingCycle> = {
-    mensal: 'monthly',
-    anual: 'yearly',
+    mensal: 'mensal',
+    anual: 'anual',
+    // Map English values to Portuguese types
+    monthly: 'mensal',
+    yearly: 'anual'
   };
   return (map[raw] || raw) as BillingCycle;
 };
@@ -84,9 +115,13 @@ export const toBillingCycle = (raw: string): BillingCycle => {
 // Service Status mappings
 export const toServiceStatus = (raw: string): ServiceStatus => {
   const map: Record<string, ServiceStatus> = {
-    ativo: 'active',
-    em_renovacao: 'renewal',
-    cancelado: 'canceled',
+    ativo: 'ativo',
+    em_renovacao: 'em_renovacao',
+    cancelado: 'cancelado',
+    // Map English values to Portuguese types
+    active: 'ativo',
+    renewal: 'em_renovacao',
+    canceled: 'cancelado'
   };
   return (map[raw] || raw) as ServiceStatus;
 };

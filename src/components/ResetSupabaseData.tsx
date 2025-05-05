@@ -1,57 +1,45 @@
 
-import { Button } from '@/components/ui/button';
-import { seedDatabase } from '@/utils/supabaseSeeder';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
-import { useState } from 'react';
+import { Button } from "@/components/ui/button";
+import { ReloadIcon } from "@radix-ui/react-icons";
+import { seedDatabase } from "@/utils/supabaseSeeder";
+import { useState } from "react";
+import { toast } from "sonner";
 
-/**
- * Component to reset and seed the Supabase database.
- * This is useful for development and demo purposes.
- */
-export const ResetSupabaseData = () => {
-  const [isLoading, setIsLoading] = useState(false);
+export function ResetSupabaseData() {
+  const [isResetting, setIsResetting] = useState(false);
 
-  const resetAndSeedData = async () => {
-    if (!confirm('This will delete all existing data and seed the database with demo data. Continue?')) {
-      return;
-    }
-
-    setIsLoading(true);
+  const handleReset = async () => {
     try {
-      toast.info('Resetting database...');
-      
-      // Delete all data from tables in reverse dependency order
-      await supabase.from('space_allocations').delete().neq('id', 'none');
-      await supabase.from('client_services').delete().neq('id', 'none');
-      await supabase.from('clients').delete().neq('id', 'none');
-      await supabase.from('proposal_items').delete().neq('id', 'none');
-      await supabase.from('proposals').delete().neq('id', 'none');
-      await supabase.from('leads').delete().neq('id', 'none');
-      await supabase.from('spaces').delete().neq('id', 'none');
-      await supabase.from('pipeline_stages').delete().neq('id', 'none');
-      
-      toast.success('Database reset successfully');
-      
-      // Now seed the database
-      await seedDatabase();
+      setIsResetting(true);
+      const result = await seedDatabase();
+      if (result) {
+        toast.success("Supabase demo data has been reset");
+      } else {
+        toast.error("Failed to reset Supabase demo data");
+      }
     } catch (error) {
-      console.error('Error resetting database:', error);
-      toast.error('Failed to reset database');
+      console.error("Error resetting Supabase data:", error);
+      toast.error("Failed to reset Supabase demo data");
     } finally {
-      setIsLoading(false);
+      setIsResetting(false);
     }
   };
 
   return (
-    <Button 
-      variant="destructive" 
-      onClick={resetAndSeedData} 
-      disabled={isLoading}
+    <Button
+      variant="outline"
+      size="sm"
+      disabled={isResetting}
+      onClick={handleReset}
     >
-      {isLoading ? 'Resetting...' : 'Reset & Seed Supabase Data'}
+      {isResetting ? (
+        <>
+          <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+          Resetting...
+        </>
+      ) : (
+        "Reset Supabase Data"
+      )}
     </Button>
   );
-};
-
-export default ResetSupabaseData;
+}
