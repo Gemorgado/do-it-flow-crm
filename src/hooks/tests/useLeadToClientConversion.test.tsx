@@ -95,7 +95,6 @@ describe('useLeadToClientConversion Hook', () => {
     expect(supabase.from().update().eq).toHaveBeenCalledWith('id', mockLead.id);
     
     // Assert: Check success toast was shown with the correct message
-    // Fix: Add the required string argument to toast.success
     expect(toast.success).toHaveBeenCalledWith('Lead successfully converted to client');
     
     // Assert: Check the returned client has expected properties
@@ -132,7 +131,6 @@ describe('useLeadToClientConversion Hook', () => {
     
     // Assert: Check that error handling worked correctly
     expect(convertedClient).toBeNull();
-    // Fix: Add the required string argument to toast.error
     expect(toast.error).toHaveBeenCalledWith('Failed to convert lead to client');
     expect(result.current.isConverting).toBe(false);
   });
