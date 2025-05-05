@@ -64,7 +64,10 @@ describe('Proposal Creation Integration', () => {
   const renderComponent = () => {
     return render(
       <QueryClientProvider client={queryClient}>
-        <ProposalModal />
+        <ProposalModal 
+          isOpen={true} 
+          onClose={() => {}} 
+        />
       </QueryClientProvider>
     );
   };

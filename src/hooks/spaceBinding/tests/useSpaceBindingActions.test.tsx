@@ -12,11 +12,11 @@ import React from 'react';
 vi.mock('@/hooks/useSpaceBindings', () => ({
   useBindSpace: vi.fn().mockReturnValue({
     mutate: vi.fn(),
-    isLoading: false,
+    isPending: false,
   }),
   useUnbindSpace: vi.fn().mockReturnValue({
     mutate: vi.fn(),
-    isLoading: false,
+    isPending: false,
   }),
 }));
 
@@ -60,13 +60,13 @@ describe('useSpaceBindingActions Hook', () => {
     // Reset the mocks for each test
     vi.mocked(useBindSpace).mockReturnValue({
       mutate: bindSpaceMutateMock,
-      isLoading: false,
-    });
+      isPending: false,
+    } as any);
     
     vi.mocked(useUnbindSpace).mockReturnValue({
       mutate: unbindSpaceMutateMock,
-      isLoading: false,
-    });
+      isPending: false,
+    } as any);
   });
 
   it('should not allow save when required fields are missing', () => {
